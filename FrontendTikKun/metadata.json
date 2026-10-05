@@ -1,0 +1,8 @@
+{
+  "name": "Casa Tikkun - Cabañas & Chalets Campestres",
+  "description": "Un paraíso de descanso, amor y frío a solo 50 minutos de Medellín en Santa Elena. Cabañas y chalets alpinos con chimenea de leña tradicional, terraza mirador a los pinos y desayuno campesino incluido.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

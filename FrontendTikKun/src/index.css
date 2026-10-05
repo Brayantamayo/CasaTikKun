@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: 'Fraunces', Georgia, serif;
+  --font-sans: 'Outfit', system-ui, -apple-system, sans-serif;
+  --color-tikkun-brand-sage: #B6C29A;
+  --color-tikkun-brand-sage-light: #C9D4B0;
+  --color-tikkun-brand-sage-bg: #E7EDD8;
+  --color-tikkun-brand-sage-mist: #F1F5E9;
+  --color-tikkun-brand-deep: #1E311A;
+  --color-tikkun-brand-dark: #152412;
+  --color-tikkun-brand-forest: #2C4526;
+  --color-tikkun-brand-olive: #6E7E52;
+  --color-tikkun-brand-gold: #C28E34;
+  --color-tikkun-brand-cream: #FAF8F2;
+  --color-tikkun-brand-warm: #EFE9DC;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #FAF8F2;
+  color: #1E311A;
+}
+
+h1, h2, h3, .font-serif-title {
+  font-family: var(--font-serif);
+}
+
+/* Custom scrollbar matching Casa Tikkun sage green palette */
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+::-webkit-scrollbar-track {
+  background: #EAE6DB;
+}
+::-webkit-scrollbar-thumb {
+  background: #B6C29A;
+  border-radius: 4px;
+  border: 2px solid #FAF8F2;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #95A574;
+}

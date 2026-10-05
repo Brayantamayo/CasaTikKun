@@ -1,20 +1,13 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Casa Tikkun
 
-# Run and deploy your AI Studio app
+Aplicación web de Casa Tikkun, un alojamiento ubicado en Santa Elena, Antioquia.
 
-This contains everything you need to run your app locally.
+## Ejecutar en local
 
-View your app in AI Studio: https://ai.studio/apps/3bc5ad40-8ce7-4c88-8646-97378f93f6a8
+**Requisito:** Node.js.
 
-## Run Locally
+1. Instala las dependencias: `npm install`.
+2. Configura `GEMINI_API_KEY` en el archivo `.env.local`.
+3. Inicia el servidor de desarrollo: `npm run dev`.
 
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+La aplicación estará disponible en la dirección local que indique Vite en la terminal.

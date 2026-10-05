@@ -1,10 +1,11 @@
+// Comparte el estado administrativo y sincroniza los cambios del catálogo y las imágenes.
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { TarifasCabana, Cabana } from '../types';
 import { ACCOMMODATIONS, TIKKUN_RULES, TIKKUN_COURTESIES, TIKKUN_SPECIFICATIONS } from '../data/tikkunData';
 import { DEFAULT_ADMIN_CREDENTIALS, STORAGE_KEYS } from '../constants/storageKeys';
 import { TikkunService } from '../services/api';
 
-// Default assets for Hero and Gallery
+// Recursos predeterminados para la portada y la galería.
 import heroGlamping from '../assets/images/hero_glamping_dome_1790614291764.jpg';
 import cabanaMirador from '../assets/images/cabana_mirador_tikkun_1790783983488.jpg';
 import cabinLuxury from '../assets/images/cabin_alpina_luxury_1790614303472.jpg';
@@ -46,16 +47,16 @@ interface AdminContextType {
   isLoginModalOpen: boolean;
   openLoginModal: () => void;
   closeLoginModal: () => void;
-  // Cabin CRUD
+  // Operaciones para crear, consultar, actualizar y eliminar cabañas.
   addCabin: (cabin: Cabana) => void;
   updateCabin: (cabin: Cabana) => void;
   deleteCabin: (cabinId: string) => void;
   resetAllCabinsToDefault: () => void;
-  // Landing Hero Images CRUD
+  // Administración de imágenes de la portada.
   heroImages: string[];
   setHeroImagesList: (urls: string[]) => void;
   resetHeroImagesToDefault: () => void;
-  // Landing Gallery Images CRUD
+  // Administración de imágenes de la galería.
   galleryImages: string[];
   setGalleryImagesList: (urls: string[]) => void;
   resetGalleryImagesToDefault: () => void;
@@ -70,7 +71,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  // Store rates overrides in localStorage
+  // Guardar las tarifas personalizadas en localStorage.
   const [ratesOverrides, setRatesOverrides] = useState<Record<string, TarifasCabana>>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.RATES_OVERRIDES);
@@ -80,7 +81,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   });
 
-  // Store custom created cabins
+  // Guardar las cabañas personalizadas.
   const [customCabins, setCustomCabins] = useState<Cabana[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.CUSTOM_CABINS);
@@ -90,7 +91,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   });
 
-  // Store modified default cabins
+  // Guardar los cambios de las cabañas predeterminadas.
   const [modifiedCabins, setModifiedCabins] = useState<Record<string, Partial<Cabana>>>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.MODIFIED_CABINS);
@@ -100,7 +101,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   });
 
-  // Store deleted cabin ids
+  // Guardar los identificadores de las cabañas ocultas.
   const [deletedCabinIds, setDeletedCabinIds] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.DELETED_CABINS);
@@ -110,7 +111,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   });
 
-  // Store Hero Images
+  // Guardar las imágenes de la portada.
   const [heroImages, setHeroImages] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.HERO_IMAGES);
@@ -121,7 +122,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   });
 
-  // Store Gallery Images
+  // Guardar las imágenes de la galería.
   const [galleryImages, setGalleryImages] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.GALLERY_IMAGES);
@@ -132,7 +133,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   });
 
-  // Login handler
+  // Gestionar el inicio de sesión.
   const login = (username: string, pass: string): boolean => {
     const cleanUser = username.trim().toLowerCase();
     const currentPass = localStorage.getItem(STORAGE_KEYS.ADMIN_PASS) || DEFAULT_ADMIN_CREDENTIALS.PASS;
@@ -176,7 +177,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       try {
         localStorage.setItem(STORAGE_KEYS.RATES_OVERRIDES, JSON.stringify(updated));
       } catch {
-        // Ignore storage error
+        // Continuar si el almacenamiento local no está disponible.
       }
       return updated;
     });
@@ -187,7 +188,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     localStorage.removeItem(STORAGE_KEYS.RATES_OVERRIDES);
   };
 
-  // Add new cabin
+  // Añadir una cabaña.
   const addCabin = (newCabin: Cabana) => {
     const enriched: Cabana = {
       ...newCabin,
@@ -201,7 +202,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       try {
         localStorage.setItem(STORAGE_KEYS.CUSTOM_CABINS, JSON.stringify(updated));
       } catch {
-        // Fallback if quota reached
+        // Usar el comportamiento alternativo si se alcanza el límite de almacenamiento.
       }
       return updated;
     });
@@ -210,11 +211,11 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       updateCabinRates(enriched.id, enriched.rates);
     }
 
-    // Non-blocking sync to Backend API
+    // Sincronizar con la API del servidor sin bloquear la interfaz.
     void TikkunService.syncCabinToBackend(enriched, 'POST');
   };
 
-  // Update existing cabin (custom or default)
+  // Actualizar una cabaña personalizada o predeterminada.
   const updateCabin = (updatedCabin: Cabana) => {
     const isCustom = customCabins.some((c) => c.id === updatedCabin.id);
 
@@ -224,7 +225,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         try {
           localStorage.setItem(STORAGE_KEYS.CUSTOM_CABINS, JSON.stringify(updated));
         } catch {
-          // Ignore quota error
+          // Continuar si se alcanza el límite de almacenamiento.
         }
         return updated;
       });
@@ -237,7 +238,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         try {
           localStorage.setItem(STORAGE_KEYS.MODIFIED_CABINS, JSON.stringify(updated));
         } catch {
-          // Ignore quota error
+          // Continuar si se alcanza el límite de almacenamiento.
         }
         return updated;
       });
@@ -247,18 +248,18 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       updateCabinRates(updatedCabin.id, updatedCabin.rates);
     }
 
-    // Non-blocking sync to Backend API
+    // Sincronizar con la API del servidor sin bloquear la interfaz.
     void TikkunService.syncCabinToBackend(updatedCabin, 'PUT');
   };
 
-  // Delete cabin (custom or hide default)
+  // Eliminar una cabaña personalizada u ocultar una predeterminada.
   const deleteCabin = (cabinId: string) => {
     setCustomCabins((prev) => {
       const updated = prev.filter((c) => c.id !== cabinId);
       try {
         localStorage.setItem(STORAGE_KEYS.CUSTOM_CABINS, JSON.stringify(updated));
       } catch {
-        // Ignore quota error
+        // Continuar si se alcanza el límite de almacenamiento.
       }
       return updated;
     });
@@ -269,7 +270,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         try {
           localStorage.setItem(STORAGE_KEYS.DELETED_CABINS, JSON.stringify(updated));
         } catch {
-          // Ignore quota error
+          // Continuar si se alcanza el límite de almacenamiento.
         }
         return updated;
       }
@@ -290,13 +291,13 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     localStorage.removeItem(STORAGE_KEYS.RATES_OVERRIDES);
   };
 
-  // Hero images handlers
+  // Acciones para administrar las imágenes de portada.
   const setHeroImagesList = (urls: string[]) => {
     setHeroImages(urls);
     try {
       localStorage.setItem(STORAGE_KEYS.HERO_IMAGES, JSON.stringify(urls));
     } catch {
-      // Fallback if localStorage quota exceeded
+      // Usar el comportamiento alternativo si se alcanza el límite de localStorage.
     }
     void TikkunService.syncMediaToBackend({ heroImages: urls });
   };
@@ -307,13 +308,13 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     void TikkunService.syncMediaToBackend({ heroImages: DEFAULT_HERO_IMAGES });
   };
 
-  // Gallery images handlers
+  // Acciones para administrar las imágenes de la galería.
   const setGalleryImagesList = (urls: string[]) => {
     setGalleryImages(urls);
     try {
       localStorage.setItem(STORAGE_KEYS.GALLERY_IMAGES, JSON.stringify(urls));
     } catch {
-      // Fallback if localStorage quota exceeded
+      // Usar el comportamiento alternativo si se alcanza el límite de localStorage.
     }
     void TikkunService.syncMediaToBackend({ galleryImages: urls });
   };

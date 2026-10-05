@@ -89,16 +89,4 @@ export interface RespuestaLoginAdminDTO {
  */
 export interface MapaSobrescrituraTarifas {
   [cabinId: string]: TarifasCabana;
-}
-
-// ============================================================================
-// ALIAS DE COMPATIBILIDAD
-// ============================================================================
-export type ApiResponse<T> = RespuestaApi<T>;
-export type UpsertCabinDTO = GuardarCabanaDTO;
-export type CreateReviewDTO = CrearResenaDTO;
-export type SiteMediaConfigDTO = ConfiguracionMultimediaDTO;
-export type BookingInquiryDTO = SolicitudReservaDTO;
-export type AdminLoginRequestDTO = SolicitudLoginAdminDTO;
-export type AdminLoginResponseDTO = RespuestaLoginAdminDTO;
-export type RatesOverrideMap = MapaSobrescrituraTarifas;
+} // Se conservan las claves existentes para mantener la compatibilidad con la API.

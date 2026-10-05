@@ -1,3 +1,4 @@
+// Punto de entrada: monta la aplicación React en el elemento raíz del documento.
 import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
 import App from './App.tsx';

@@ -1,3 +1,4 @@
+// Permite consultar reseñas, filtrarlas por cabaña y publicar una nueva opinión.
 import React, { useState, useMemo } from 'react';
 import { Star, CheckCircle, MessageSquarePlus, X, Filter } from 'lucide-react';
 import { useReviews } from '../../context/ReviewsContext';
@@ -12,7 +13,7 @@ export const ReviewsSection: React.FC = () => {
   const [selectedCabinFilter, setSelectedCabinFilter] = useState<string>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // New review form state
+  // Estado del formulario para publicar una reseña.
   const [name, setName] = useState('');
   const [city, setCity] = useState('');
   const [accommodationId, setAccommodationId] = useState(allAccommodations[0]?.id || '');
@@ -49,13 +50,13 @@ export const ReviewsSection: React.FC = () => {
     <section id="resenas" className="py-20 sm:py-24 bg-[#F2F6EC] border-t border-[#CCD8B8]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Header */}
+        {/* Encabezado de reseñas. */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 sm:mb-12 gap-6">
           <div>
-            <div className="inline-block px-3 py-1 bg-[#B6C29A] text-[#1E311A] text-xs font-bold uppercase tracking-widest rounded-md mb-2">
+            <div className="inline-block px-3 py-1 bg-tikkun-brand-sage text-tikkun-brand-deep text-xs font-bold uppercase tracking-widest rounded-md mb-2">
               Testimonios de Huéspedes
             </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-[#1E311A] tracking-tight [text-wrap:balance]">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-tikkun-brand-deep tracking-tight text-balance">
               Lo que dicen quienes han vivido Casa Tikkun
             </h2>
             <p className="mt-2 text-sm sm:text-base text-[#465E3C]">
@@ -66,20 +67,20 @@ export const ReviewsSection: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center gap-2 px-6 py-3.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-white bg-[#1E311A] hover:bg-[#101F0D] rounded-xl transition-all shadow-xs shrink-0 cursor-pointer"
+            className="inline-flex items-center gap-2 px-6 py-3.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-white bg-tikkun-brand-deep hover:bg-[#101F0D] rounded-xl transition-all shadow-xs shrink-0 cursor-pointer"
           >
-            <MessageSquarePlus className="w-4 h-4 text-[#B6C29A]" />
+            <MessageSquarePlus className="w-4 h-4 text-tikkun-brand-sage" />
             <span>Compartir tu Experiencia</span>
           </button>
         </div>
 
-        {/* Global Rating Scoreboard */}
-        <div className="bg-[#FAF8F2] rounded-2xl p-6 sm:p-8 border-2 border-[#CCD8B8] mb-8 shadow-sm">
+        {/* Resumen general de calificaciones. */}
+        <div className="bg-tikkun-brand-cream rounded-2xl p-6 sm:p-8 border-2 border-[#CCD8B8] mb-8 shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
             
-            {/* Big Score */}
+            {/* Calificación promedio. */}
             <div className="md:col-span-4 text-center md:text-left md:border-r border-[#D5DFCA] md:pr-8">
-              <div className="text-5xl sm:text-6xl font-serif font-bold text-[#1E311A] tabular-nums">
+              <div className="text-5xl sm:text-6xl font-serif font-bold text-tikkun-brand-deep tabular-nums">
                 4.98
               </div>
               <div className="flex items-center justify-center md:justify-start gap-1 text-[#C48E2E] my-2">
@@ -92,10 +93,10 @@ export const ReviewsSection: React.FC = () => {
               </p>
             </div>
 
-            {/* Category Scores */}
+            {/* Desglose de calificaciones. */}
             <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div className="space-y-1.5">
-                <div className="flex justify-between font-semibold text-[#1E311A]">
+                <div className="flex justify-between font-semibold text-tikkun-brand-deep">
                   <span>Paz, Silencio & Naturaleza</span>
                   <span className="font-bold text-[#2A4222]">5.0 / 5.0</span>
                 </div>
@@ -105,7 +106,7 @@ export const ReviewsSection: React.FC = () => {
               </div>
 
               <div className="space-y-1.5">
-                <div className="flex justify-between font-semibold text-[#1E311A]">
+                <div className="flex justify-between font-semibold text-tikkun-brand-deep">
                   <span>Calor de Chimenea & Acogida</span>
                   <span className="font-bold text-[#2A4222]">5.0 / 5.0</span>
                 </div>
@@ -115,7 +116,7 @@ export const ReviewsSection: React.FC = () => {
               </div>
 
               <div className="space-y-1.5">
-                <div className="flex justify-between font-semibold text-[#1E311A]">
+                <div className="flex justify-between font-semibold text-tikkun-brand-deep">
                   <span>Desayuno Campesino & Sabor</span>
                   <span className="font-bold text-[#2A4222]">4.9 / 5.0</span>
                 </div>
@@ -125,7 +126,7 @@ export const ReviewsSection: React.FC = () => {
               </div>
 
               <div className="space-y-1.5">
-                <div className="flex justify-between font-semibold text-[#1E311A]">
+                <div className="flex justify-between font-semibold text-tikkun-brand-deep">
                   <span>Limpieza & Lencería de Cama</span>
                   <span className="font-bold text-[#2A4222]">4.9 / 5.0</span>
                 </div>
@@ -138,7 +139,7 @@ export const ReviewsSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Cabin Filter Tabs for Reviews */}
+        {/* Filtros de reseñas por cabaña. */}
         <div className="mb-8 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
           <span className="text-xs font-bold text-[#3B5430] uppercase tracking-wider flex items-center gap-1 shrink-0 mr-1">
             <Filter className="w-3.5 h-3.5" />
@@ -149,8 +150,8 @@ export const ReviewsSection: React.FC = () => {
             onClick={() => setSelectedCabinFilter('all')}
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
               selectedCabinFilter === 'all'
-                ? 'bg-[#1E311A] text-white shadow-xs'
-                : 'bg-[#FAF8F2] text-[#384E33] hover:bg-[#DCE6CA] border border-[#CCD8B8]'
+                ? 'bg-tikkun-brand-deep text-white shadow-xs'
+                : 'bg-tikkun-brand-cream text-[#384E33] hover:bg-[#DCE6CA] border border-[#CCD8B8]'
             }`}
           >
             Todas ({reviews.length})
@@ -165,8 +166,8 @@ export const ReviewsSection: React.FC = () => {
                 onClick={() => setSelectedCabinFilter(acc.id)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   selectedCabinFilter === acc.id
-                    ? 'bg-[#1E311A] text-white shadow-xs'
-                    : 'bg-[#FAF8F2] text-[#384E33] hover:bg-[#DCE6CA] border border-[#CCD8B8]'
+                    ? 'bg-tikkun-brand-deep text-white shadow-xs'
+                    : 'bg-tikkun-brand-cream text-[#384E33] hover:bg-[#DCE6CA] border border-[#CCD8B8]'
                 }`}
               >
                 {acc.cabinNumberLabel} · {shortName} ({count})
@@ -175,15 +176,15 @@ export const ReviewsSection: React.FC = () => {
           })}
         </div>
 
-        {/* Reviews Cards Grid */}
+        {/* Tarjetas de reseñas. */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredReviews.map((rev) => (
             <div
               key={rev.id}
-              className="bg-[#FAF8F2] p-6 sm:p-7 rounded-2xl border-2 border-[#D5DFCA] hover:border-[#B6C29A] flex flex-col justify-between shadow-xs hover:shadow-lg transition-all"
+              className="bg-tikkun-brand-cream p-6 sm:p-7 rounded-2xl border-2 border-[#D5DFCA] hover:border-tikkun-brand-sage flex flex-col justify-between shadow-xs hover:shadow-lg transition-all"
             >
               <div>
-                {/* Top reviewer meta */}
+                {/* Calificación y datos de la reseña. */}
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-1 text-[#C48E2E]">
                     {[...Array(rev.rating)].map((_, i) => (
@@ -195,21 +196,21 @@ export const ReviewsSection: React.FC = () => {
                   </span>
                 </div>
 
-                {/* Accommodation Tag */}
-                <div className="inline-block px-2.5 py-1 bg-[#B6C29A]/40 text-[#1E311A] text-xs font-bold rounded-md mb-3">
+                {/* Cabaña asociada a la reseña. */}
+                <div className="inline-block px-2.5 py-1 bg-tikkun-brand-sage/40 text-tikkun-brand-deep text-xs font-bold rounded-md mb-3">
                   {rev.accommodationName}
                 </div>
 
-                {/* Comment quote */}
+                {/* Comentario del huésped. */}
                 <p className="text-sm text-[#384E33] leading-relaxed italic">
                   &ldquo;{rev.comment}&rdquo;
                 </p>
               </div>
 
-              {/* Author footer */}
+              {/* Datos de quien publicó la reseña. */}
               <div className="pt-4 mt-4 border-t border-[#DEE6D5] flex items-center justify-between">
                 <div>
-                  <h5 className="text-xs font-bold text-[#1E311A]">
+                  <h5 className="text-xs font-bold text-tikkun-brand-deep">
                     {rev.guestName}
                   </h5>
                   <p className="text-[11px] text-[#5B7549]">
@@ -230,7 +231,7 @@ export const ReviewsSection: React.FC = () => {
 
       </div>
 
-      {/* Add Review Modal */}
+      {/* Ventana para añadir una reseña. */}
       {isModalOpen && (
         <div
           onClick={() => setIsModalOpen(false)}
@@ -238,13 +239,13 @@ export const ReviewsSection: React.FC = () => {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-[#FAF8F2] rounded-3xl max-w-3xl w-full border-2 border-[#D5DFCA] shadow-2xl overflow-hidden relative my-auto animate-in zoom-in-95 duration-200"
+            className="bg-tikkun-brand-cream rounded-3xl max-w-3xl w-full border-2 border-[#D5DFCA] shadow-2xl overflow-hidden relative my-auto animate-in zoom-in-95 duration-200"
           >
-            {/* Close Button Top Right */}
+            {/* Botón para cerrar la ventana. */}
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 z-10 p-2 rounded-full bg-[#EAEFD9] hover:bg-[#DCE6CA] text-[#1E311A] transition-colors cursor-pointer"
+              className="absolute top-4 right-4 z-10 p-2 rounded-full bg-[#EAEFD9] hover:bg-[#DCE6CA] text-tikkun-brand-deep transition-colors cursor-pointer"
               aria-label="Cerrar modal"
             >
               <X className="w-4 h-4 stroke-[2.5]" />
@@ -252,14 +253,14 @@ export const ReviewsSection: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-12">
               
-              {/* Left Column: Scenic Landscape Background & Interactive Star Rating Hero */}
+              {/* Columna izquierda: fotografía y calificación. */}
               <div className="md:col-span-5 relative p-6 sm:p-7 text-white flex flex-col justify-between overflow-hidden">
                 <img
                   src={landscapePhoto}
                   alt="Paisaje de montañas y atardecer en Casa Tikkun"
                   className="absolute inset-0 w-full h-full object-cover object-center"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#101C11] via-[#101C11]/70 to-[#101C11]/40" />
+                <div className="absolute inset-0 bg-linear-to-t from-[#101C11] via-[#101C11]/70 to-[#101C11]/40" />
 
                 <div className="relative z-10">
                   <div className="inline-block px-2.5 py-1 bg-white/20 backdrop-blur-md text-white rounded-md text-[10px] font-bold uppercase tracking-widest mb-3">
@@ -273,7 +274,7 @@ export const ReviewsSection: React.FC = () => {
                   </p>
                 </div>
 
-                {/* Star Rating Block with Glassmorphism */}
+                {/* Selector de estrellas. */}
                 <div className="relative z-10 my-5 bg-black/40 backdrop-blur-md p-4 rounded-2xl border border-white/20 shadow-lg">
                   <span className="block text-[11px] font-bold text-[#F0B87F] uppercase tracking-wider mb-2">
                     Tu Calificación General
@@ -307,21 +308,21 @@ export const ReviewsSection: React.FC = () => {
                   </span>
                 </div>
 
-                {/* Footer badge */}
+                {/* Distintivo informativo. */}
                 <div className="relative z-10 text-[11px] text-stone-300 flex items-center gap-1.5">
-                  <CheckCircle className="w-3.5 h-3.5 text-[#B6C29A]" />
+                  <CheckCircle className="w-3.5 h-3.5 text-tikkun-brand-sage" />
                   <span>Reseña verificada de huésped</span>
                 </div>
               </div>
 
-              {/* Right Column: Form Fields */}
-              <div className="md:col-span-7 p-6 sm:p-7 flex flex-col justify-between bg-[#FAF8F2]">
+              {/* Columna derecha: campos del formulario. */}
+              <div className="md:col-span-7 p-6 sm:p-7 flex flex-col justify-between bg-tikkun-brand-cream">
                 <form onSubmit={handleAddReview} className="space-y-3.5">
                   
-                  {/* Row 1: Nombre & Ciudad */}
+                  {/* Fila 1: nombre y ciudad. */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[11px] font-bold text-[#1E311A] uppercase tracking-wider mb-1">
+                      <label className="block text-[11px] font-bold text-tikkun-brand-deep uppercase tracking-wider mb-1">
                         Tu Nombre *
                       </label>
                       <input
@@ -330,12 +331,12 @@ export const ReviewsSection: React.FC = () => {
                         placeholder="Ej. Laura Gómez"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="w-full bg-white border border-[#CCD8B8] focus:border-[#1E311A] rounded-xl px-3 py-2 text-xs sm:text-sm text-[#1E311A] focus:ring-1 focus:ring-[#1E311A] focus:outline-hidden transition-all"
+                        className="w-full bg-white border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3 py-2 text-xs sm:text-sm text-tikkun-brand-deep focus:ring-1 focus:ring-tikkun-brand-deep focus:outline-hidden transition-all"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold text-[#1E311A] uppercase tracking-wider mb-1">
+                      <label className="block text-[11px] font-bold text-tikkun-brand-deep uppercase tracking-wider mb-1">
                         Ciudad / Origen
                       </label>
                       <input
@@ -343,21 +344,21 @@ export const ReviewsSection: React.FC = () => {
                         placeholder="Medellín, Colombia"
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
-                        className="w-full bg-white border border-[#CCD8B8] focus:border-[#1E311A] rounded-xl px-3 py-2 text-xs sm:text-sm text-[#1E311A] focus:ring-1 focus:ring-[#1E311A] focus:outline-hidden transition-all"
+                        className="w-full bg-white border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3 py-2 text-xs sm:text-sm text-tikkun-brand-deep focus:ring-1 focus:ring-tikkun-brand-deep focus:outline-hidden transition-all"
                       />
                     </div>
                   </div>
 
-                  {/* Row 2: Alojamiento & Tipo de Viaje */}
+                  {/* Fila 2: cabaña y tipo de viaje. */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[11px] font-bold text-[#1E311A] uppercase tracking-wider mb-1">
+                      <label className="block text-[11px] font-bold text-tikkun-brand-deep uppercase tracking-wider mb-1">
                         Cabaña
                       </label>
                       <select
                         value={accommodationId}
                         onChange={(e) => setAccommodationId(e.target.value)}
-                        className="w-full bg-white border border-[#CCD8B8] focus:border-[#1E311A] rounded-xl px-3 py-2 text-xs text-[#1E311A] focus:ring-1 focus:ring-[#1E311A] focus:outline-hidden transition-all truncate"
+                        className="w-full bg-white border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3 py-2 text-xs text-tikkun-brand-deep focus:ring-1 focus:ring-tikkun-brand-deep focus:outline-hidden transition-all truncate"
                       >
                         {allAccommodations.map((a) => (
                           <option key={a.id} value={a.id}>
@@ -368,13 +369,13 @@ export const ReviewsSection: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold text-[#1E311A] uppercase tracking-wider mb-1">
+                      <label className="block text-[11px] font-bold text-tikkun-brand-deep uppercase tracking-wider mb-1">
                         Tipo de Viaje
                       </label>
                       <select
                         value={travelType}
                         onChange={(e) => setTravelType(e.target.value)}
-                        className="w-full bg-white border border-[#CCD8B8] focus:border-[#1E311A] rounded-xl px-3 py-2 text-xs text-[#1E311A] focus:ring-1 focus:ring-[#1E311A] focus:outline-hidden transition-all"
+                        className="w-full bg-white border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3 py-2 text-xs text-tikkun-brand-deep focus:ring-1 focus:ring-tikkun-brand-deep focus:outline-hidden transition-all"
                       >
                         <option value="En Pareja">En Pareja</option>
                         <option value="Familia">En Familia</option>
@@ -384,9 +385,9 @@ export const ReviewsSection: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Row 3: Comentario */}
+                  {/* Fila 3: comentario. */}
                   <div>
-                    <label className="block text-[11px] font-bold text-[#1E311A] uppercase tracking-wider mb-1">
+                    <label className="block text-[11px] font-bold text-tikkun-brand-deep uppercase tracking-wider mb-1">
                       Tu Reseña / Experiencia *
                     </label>
                     <textarea
@@ -395,11 +396,11 @@ export const ReviewsSection: React.FC = () => {
                       placeholder="Cuéntanos sobre la chimenea de leña, el frío de la montaña, la niebla, el desayuno y tu descanso..."
                       value={comment}
                       onChange={(e) => setComment(e.target.value)}
-                      className="w-full bg-white border border-[#CCD8B8] focus:border-[#1E311A] rounded-xl p-3 text-xs sm:text-sm text-[#1E311A] focus:ring-1 focus:ring-[#1E311A] focus:outline-hidden transition-all resize-none leading-relaxed"
+                      className="w-full bg-white border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl p-3 text-xs sm:text-sm text-tikkun-brand-deep focus:ring-1 focus:ring-tikkun-brand-deep focus:outline-hidden transition-all resize-none leading-relaxed"
                     />
                   </div>
 
-                  {/* Actions */}
+                  {/* Acciones del formulario. */}
                   <div className="pt-2 flex items-center justify-end gap-2.5">
                     <button
                       type="button"
@@ -410,7 +411,7 @@ export const ReviewsSection: React.FC = () => {
                     </button>
                     <button
                       type="submit"
-                      className="px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-white bg-[#1E311A] hover:bg-[#122210] rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95 cursor-pointer border border-[#B6C29A]/40"
+                      className="px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-white bg-tikkun-brand-deep hover:bg-[#122210] rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95 cursor-pointer border border-tikkun-brand-sage/40"
                     >
                       Publicar Reseña
                     </button>

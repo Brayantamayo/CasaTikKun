@@ -1,3 +1,4 @@
+// Revela contenido con una animación cuando entra en el área visible.
 import React, { useEffect, useRef, useState } from 'react';
 
 interface RevealProps {
@@ -22,7 +23,7 @@ export const Reveal: React.FC<RevealProps> = ({
     const element = ref.current;
     if (!element) return;
 
-    // Check if element is already in viewport or if IntersectionObserver is available
+    // Comprobar si el elemento ya está visible o si el navegador admite IntersectionObserver.
     if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
       setIsVisible(true);
       return;

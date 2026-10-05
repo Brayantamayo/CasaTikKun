@@ -1,3 +1,4 @@
+// Reúne la identidad de marca, los enlaces, el contacto y los accesos a cabañas.
 import React from 'react';
 import { MapPin, Phone, Mail, Instagram, Lock } from 'lucide-react';
 import { TikkunLogo } from './TikkunLogo';
@@ -26,7 +27,7 @@ export const Footer: React.FC<FooterProps> = ({
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12 border-b border-[#25392B]">
           
-          {/* Brand info */}
+          {/* Información de marca. */}
           <div className="lg:col-span-4 space-y-4">
             <TikkunLogo variant="light" size="lg" />
             <p className="text-xs sm:text-sm text-[#A9BAA5] leading-relaxed max-w-sm mt-3">
@@ -39,7 +40,7 @@ export const Footer: React.FC<FooterProps> = ({
             </div>
           </div>
 
-          {/* Navigation Links */}
+          {/* Enlaces de navegación. */}
           <div className="lg:col-span-3 space-y-3">
             <h4 className="text-xs font-semibold uppercase tracking-wider text-[#F2F6F0]">
               Explorar
@@ -111,7 +112,7 @@ export const Footer: React.FC<FooterProps> = ({
             </ul>
           </div>
 
-          {/* Dynamic Accommodations shortcuts */}
+          {/* Accesos a las cabañas disponibles. */}
           <div className="lg:col-span-2 space-y-3">
             <h4 className="text-xs font-semibold uppercase tracking-wider text-[#F2F6F0]">
               Nuestras Cabañas
@@ -132,7 +133,7 @@ export const Footer: React.FC<FooterProps> = ({
                 <button
                   type="button"
                   onClick={onOpenBookingModal}
-                  className="text-xs text-[#B6C29A] hover:text-white font-semibold underline underline-offset-4 cursor-pointer"
+                  className="text-xs text-tikkun-brand-sage hover:text-white font-semibold underline underline-offset-4 cursor-pointer"
                 >
                   Consultar por WhatsApp
                 </button>
@@ -140,7 +141,7 @@ export const Footer: React.FC<FooterProps> = ({
             </ul>
           </div>
 
-          {/* Contact */}
+          {/* Datos de contacto. */}
           <div className="lg:col-span-3 space-y-3">
             <h4 className="text-xs font-semibold uppercase tracking-wider text-[#F2F6F0]">
               Información de contacto
@@ -179,7 +180,7 @@ export const Footer: React.FC<FooterProps> = ({
               <button
                 type="button"
                 onClick={onOpenBookingModal}
-                className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[#1E311A] bg-[#B6C29A] hover:bg-[#C6D2AB] rounded-lg transition-colors cursor-pointer shadow-sm"
+                className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-tikkun-brand-deep bg-tikkun-brand-sage hover:bg-[#C6D2AB] rounded-lg transition-colors cursor-pointer shadow-sm"
               >
                 <span>Reservar por WhatsApp</span>
               </button>
@@ -188,7 +189,7 @@ export const Footer: React.FC<FooterProps> = ({
 
         </div>
 
-        {/* Quiet copyright with subtle admin access */}
+        {/* Derechos de autor y acceso administrativo. */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#7F937C]">
           <div className="flex items-center gap-2">
             <span>© {new Date().getFullYear()} Casa Tikkun - Cabañas & Chalets Campestres. Todos los derechos reservados.</span>
@@ -197,7 +198,7 @@ export const Footer: React.FC<FooterProps> = ({
                 type="button"
                 onClick={onOpenAdmin}
                 title="Acceso administrativo secreto (o presiona Ctrl + Shift + A)"
-                className="opacity-20 hover:opacity-100 text-[#A9BAA5] hover:text-[#B6C29A] transition-opacity cursor-pointer p-1 rounded inline-flex items-center"
+                className="opacity-20 hover:opacity-100 text-[#A9BAA5] hover:text-tikkun-brand-sage transition-opacity cursor-pointer p-1 rounded inline-flex items-center"
                 aria-label="Acceso secreto de administración"
               >
                 <Lock className="w-3 h-3" />

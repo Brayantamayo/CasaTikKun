@@ -1,3 +1,4 @@
+// Recopila los datos de la estadía, calcula el precio y prepara la consulta por WhatsApp.
 import React, { useState, useMemo, useEffect } from 'react';
 import { 
   X, Calendar, Users, MessageCircle, ArrowRight, 
@@ -37,7 +38,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
   const { getEffectiveAccommodations } = useAdmin();
   const allAccommodations = getEffectiveAccommodations();
 
-  // Find initial accommodation
+  // Determinar el alojamiento seleccionado inicialmente.
   const defaultAccId = selectedAccommodationId || allAccommodations[0]?.id || ACCOMMODATIONS[0].id;
   const [currentAccId, setCurrentAccId] = useState<string>(defaultAccId);
 
@@ -51,10 +52,10 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
     return allAccommodations.find((a) => a.id === currentAccId) || allAccommodations[0];
   }, [currentAccId, allAccommodations]);
 
-  // Timezone-safe default dates
+  // Obtener fechas predeterminadas sin problemas de zona horaria.
   const { todayStr, tomorrowStr, dayAfterStr } = useMemo(() => getDefaultStayDates(), []);
 
-  // Dates state
+  // Estado de las fechas y los datos de contacto.
   const [checkIn, setCheckIn] = useState<string>(initialCheckIn || tomorrowStr);
   const [checkOut, setCheckOut] = useState<string>(initialCheckOut || dayAfterStr);
   const [guests, setGuests] = useState<number>(initialGuests);
@@ -65,7 +66,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
   const [isSent, setIsSent] = useState<boolean>(false);
   const [dateError, setDateError] = useState<string | null>(null);
 
-  // Sync if initial props change
+  // Sincronizar el formulario si cambian sus propiedades iniciales.
   useEffect(() => {
     if (initialCheckIn) {
       setCheckIn(initialCheckIn);
@@ -76,14 +77,14 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
     if (initialGuests) setGuests(initialGuests);
   }, [initialCheckIn, initialCheckOut, initialGuests]);
 
-  // Clamp guests count if user switches to a cabin with smaller capacity
+  // Ajustar el número de huéspedes si se elige una cabaña con menor capacidad.
   useEffect(() => {
     if (accommodation && guests > accommodation.capacity) {
       setGuests(accommodation.capacity);
     }
   }, [accommodation, guests]);
 
-  // Reset sent state when opening
+  // Restablecer el estado del formulario al abrir la ventana.
   useEffect(() => {
     if (isOpen) {
       setIsSent(false);
@@ -93,7 +94,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
 
   const effectiveRates = useMemo(() => getEffectiveCabinRates(accommodation), [accommodation]);
 
-  // Calculate stay breakdown based on the 3 pricing tiers:
+  // Calcular el desglose de la estadía según las tres tarifas:
   // 1. Domingo a Jueves
   // 2. Viernes
   // 3. Sábados, Domingos y Festivos
@@ -105,7 +106,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
   const estimatedTotal = stayBreakdown.totalAccommodationCOP;
   const deposit50 = Math.round(estimatedTotal * 0.5);
 
-  // Build the WhatsApp message with precise rate breakdown
+  // Crear el mensaje de WhatsApp con el desglose exacto de las tarifas.
   const messageText = useMemo(() => {
     const rateLines: string[] = [];
     if (stayBreakdown.weekdayCount > 0) {
@@ -164,7 +165,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
 
     setDateError(null);
 
-    // Record booking lead locally & in Backend API
+    // Registrar la solicitud localmente y en la API del servidor.
     void TikkunService.recordBookingInquiry({
       accommodationId: accommodation.id,
       accommodationName: accommodation.name,
@@ -180,7 +181,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
       notes: notes.trim() || undefined
     });
 
-    // Open WhatsApp directly
+    // Abrir la conversación de WhatsApp.
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
     setIsSent(true);
   };
@@ -195,10 +196,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         
-        {/* 
-          1. CLEAN, NEUTRAL HEADER:
-          Gentle, boutique, friendly typography with zero aggression
-        */}
+        {/* Encabezado de la ventana de reserva. */}
         <div className="flex items-center justify-between px-6 py-4.5 border-b border-stone-100 bg-[#F9F7F2]">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-2xl bg-[#EFECE2] text-[#2C4124] flex items-center justify-center shrink-0">
@@ -224,11 +222,11 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
           </button>
         </div>
 
-        {/* Modal Body */}
+        {/* Contenido de la ventana. */}
         <div className="overflow-y-auto p-5 sm:p-6 flex-1 space-y-5">
           
           {isSent ? (
-            /* Sent / Redirect Confirmation View */
+            /* Confirmación de envío de la solicitud. */
             <div className="py-6 text-center space-y-5 max-w-md mx-auto">
               <div className="w-14 h-14 rounded-full bg-[#25D366]/15 text-[#25D366] flex items-center justify-center mx-auto">
                 <CheckCircle2 className="w-8 h-8 stroke-[2.2]" />
@@ -243,7 +241,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
                 </p>
               </div>
 
-              {/* Summary Voucher */}
+              {/* Resumen de la solicitud. */}
               <div className="bg-tikkun-brand-cream rounded-2xl p-4 border border-stone-200 text-left text-xs space-y-2">
                 <div className="flex justify-between text-stone-700 font-medium">
                   <span className="text-stone-500">Cabaña:</span>
@@ -284,13 +282,10 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
               </div>
             </div>
           ) : (
-            /* Booking Form */
+            /* Formulario de reserva. */
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
               
-              {/* 
-                Cabin Selector Segment:
-                Clean, neutral, intuitive segmented pill bar
-              */}
+              {/* Selector de cabaña. */}
               <div>
                 <label className="block text-xs font-medium text-stone-600 mb-2">
                   Selecciona la cabaña:
@@ -323,7 +318,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
                 </div>
               </div>
 
-              {/* Selected Cabin Compact Preview & Rates Structure */}
+              {/* Resumen de la cabaña seleccionada y sus tarifas. */}
               <div className="bg-tikkun-brand-cream rounded-2xl border border-stone-200 p-3 space-y-2.5">
                 <div className="flex items-center gap-3">
                   <img
@@ -350,7 +345,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
                   </div>
                 </div>
 
-                {/* 3 Rates Breakdown Bar */}
+                {/* Desglose de las tres tarifas por noche. */}
                 <div className="grid grid-cols-3 gap-1.5 text-center text-[10.5px] pt-2 border-t border-stone-200/60">
                   <div className="p-1.5 bg-white rounded-lg border border-[#D5DFCA]">
                     <span className="block text-stone-500 text-[9px] font-medium">Dom a Jue</span>
@@ -373,7 +368,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
                 </div>
               </div>
 
-              {/* Dates Row: Check-in & Check-out */}
+              {/* Fechas de llegada y salida. */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
                 <div>
                   <label htmlFor="modal-checkin" className="text-xs font-medium text-stone-700 mb-1.5 flex items-center justify-between">
@@ -422,7 +417,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
                 </div>
               )}
 
-              {/* Guests Selector & Guest Name */}
+              {/* Número de huéspedes y nombre de contacto. */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
                 <div>
                   <label htmlFor="modal-guests" className="block text-xs font-medium text-stone-700 mb-1.5">
@@ -458,7 +453,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
                 </div>
               </div>
 
-              {/* Email & Phone */}
+              {/* Correo electrónico y teléfono. */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
                 <div>
                   <label htmlFor="modal-email" className="text-xs font-medium text-stone-700 mb-1.5 flex items-center justify-between">
@@ -496,7 +491,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
                 </div>
               </div>
 
-              {/* Special Request or Note */}
+              {/* Solicitud especial o nota. */}
               <div>
                 <label htmlFor="modal-notes" className="text-xs font-medium text-stone-700 mb-1.5 flex items-center justify-between">
                   <span>Petición especial o nota</span>
@@ -512,7 +507,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
                 />
               </div>
 
-              {/* Dynamic Cabin Specs & Cortesías Reminder */}
+              {/* Características de la cabaña y cortesías incluidas. */}
               <div className="bg-[#EFF4E6] p-3 sm:p-3.5 rounded-xl border border-[#CCD8B8] space-y-1.5 text-xs text-[#2A3F23]">
                 <div className="flex flex-wrap items-center justify-between gap-1 font-bold text-tikkun-brand-deep">
                   <span className="flex items-center gap-1.5">
@@ -533,13 +528,13 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
                 </div>
               </div>
 
-              {/* Gentle note about WhatsApp */}
+              {/* Nota sobre la atención directa por WhatsApp. */}
               <div className="flex items-center gap-2 text-xs text-stone-500 bg-[#FBF9F5] p-2.5 rounded-xl border border-stone-100">
                 <ShieldCheck className="w-4 h-4 text-[#557048] shrink-0" />
                 <span>Trato directo con el anfitrión · Consulta sin compromiso ni cobros previos</span>
               </div>
 
-              {/* Pricing & Submit CTA with 50% deposit breakdown */}
+              {/* Precio total, anticipo y envío de la solicitud. */}
               <div className="pt-3 border-t border-stone-100 flex flex-col sm:flex-row items-center justify-between gap-3">
                 <div className="w-full sm:w-auto">
                   <div className="flex items-center gap-1.5 text-xs text-stone-600">

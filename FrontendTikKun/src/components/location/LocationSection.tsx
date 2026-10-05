@@ -1,18 +1,19 @@
+// Presenta los datos de contacto, las indicaciones y la ubicación en el mapa.
 import React from 'react';
 import { MapPin, Navigation, Car, Bus, PhoneCall, Mail, Smartphone, Clock, ExternalLink, Compass } from 'lucide-react';
 import { TIKKUN_CONTACT } from '../../data/tikkunData';
 
 export const LocationSection: React.FC = () => {
   return (
-    <section id="ubicacion" className="py-24 bg-[#FAF8F2]">
+    <section id="ubicacion" className="py-24 bg-tikkun-brand-cream">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header */}
+        {/* Encabezado de ubicación y contacto. */}
         <div className="max-w-3xl mb-14">
-          <div className="inline-block px-3 py-1 bg-[#B6C29A] text-[#1E311A] text-xs font-bold uppercase tracking-widest rounded-md mb-2">
+          <div className="inline-block px-3 py-1 bg-tikkun-brand-sage text-tikkun-brand-deep text-xs font-bold uppercase tracking-widest rounded-md mb-2">
             Ubicación & Contacto
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-[#1E311A] tracking-tight [text-wrap:balance]">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-tikkun-brand-deep tracking-tight text-balance">
             Encuéntranos en Santa Elena, Antioquia
           </h2>
           <p className="mt-3 text-sm sm:text-base text-[#465E3C] leading-relaxed">
@@ -20,27 +21,23 @@ export const LocationSection: React.FC = () => {
           </p>
         </div>
 
-        {/* 
-          Main Grid: 
-          Col 1: Información de Contacto (Matching user screenshot) + Ruta Guide
-          Col 2: Google Maps View (Prepared for Google Maps API)
-        */}
+        {/* Distribución de la información de contacto y el mapa. */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-14">
           
-          {/* Left Column: Contact Card + Transportation Guide */}
+          {/* Columna izquierda: contacto e indicaciones de transporte. */}
           <div className="lg:col-span-5 space-y-6">
             
-            {/* 1. INFORMACIÓN DE CONTACTO CARD (Exact layout from user screenshot) */}
-            <div className="bg-[#FAF8F2] rounded-3xl p-6 sm:p-7 border-2 border-[#B6C29A] shadow-md">
-              <h3 className="text-xl font-serif font-bold text-[#1E311A] mb-5 pb-3 border-b border-[#D6DFC7]">
+            {/* Información de contacto. */}
+            <div className="bg-tikkun-brand-cream rounded-3xl p-6 sm:p-7 border-2 border-tikkun-brand-sage shadow-md">
+              <h3 className="text-xl font-serif font-bold text-tikkun-brand-deep mb-5 pb-3 border-b border-[#D6DFC7]">
                 Información de contacto
               </h3>
 
               <div className="space-y-4 text-sm text-[#253A20]">
                 
-                {/* Email */}
+                {/* Correo electrónico. */}
                 <div className="flex items-start gap-3.5">
-                  <div className="w-8 h-8 rounded-lg bg-[#EAEFD9] text-[#1E311A] flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#EAEFD9] text-tikkun-brand-deep flex items-center justify-center shrink-0 mt-0.5">
                     <Mail className="w-4 h-4 stroke-[2.2]" />
                   </div>
                   <div>
@@ -49,16 +46,16 @@ export const LocationSection: React.FC = () => {
                     </span>
                     <a
                       href="mailto:info@casatikkun.com"
-                      className="font-semibold text-[#1E311A] hover:underline transition-colors"
+                      className="font-semibold text-tikkun-brand-deep hover:underline transition-colors"
                     >
                       info@casatikkun.com
                     </a>
                   </div>
                 </div>
 
-                {/* Celular / Teléfono */}
+                {/* Teléfono y WhatsApp. */}
                 <div className="flex items-start gap-3.5">
-                  <div className="w-8 h-8 rounded-lg bg-[#EAEFD9] text-[#1E311A] flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#EAEFD9] text-tikkun-brand-deep flex items-center justify-center shrink-0 mt-0.5">
                     <Smartphone className="w-4 h-4 stroke-[2.2]" />
                   </div>
                   <div>
@@ -67,7 +64,7 @@ export const LocationSection: React.FC = () => {
                     </span>
                     <a
                       href="tel:+573113281789"
-                      className="font-semibold text-[#1E311A] hover:underline transition-colors"
+                      className="font-semibold text-tikkun-brand-deep hover:underline transition-colors"
                     >
                       +57 311 328 1789
                     </a>
@@ -77,16 +74,16 @@ export const LocationSection: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Dirección / Ubicación */}
+                {/* Dirección del alojamiento. */}
                 <div className="flex items-start gap-3.5">
-                  <div className="w-8 h-8 rounded-lg bg-[#EAEFD9] text-[#1E311A] flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#EAEFD9] text-tikkun-brand-deep flex items-center justify-center shrink-0 mt-0.5">
                     <Navigation className="w-4 h-4 stroke-[2.2]" />
                   </div>
                   <div>
                     <span className="block text-[11px] font-bold uppercase tracking-wider text-[#637C55]">
                       Dirección Oficial
                     </span>
-                    <p className="font-semibold text-[#1E311A] text-sm">
+                    <p className="font-semibold text-tikkun-brand-deep text-sm">
                       Carrera 25 Este, Vía Medellín-Vía Sta. Elena #54-989 KM 6
                     </p>
                     <span className="text-xs text-[#526D46] block mt-0.5">
@@ -95,9 +92,9 @@ export const LocationSection: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Horario */}
+                {/* Horarios de estadía. */}
                 <div className="flex items-start gap-3.5 pt-2 border-t border-[#E5ECD9]">
-                  <div className="w-8 h-8 rounded-lg bg-[#EAEFD9] text-[#1E311A] flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#EAEFD9] text-tikkun-brand-deep flex items-center justify-center shrink-0 mt-0.5">
                     <Clock className="w-4 h-4 stroke-[2.2]" />
                   </div>
                   <div>
@@ -112,28 +109,28 @@ export const LocationSection: React.FC = () => {
 
               </div>
 
-              {/* Direct WhatsApp Call to Action */}
+              {/* Contactar al anfitrión por WhatsApp. */}
               <div className="mt-6 pt-4 border-t border-[#D6DFC7]">
                 <a
                   href={`https://wa.me/${TIKKUN_CONTACT.whatsappNumber}?text=${encodeURIComponent('Hola Casa Tikkun, quisiera consultar sobre la ubicación en Santa Elena y cómo llegar.')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-white bg-[#1E311A] hover:bg-[#122210] rounded-xl transition-all shadow-md active:scale-95"
+                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-white bg-tikkun-brand-deep hover:bg-[#122210] rounded-xl transition-all shadow-md active:scale-95"
                 >
-                  <PhoneCall className="w-4 h-4 text-[#B6C29A]" />
+                  <PhoneCall className="w-4 h-4 text-tikkun-brand-sage" />
                   <span>Contactar Anfitrión por Celular</span>
                 </a>
               </div>
             </div>
 
-            {/* 2. ROUTE HIGHLIGHTS */}
+            {/* Indicaciones para llegar en vehículo. */}
             <div className="bg-[#EDF2E4] rounded-3xl p-6 border-2 border-[#CCD8B8]">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-9 h-9 rounded-xl bg-[#1E311A] text-[#B6C29A] flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-tikkun-brand-deep text-tikkun-brand-sage flex items-center justify-center">
                   <Car className="w-4 h-4" />
                 </div>
                 <div>
-                  <h4 className="font-serif font-bold text-[#1E311A] text-base">
+                  <h4 className="font-serif font-bold text-tikkun-brand-deep text-base">
                     Ruta en Carro o Moto
                   </h4>
                   <p className="text-[11px] text-[#556D49] font-medium">
@@ -148,15 +145,15 @@ export const LocationSection: React.FC = () => {
 
           </div>
 
-          {/* Right Column: Google Maps Container (Prepared for Google Maps API) */}
+          {/* Columna derecha: mapa de Google Maps. */}
           <div className="lg:col-span-7 flex flex-col space-y-4">
             
-            {/* Google Maps Container Card */}
-            <div className="bg-[#FAF8F2] rounded-3xl p-3 sm:p-4 border-2 border-[#B6C29A] shadow-xl overflow-hidden relative">
+            {/* Panel del mapa. */}
+            <div className="bg-tikkun-brand-cream rounded-3xl p-3 sm:p-4 border-2 border-tikkun-brand-sage shadow-xl overflow-hidden relative">
               
-              {/* Maps Header Bar */}
-              <div className="flex items-center justify-between px-3 py-2.5 mb-2 bg-[#FAF8F2] rounded-2xl border border-[#D5DFCA]">
-                <div className="flex items-center gap-2 text-xs font-bold text-[#1E311A]">
+              {/* Encabezado del mapa y acceso a Google Maps. */}
+              <div className="flex items-center justify-between px-3 py-2.5 mb-2 bg-tikkun-brand-cream rounded-2xl border border-[#D5DFCA]">
+                <div className="flex items-center gap-2 text-xs font-bold text-tikkun-brand-deep">
                   <Compass className="w-4 h-4 text-[#5D7743]" />
                   <span>Google Maps · Casa Tikkun Glamping</span>
                 </div>
@@ -168,7 +165,7 @@ export const LocationSection: React.FC = () => {
                     href="https://maps.google.com/?q=carrera+25+este,+Via+Medell%C3%ADn-Via+Sta.+Elena+%2354-989+km+6,+Santa+Elena,+Medell%C3%ADn,+Antioquia"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold text-white bg-[#1E311A] hover:bg-[#122210] transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold text-white bg-tikkun-brand-deep hover:bg-[#122210] transition-colors"
                   >
                     <span>Abrir en Google Maps</span>
                     <ExternalLink className="w-3 h-3" />
@@ -176,12 +173,8 @@ export const LocationSection: React.FC = () => {
                 </div>
               </div>
 
-              {/* 
-                Interactive Map View:
-                Embeds interactive Google Maps centered on Santa Elena, Medellín.
-                Ready for Google Maps Platform JS API / @vis.gl/react-google-maps if API key is plugged.
-              */}
-              <div className="relative w-full h-[430px] sm:h-[480px] rounded-2xl overflow-hidden border border-[#CCD8B8] shadow-inner bg-[#DEE5D2]">
+              {/* Mapa interactivo centrado en Santa Elena, Medellín. */}
+              <div className="relative w-full h-107.5 sm:h-120 rounded-2xl overflow-hidden border border-[#CCD8B8] shadow-inner bg-[#DEE5D2]">
                 <iframe
                   title="Ubicación de Casa Tikkun en Santa Elena en Google Maps"
                   src="https://maps.google.com/maps?q=carrera+25+este,+Via+Medell%C3%ADn-Via+Sta.+Elena+%2354-989+km+6,+Santa+Elena,+Medell%C3%ADn,+Antioquia&t=&z=15&ie=UTF8&iwloc=&output=embed"
@@ -194,11 +187,11 @@ export const LocationSection: React.FC = () => {
                   className="w-full h-full object-cover"
                 />
 
-                {/* Floating Interactive Location Card */}
-                <div className="absolute bottom-4 left-4 right-4 sm:right-auto sm:max-w-xs bg-[#FAF8F2]/95 backdrop-blur-md p-4 rounded-2xl border-2 border-[#B6C29A] shadow-xl text-left">
+                {/* Dirección y accesos a aplicaciones de navegación. */}
+                <div className="absolute bottom-4 left-4 right-4 sm:right-auto sm:max-w-xs bg-tikkun-brand-cream/95 backdrop-blur-md p-4 rounded-2xl border-2 border-tikkun-brand-sage shadow-xl text-left">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#1E311A] animate-ping" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-[#1E311A]">
+                    <span className="w-2.5 h-2.5 rounded-full bg-tikkun-brand-deep animate-ping" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-tikkun-brand-deep">
                       Casa Tikkun Santa Elena
                     </span>
                   </div>
@@ -210,7 +203,7 @@ export const LocationSection: React.FC = () => {
                       href="https://waze.com/ul?q=carrera+25+este+Via+Medellin+Via+Sta+Elena+54-989+km+6+Santa+Elena+Medellin"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-2.5 py-1 rounded-md bg-[#EDF2E4] text-[#1E311A] border border-[#CCD8B8] hover:bg-[#DEE6D5]"
+                      className="px-2.5 py-1 rounded-md bg-[#EDF2E4] text-tikkun-brand-deep border border-[#CCD8B8] hover:bg-[#DEE6D5]"
                     >
                       Abrir con Waze
                     </a>
@@ -218,7 +211,7 @@ export const LocationSection: React.FC = () => {
                       href="https://maps.google.com/?q=carrera+25+este,+Via+Medell%C3%ADn-Via+Sta.+Elena+%2354-989+km+6,+Santa+Elena,+Medell%C3%ADn,+Antioquia"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-2.5 py-1 rounded-md bg-[#1E311A] text-white hover:bg-[#122210]"
+                      className="px-2.5 py-1 rounded-md bg-tikkun-brand-deep text-white hover:bg-[#122210]"
                     >
                       Ruta en Maps
                     </a>
@@ -227,7 +220,7 @@ export const LocationSection: React.FC = () => {
 
               </div>
 
-              {/* Public Transport info note */}
+              {/* Información sobre transporte público. */}
               <div className="mt-3 px-3 py-2 bg-[#EDF2E4] rounded-xl border border-[#CCD8B8] flex items-center justify-between text-xs text-[#3E5536]">
                 <div className="flex items-center gap-2">
                   <Bus className="w-4 h-4 text-[#5D7743]" />

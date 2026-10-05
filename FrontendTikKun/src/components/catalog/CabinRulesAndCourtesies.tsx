@@ -1,3 +1,4 @@
+// Muestra las cortesías, horarios, especificaciones y reglas de convivencia de una cabaña.
 import React, { useState } from 'react';
 import { 
   VolumeX, CreditCard, Clock, CalendarClock, 
@@ -83,26 +84,26 @@ export const CabinRulesAndCourtesies: React.FC<CabinRulesAndCourtesiesProps> = (
 
   return (
     <div className="bg-white rounded-2xl border border-[#D5DFCA] p-4 sm:p-5 shadow-2xs space-y-3.5">
-      {/* Header with Title and Segmented Tabs */}
+      {/* Encabezado y pestañas de navegación. */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-[#E3EBD7]">
         <div>
           <span className="text-[10px] font-bold text-[#557048] uppercase tracking-wider block">
             Información General Casa Tikkun
           </span>
-          <h4 className="text-sm sm:text-base font-serif font-bold text-[#1E311A]">
+          <h4 className="text-sm sm:text-base font-serif font-bold text-tikkun-brand-deep">
             Cortesías, Horarios y Reglas
           </h4>
         </div>
 
-        {/* Compact Segmented Control */}
+        {/* Selector de pestaña. */}
         <div className="flex items-center gap-1 bg-[#EFF4E6] p-1 rounded-xl border border-[#CCD8B8]/80 self-start sm:self-auto">
           <button
             type="button"
             onClick={() => setActiveTab('cortesias')}
             className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               activeTab === 'cortesias'
-                ? 'bg-[#1E311A] text-white shadow-2xs'
-                : 'text-[#3E5C31] hover:text-[#1E311A] hover:bg-white/60'
+                ? 'bg-tikkun-brand-deep text-white shadow-2xs'
+                : 'text-[#3E5C31] hover:text-tikkun-brand-deep hover:bg-white/60'
             }`}
           >
             Cortesías ({courtesies.length})
@@ -113,8 +114,8 @@ export const CabinRulesAndCourtesies: React.FC<CabinRulesAndCourtesiesProps> = (
             onClick={() => setActiveTab('horarios')}
             className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               activeTab === 'horarios'
-                ? 'bg-[#1E311A] text-white shadow-2xs'
-                : 'text-[#3E5C31] hover:text-[#1E311A] hover:bg-white/60'
+                ? 'bg-tikkun-brand-deep text-white shadow-2xs'
+                : 'text-[#3E5C31] hover:text-tikkun-brand-deep hover:bg-white/60'
             }`}
           >
             Horarios
@@ -125,8 +126,8 @@ export const CabinRulesAndCourtesies: React.FC<CabinRulesAndCourtesiesProps> = (
             onClick={() => setActiveTab('reglas')}
             className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               activeTab === 'reglas'
-                ? 'bg-[#1E311A] text-white shadow-2xs'
-                : 'text-[#3E5C31] hover:text-[#1E311A] hover:bg-white/60'
+                ? 'bg-tikkun-brand-deep text-white shadow-2xs'
+                : 'text-[#3E5C31] hover:text-tikkun-brand-deep hover:bg-white/60'
             }`}
           >
             Reglas ({rules.length})
@@ -134,7 +135,7 @@ export const CabinRulesAndCourtesies: React.FC<CabinRulesAndCourtesiesProps> = (
         </div>
       </div>
 
-      {/* TAB 1: CORTESÍAS DE BIENVENIDA */}
+      {/* Pestaña 1: cortesías de bienvenida. */}
       {activeTab === 'cortesias' && (
         <div className="space-y-2.5 animate-in fade-in duration-200">
           <div className="flex items-center justify-between text-xs text-[#4A643E]">
@@ -148,13 +149,13 @@ export const CabinRulesAndCourtesies: React.FC<CabinRulesAndCourtesiesProps> = (
             {courtesies.map((item) => (
               <div
                 key={item.id}
-                className="p-2.5 rounded-xl bg-[#FAF8F2] border border-[#CCD8B8] flex items-center gap-2 hover:bg-[#F2F6EC] transition-colors"
+                className="p-2.5 rounded-xl bg-tikkun-brand-cream border border-[#CCD8B8] flex items-center gap-2 hover:bg-[#F2F6EC] transition-colors"
               >
                 <div className="w-7 h-7 rounded-lg bg-[#EFF4E6] flex items-center justify-center shrink-0">
                   {renderCourtesyIcon(item.iconName)}
                 </div>
                 <div className="min-w-0">
-                  <span className="block text-xs font-bold text-[#1E311A] truncate">{item.name}</span>
+                  <span className="block text-xs font-bold text-tikkun-brand-deep truncate">{item.name}</span>
                   <span className="block text-[10px] text-stone-500 truncate">{item.description}</span>
                 </div>
               </div>
@@ -163,33 +164,33 @@ export const CabinRulesAndCourtesies: React.FC<CabinRulesAndCourtesiesProps> = (
         </div>
       )}
 
-      {/* TAB 2: HORARIOS Y ESPECIFICACIONES */}
+      {/* Pestaña 2: horarios y especificaciones. */}
       {activeTab === 'horarios' && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 animate-in fade-in duration-200">
-          <div className="p-3 rounded-xl bg-[#FAF8F2] border border-[#CCD8B8] space-y-1">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-[#1E311A]">
+          <div className="p-3 rounded-xl bg-tikkun-brand-cream border border-[#CCD8B8] space-y-1">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-tikkun-brand-deep">
               <Clock className="w-3.5 h-3.5 text-[#557048]" />
               <span>Llegada (Check-in)</span>
             </div>
-            <p className="text-sm font-serif font-bold text-[#1E311A]">{specifications.checkIn}</p>
+            <p className="text-sm font-serif font-bold text-tikkun-brand-deep">{specifications.checkIn}</p>
             <p className="text-[10.5px] text-stone-500 leading-tight">Entrega de cabaña a partir de las 3:00 PM</p>
           </div>
 
-          <div className="p-3 rounded-xl bg-[#FAF8F2] border border-[#CCD8B8] space-y-1">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-[#1E311A]">
+          <div className="p-3 rounded-xl bg-tikkun-brand-cream border border-[#CCD8B8] space-y-1">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-tikkun-brand-deep">
               <Clock className="w-3.5 h-3.5 text-[#557048]" />
               <span>Salida (Check-out)</span>
             </div>
-            <p className="text-sm font-serif font-bold text-[#1E311A]">{specifications.checkOut}</p>
+            <p className="text-sm font-serif font-bold text-tikkun-brand-deep">{specifications.checkOut}</p>
             <p className="text-[10.5px] text-stone-500 leading-tight">Entrega hasta el mediodía (12:00 M)</p>
           </div>
 
-          <div className="p-3 rounded-xl bg-[#FAF8F2] border border-[#CCD8B8] space-y-1">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-[#1E311A]">
+          <div className="p-3 rounded-xl bg-tikkun-brand-cream border border-[#CCD8B8] space-y-1">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-tikkun-brand-deep">
               <Key className="w-3.5 h-3.5 text-[#557048]" />
               <span>Self Check-in</span>
             </div>
-            <p className="text-xs font-semibold text-[#1E311A]">Instrucciones Claras</p>
+            <p className="text-xs font-semibold text-tikkun-brand-deep">Instrucciones Claras</p>
             <p className="text-[10.5px] text-stone-500 leading-tight">Envío de clave de acceso luego de la reserva</p>
           </div>
 
@@ -203,7 +204,7 @@ export const CabinRulesAndCourtesies: React.FC<CabinRulesAndCourtesiesProps> = (
         </div>
       )}
 
-      {/* TAB 3: REGLAS GENERALES DE CONVIVENCIA */}
+      {/* Pestaña 3: reglas generales de convivencia. */}
       {activeTab === 'reglas' && (
         <div className="space-y-2 animate-in fade-in duration-200">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
@@ -221,7 +222,7 @@ export const CabinRulesAndCourtesies: React.FC<CabinRulesAndCourtesiesProps> = (
                   <div className="mt-0.5">{renderRuleIcon(rule.iconName)}</div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-1">
-                      <span className="font-bold text-[#1E311A] text-xs">{rule.title}</span>
+                      <span className="font-bold text-tikkun-brand-deep text-xs">{rule.title}</span>
                     </div>
                     <p className="text-[11px] text-[#47603B] leading-snug mt-0.5">{rule.description}</p>
                     {isTransport && (

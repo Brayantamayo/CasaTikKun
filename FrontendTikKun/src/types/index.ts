@@ -265,15 +265,5 @@ export interface InformacionContacto {
 // ALIAS DE COMPATIBILIDAD
 // ============================================================================
 export type Alojamiento = Cabana;
-export type Accommodation = Cabana;
-export type CabinRates = TarifasCabana;
-export type CabinRule = ReglaCabana;
-export type CourtesyItem = ElementoCortesia;
-export type CabinSpecifications = EspecificacionesCabana;
-export type ExtraService = ServicioExtra;
-export type ReservationData = DatosReserva;
-export type Review = Resena;
-export type GalleryItem = ElementoGaleria;
-export type FAQItem = PreguntaFrecuente;
 
 export * from './api';

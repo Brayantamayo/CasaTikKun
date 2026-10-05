@@ -1,3 +1,4 @@
+// Administra el catálogo, las imágenes de portada y galería, y las reseñas.
 import React, { useState } from 'react';
 import { 
   LogOut, Star, Check, RefreshCw,
@@ -36,28 +37,28 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
   const { reviews, deleteReview } = useReviews();
   const allAccommodations = getEffectiveAccommodations();
 
-  // Primary navigation tabs
+  // Pestañas principales de navegación.
   const [activeTab, setActiveTab] = useState<'cabins' | 'landing' | 'gallery' | 'reviews'>('cabins');
 
-  // View mode for cabins: 'grid' vs 'table'
+  // Modo de visualización de cabañas: cuadrícula o tabla.
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
-  // Search filter
+  // Filtro de búsqueda.
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Modal State for Cabin Creation / Editing
+  // Estado de la ventana para crear o editar una cabaña.
   const [isCabinModalOpen, setIsCabinModalOpen] = useState(false);
   const [cabinEditingTarget, setCabinEditingTarget] = useState<Cabana | null>(null);
 
-  // Inline confirmations
+  // Confirmaciones en línea.
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [confirmResetCabins, setConfirmResetCabins] = useState(false);
 
-  // URL inputs
+  // Campos para ingresar direcciones de imágenes.
   const [heroUrlInput, setHeroUrlInput] = useState('');
   const [galleryUrlInput, setGalleryUrlInput] = useState('');
 
-  // Notifications
+  // Notificaciones.
   const [saveSuccessMsg, setSaveSuccessMsg] = useState<string | null>(null);
   const [errorBannerMsg, setErrorBannerMsg] = useState<string | null>(null);
 
@@ -71,18 +72,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
     setTimeout(() => setErrorBannerMsg(null), 3500);
   };
 
-  // KPIs & Metrics
+  // Indicadores y métricas.
   const totalCapacity = allAccommodations.reduce((acc, c) => acc + (c.capacity || 2), 0);
   const averageWeekdayPrice = allAccommodations.length > 0
     ? Math.round(allAccommodations.reduce((acc, c) => acc + (c.rates?.weekday || c.priceCOP || 0), 0) / allAccommodations.length)
     : 0;
 
-  // Next cabin number
+  // Número de la siguiente cabaña.
   const nextCabinNumber = allAccommodations.length > 0 
     ? Math.max(...allAccommodations.map((a) => a.cabinNumber || 0)) + 1
     : 1;
 
-  // Filtered cabins
+  // Cabañas filtradas.
   const filteredCabins = allAccommodations.filter((cabin) => {
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
@@ -93,7 +94,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
     );
   });
 
-  // Actions
+  // Acciones del panel.
   const handleOpenCreateCabin = () => {
     setCabinEditingTarget(null);
     setIsCabinModalOpen(true);
@@ -131,7 +132,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
     showSuccess('Se han restaurado las 5 cabañas originales de Casa Tikkun.');
   };
 
-  // --- HERO HANDLERS ---
+  // --- ACCIONES DE LA PORTADA ---
   const handleHeroFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -190,7 +191,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
     showSuccess('Imagen establecida como portada principal.');
   };
 
-  // --- GALLERY HANDLERS ---
+  // --- ACCIONES DE LA GALERÍA ---
   const handleGalleryFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -250,33 +251,33 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
   };
 
   return (
-    <div className="min-h-screen bg-[#FBF9F5] text-[#1E311A] font-sans pb-24 selection:bg-[#435B48] selection:text-white">
+    <div className="min-h-screen bg-[#FBF9F5] text-tikkun-brand-deep font-sans pb-24 selection:bg-[#435B48] selection:text-white">
       
-      {/* STICKY TOP ADMIN HEADER - CASA TIKKUN BRAND */}
-      <header className="sticky top-0 z-30 bg-[#1E311A] text-white border-b border-[#2C4623] shadow-md">
+      {/* Encabezado fijo del panel administrativo. */}
+      <header className="sticky top-0 z-30 bg-tikkun-brand-deep text-white border-b border-[#2C4623] shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           
-          {/* Logo & Brand Info */}
+          {/* Logotipo e información de marca. */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#B6C29A] text-[#1E311A] flex items-center justify-center font-bold shadow-sm shrink-0 overflow-hidden p-1 border border-[#CCD8B8]/60">
+            <div className="w-10 h-10 rounded-2xl bg-tikkun-brand-sage text-tikkun-brand-deep flex items-center justify-center font-bold shadow-sm shrink-0 overflow-hidden p-1 border border-[#CCD8B8]/60">
               <TikkunEmblem size={34} color="#1E311A" />
             </div>
             <div>
               <h1 className="text-base sm:text-lg font-serif font-bold text-white tracking-wide leading-tight">
                 Casa Tikkun · Panel de Administración
               </h1>
-              <p className="text-[11px] text-[#B6C29A] hidden md:block">
+              <p className="text-[11px] text-tikkun-brand-sage hidden md:block">
                 Santa Elena, Antioquia · Gestión de Cabañas, Tarifas y Contenidos
               </p>
             </div>
           </div>
 
-          {/* Quick Header Actions */}
+          {/* Acciones rápidas del encabezado. */}
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={handleOpenCreateCabin}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-[#1E311A] bg-[#B6C29A] hover:bg-[#C8D3AE] rounded-xl transition-all cursor-pointer shadow-xs active:scale-95 shrink-0"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-tikkun-brand-deep bg-tikkun-brand-sage hover:bg-[#C8D3AE] rounded-xl transition-all cursor-pointer shadow-xs active:scale-95 shrink-0"
             >
               <Plus className="w-4 h-4 stroke-[2.5]" />
               <span>Nueva Cabaña</span>
@@ -287,7 +288,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
               onClick={onBackToSite}
               className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-white/10 hover:bg-white/20 rounded-xl transition-all cursor-pointer"
             >
-              <Home className="w-3.5 h-3.5 text-[#B6C29A]" />
+              <Home className="w-3.5 h-3.5 text-tikkun-brand-sage" />
               <span className="hidden sm:inline">Ver Sitio Web</span>
             </button>
 
@@ -304,10 +305,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
         </div>
       </header>
 
-      {/* MAIN CONTAINER */}
+      {/* Contenido principal del panel. */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
 
-        {/* Global Toast Messages */}
+        {/* Notificaciones generales. */}
         {saveSuccessMsg && (
           <div className="p-4 bg-emerald-50 border border-emerald-300 rounded-2xl flex items-center justify-between gap-3 text-xs sm:text-sm font-semibold text-emerald-950 shadow-xs animate-in fade-in duration-200">
             <div className="flex items-center gap-2.5">
@@ -331,7 +332,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
           </div>
         )}
 
-        {/* ELEGANT SUMMARY KPI CARDS (CLEAN WHITE & SAGE) */}
+        {/* Tarjetas de resumen e indicadores. */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           
           <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#D5DFCA] shadow-2xs space-y-1">
@@ -339,7 +340,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
               <span className="font-medium">Cabañas Activas</span>
               <Users className="w-4 h-4 text-[#556F48]" />
             </div>
-            <div className="text-xl sm:text-2xl font-serif font-bold text-[#1E311A]">
+            <div className="text-xl sm:text-2xl font-serif font-bold text-tikkun-brand-deep">
               {allAccommodations.length} <span className="text-xs font-sans font-normal text-stone-500">refugios</span>
             </div>
             <div className="text-[11px] text-[#556F48] font-semibold">
@@ -352,7 +353,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
               <span className="font-medium">Galería & Portada</span>
               <ImageIcon className="w-4 h-4 text-[#556F48]" />
             </div>
-            <div className="text-xl sm:text-2xl font-serif font-bold text-[#1E311A]">
+            <div className="text-xl sm:text-2xl font-serif font-bold text-tikkun-brand-deep">
               {heroImages.length + galleryImages.length} <span className="text-xs font-sans font-normal text-stone-500">fotos</span>
             </div>
             <div className="text-[11px] text-stone-500">
@@ -365,7 +366,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
               <span className="font-medium">Calificación</span>
               <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
             </div>
-            <div className="text-xl sm:text-2xl font-serif font-bold text-[#1E311A]">
+            <div className="text-xl sm:text-2xl font-serif font-bold text-tikkun-brand-deep">
               5.0★
             </div>
             <div className="text-[11px] text-[#556F48] font-semibold">
@@ -375,7 +376,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
 
         </div>
 
-        {/* CLEAN SEGMENTED NAVIGATION TABS */}
+        {/* Pestañas de navegación. */}
         <div className="bg-white p-1.5 rounded-2xl border border-[#D5DFCA] shadow-2xs flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-1">
             
@@ -384,8 +385,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
               onClick={() => setActiveTab('cabins')}
               className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${
                 activeTab === 'cabins'
-                  ? 'bg-[#1E311A] text-white shadow-2xs'
-                  : 'text-stone-600 hover:text-[#1E311A] hover:bg-[#F4F7EE]'
+                  ? 'bg-tikkun-brand-deep text-white shadow-2xs'
+                  : 'text-stone-600 hover:text-tikkun-brand-deep hover:bg-[#F4F7EE]'
               }`}
             >
               <Users className="w-4 h-4" />
@@ -397,8 +398,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
               onClick={() => setActiveTab('landing')}
               className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${
                 activeTab === 'landing'
-                  ? 'bg-[#1E311A] text-white shadow-2xs'
-                  : 'text-stone-600 hover:text-[#1E311A] hover:bg-[#F4F7EE]'
+                  ? 'bg-tikkun-brand-deep text-white shadow-2xs'
+                  : 'text-stone-600 hover:text-tikkun-brand-deep hover:bg-[#F4F7EE]'
               }`}
             >
               <Monitor className="w-4 h-4" />
@@ -410,8 +411,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
               onClick={() => setActiveTab('gallery')}
               className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${
                 activeTab === 'gallery'
-                  ? 'bg-[#1E311A] text-white shadow-2xs'
-                  : 'text-stone-600 hover:text-[#1E311A] hover:bg-[#F4F7EE]'
+                  ? 'bg-tikkun-brand-deep text-white shadow-2xs'
+                  : 'text-stone-600 hover:text-tikkun-brand-deep hover:bg-[#F4F7EE]'
               }`}
             >
               <ImageIcon className="w-4 h-4" />
@@ -423,8 +424,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
               onClick={() => setActiveTab('reviews')}
               className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${
                 activeTab === 'reviews'
-                  ? 'bg-[#1E311A] text-white shadow-2xs'
-                  : 'text-stone-600 hover:text-[#1E311A] hover:bg-[#F4F7EE]'
+                  ? 'bg-tikkun-brand-deep text-white shadow-2xs'
+                  : 'text-stone-600 hover:text-tikkun-brand-deep hover:bg-[#F4F7EE]'
               }`}
             >
               <Star className="w-4 h-4" />
@@ -438,10 +439,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
         {activeTab === 'cabins' && (
           <div className="space-y-4 animate-in fade-in duration-200">
             
-            {/* Filter and View Mode Controls */}
+            {/* Filtros y modo de visualización. */}
             <div className="bg-white rounded-2xl p-4 sm:p-5 border border-[#D5DFCA] shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <h2 className="text-base sm:text-lg font-serif font-bold text-[#1E311A] flex items-center gap-2">
+                <h2 className="text-base sm:text-lg font-serif font-bold text-tikkun-brand-deep flex items-center gap-2">
                   <span>Inventario de Cabañas</span>
                   <span className="text-xs font-sans font-semibold text-[#556F48] px-2.5 py-0.5 rounded-full bg-[#EFF4E6] border border-[#CCD8B8]">
                     {filteredCabins.length} activas
@@ -453,7 +454,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
               </div>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
-                {/* Search Bar */}
+                {/* Búsqueda de cabañas. */}
                 <div className="relative">
                   <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
@@ -461,17 +462,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Buscar por nombre, cama..."
-                    className="w-full sm:w-56 bg-[#FAF8F2] border border-[#CCD8B8] focus:border-[#1E311A] rounded-xl pl-9 pr-3 py-2 text-xs text-[#1E311A] placeholder-stone-400 focus:outline-hidden"
+                    className="w-full sm:w-56 bg-tikkun-brand-cream border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl pl-9 pr-3 py-2 text-xs text-tikkun-brand-deep placeholder-stone-400 focus:outline-hidden"
                   />
                 </div>
 
-                {/* View Mode Toggle: Grid vs Table */}
-                <div className="flex items-center gap-1 bg-[#FAF8F2] p-1 rounded-xl border border-[#CCD8B8]">
+                {/* Alternar entre cuadrícula y tabla. */}
+                <div className="flex items-center gap-1 bg-tikkun-brand-cream p-1 rounded-xl border border-[#CCD8B8]">
                   <button
                     type="button"
                     onClick={() => setViewMode('grid')}
                     className={`p-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
-                      viewMode === 'grid' ? 'bg-[#1E311A] text-white font-bold shadow-2xs' : 'text-stone-600 hover:text-[#1E311A]'
+                      viewMode === 'grid' ? 'bg-tikkun-brand-deep text-white font-bold shadow-2xs' : 'text-stone-600 hover:text-tikkun-brand-deep'
                     }`}
                     title="Vista en tarjetas"
                   >
@@ -481,7 +482,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                     type="button"
                     onClick={() => setViewMode('table')}
                     className={`p-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
-                      viewMode === 'table' ? 'bg-[#1E311A] text-white font-bold shadow-2xs' : 'text-stone-600 hover:text-[#1E311A]'
+                      viewMode === 'table' ? 'bg-tikkun-brand-deep text-white font-bold shadow-2xs' : 'text-stone-600 hover:text-tikkun-brand-deep'
                     }`}
                     title="Vista en tabla"
                   >
@@ -492,15 +493,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                 <button
                   type="button"
                   onClick={handleOpenCreateCabin}
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#1E311A] hover:bg-[#2C4623] text-white text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer shrink-0"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-tikkun-brand-deep hover:bg-[#2C4623] text-white text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer shrink-0"
                 >
-                  <Plus className="w-4 h-4 text-[#B6C29A] stroke-[2.5]" />
+                  <Plus className="w-4 h-4 text-tikkun-brand-sage stroke-[2.5]" />
                   <span>Crear Nueva Cabaña</span>
                 </button>
               </div>
             </div>
 
-            {/* GRID VIEW MODE */}
+            {/* Vista de cuadrícula. */}
             {viewMode === 'grid' && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredCabins.map((cabin) => {
@@ -517,17 +518,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                       key={cabin.id}
                       className="bg-white rounded-2xl border border-[#D5DFCA] shadow-2xs hover:shadow-md transition-all overflow-hidden flex flex-col group"
                     >
-                      {/* Photo Header */}
+                      {/* Fotografía de la cabaña. */}
                       <div className="relative aspect-16/10 bg-stone-100 overflow-hidden">
                         <img
                           src={cabin.image}
                           alt={cabin.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+                        <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-black/20" />
 
                         <div className="absolute top-3 left-3 flex items-center gap-1.5">
-                          <span className="bg-white/95 backdrop-blur-xs text-[#1E311A] text-[11px] font-bold px-2.5 py-1 rounded-full shadow-xs border border-stone-200">
+                          <span className="bg-white/95 backdrop-blur-xs text-tikkun-brand-deep text-[11px] font-bold px-2.5 py-1 rounded-full shadow-xs border border-stone-200">
                             {cabin.cabinNumberLabel}
                           </span>
                         </div>
@@ -546,16 +547,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                         </div>
                       </div>
 
-                      {/* Card Body */}
+                      {/* Datos de la cabaña. */}
                       <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-4">
                         <div className="space-y-3">
                           <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
                             {cabin.description}
                           </p>
 
-                          {/* Capacity & Beds */}
+                          {/* Capacidad y camas. */}
                           <div className="flex flex-wrap items-center gap-3 text-xs text-stone-700 pt-1">
-                            <span className="inline-flex items-center gap-1.5 font-semibold text-[#1E311A]">
+                            <span className="inline-flex items-center gap-1.5 font-semibold text-tikkun-brand-deep">
                               <Users className="w-3.5 h-3.5 text-[#556F48]" />
                               <span>Hasta {cabin.capacity} personas</span>
                             </span>
@@ -565,24 +566,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                             </span>
                           </div>
 
-                          {/* Rate Chips */}
+                          {/* Tarifas por noche. */}
                           <div className="grid grid-cols-3 gap-1.5 pt-2 border-t border-stone-100 text-center">
-                            <div className="p-2 bg-[#FAF8F2] rounded-xl border border-[#E2EBD8]">
+                            <div className="p-2 bg-tikkun-brand-cream rounded-xl border border-[#E2EBD8]">
                               <span className="block text-[9px] uppercase tracking-wider text-stone-500">Dom-Jue</span>
-                              <strong className="text-xs text-[#1E311A] font-bold">{formatCOP(r.weekday)}</strong>
+                              <strong className="text-xs text-tikkun-brand-deep font-bold">{formatCOP(r.weekday)}</strong>
                             </div>
-                            <div className="p-2 bg-[#FAF8F2] rounded-xl border border-[#E2EBD8]">
+                            <div className="p-2 bg-tikkun-brand-cream rounded-xl border border-[#E2EBD8]">
                               <span className="block text-[9px] uppercase tracking-wider text-stone-500">Viernes</span>
-                              <strong className="text-xs text-[#1E311A] font-bold">{formatCOP(r.friday)}</strong>
+                              <strong className="text-xs text-tikkun-brand-deep font-bold">{formatCOP(r.friday)}</strong>
                             </div>
                             <div className="p-2 bg-[#EFF4E6] rounded-xl border border-[#CCD8B8]">
                               <span className="block text-[9px] uppercase tracking-wider text-[#556F48] font-bold">Sáb/Fest</span>
-                              <strong className="text-xs text-[#1E311A] font-bold">{formatCOP(r.weekendHoliday)}</strong>
+                              <strong className="text-xs text-tikkun-brand-deep font-bold">{formatCOP(r.weekendHoliday)}</strong>
                             </div>
                           </div>
                         </div>
 
-                        {/* Card Bottom Actions */}
+                        {/* Acciones de la tarjeta. */}
                         <div className="pt-3 border-t border-stone-100 flex items-center justify-between gap-2">
                           {isConfirmingDelete ? (
                             <div className="w-full flex items-center justify-between gap-2 bg-red-50 p-2 rounded-xl border border-red-200">
@@ -609,7 +610,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                               <button
                                 type="button"
                                 onClick={() => handleOpenEditCabin(cabin)}
-                                className="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-[#1E311A] bg-[#EFF4E6] hover:bg-[#DCE7CF] rounded-xl transition-colors cursor-pointer border border-[#CCD8B8]"
+                                className="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-tikkun-brand-deep bg-[#EFF4E6] hover:bg-[#DCE7CF] rounded-xl transition-colors cursor-pointer border border-[#CCD8B8]"
                               >
                                 <Edit3 className="w-3.5 h-3.5 text-[#556F48]" />
                                 <span>Editar</span>
@@ -633,10 +634,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
               </div>
             )}
 
-            {/* TABLE VIEW MODE */}
+            {/* Vista de tabla. */}
             {viewMode === 'table' && (
               <div className="bg-white rounded-2xl border border-[#D5DFCA] shadow-2xs overflow-hidden">
-                <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-6 py-3.5 bg-[#F4F7EE] border-b border-[#D5DFCA] text-xs font-bold text-[#1E311A] uppercase tracking-wider">
+                <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-6 py-3.5 bg-[#F4F7EE] border-b border-[#D5DFCA] text-xs font-bold text-tikkun-brand-deep uppercase tracking-wider">
                   <div className="col-span-4">Cabaña</div>
                   <div className="col-span-3">Capacidad & Camas</div>
                   <div className="col-span-3">Tarifas COP (Dom-Jue / Vie / Sáb)</div>
@@ -656,7 +657,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                     return (
                       <div
                         key={cabin.id}
-                        className="p-4 sm:px-6 sm:py-4 hover:bg-[#FAF8F2]/70 transition-colors grid grid-cols-1 lg:grid-cols-12 gap-4 items-center"
+                        className="p-4 sm:px-6 sm:py-4 hover:bg-tikkun-brand-cream/70 transition-colors grid grid-cols-1 lg:grid-cols-12 gap-4 items-center"
                       >
                         <div className="lg:col-span-4 flex items-center gap-3.5 min-w-0">
                           <div
@@ -680,7 +681,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                             </span>
                             <h3
                               onClick={() => handleOpenEditCabin(cabin)}
-                              className="text-sm font-serif font-bold text-[#1E311A] hover:text-[#2C4623] truncate cursor-pointer"
+                              className="text-sm font-serif font-bold text-tikkun-brand-deep hover:text-[#2C4623] truncate cursor-pointer"
                             >
                               {cabin.name}
                             </h3>
@@ -691,7 +692,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                         </div>
 
                         <div className="lg:col-span-3 space-y-1 text-xs">
-                          <div className="flex items-center gap-1.5 font-semibold text-[#1E311A]">
+                          <div className="flex items-center gap-1.5 font-semibold text-tikkun-brand-deep">
                             <Users className="w-3.5 h-3.5 text-[#556F48] shrink-0" />
                             <span>Hasta {cabin.capacity} personas</span>
                           </div>
@@ -702,17 +703,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                         </div>
 
                         <div className="lg:col-span-3 grid grid-cols-3 gap-2 text-xs">
-                          <div className="p-2 bg-[#FAF8F2] rounded-xl border border-[#E2EBD8]">
+                          <div className="p-2 bg-tikkun-brand-cream rounded-xl border border-[#E2EBD8]">
                             <span className="block text-[9px] text-stone-500">Dom-Jue</span>
-                            <strong className="text-[#1E311A] font-bold">{formatCOP(r.weekday)}</strong>
+                            <strong className="text-tikkun-brand-deep font-bold">{formatCOP(r.weekday)}</strong>
                           </div>
-                          <div className="p-2 bg-[#FAF8F2] rounded-xl border border-[#E2EBD8]">
+                          <div className="p-2 bg-tikkun-brand-cream rounded-xl border border-[#E2EBD8]">
                             <span className="block text-[9px] text-stone-500">Viernes</span>
-                            <strong className="text-[#1E311A] font-bold">{formatCOP(r.friday)}</strong>
+                            <strong className="text-tikkun-brand-deep font-bold">{formatCOP(r.friday)}</strong>
                           </div>
                           <div className="p-2 bg-[#EFF4E6] rounded-xl border border-[#CCD8B8]">
                             <span className="block text-[9px] text-[#556F48] font-semibold">Sáb/Fest</span>
-                            <strong className="text-[#1E311A] font-bold">{formatCOP(r.weekendHoliday)}</strong>
+                            <strong className="text-tikkun-brand-deep font-bold">{formatCOP(r.weekendHoliday)}</strong>
                           </div>
                         </div>
 
@@ -739,7 +740,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                               <button
                                 type="button"
                                 onClick={() => handleOpenEditCabin(cabin)}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#1E311A] bg-[#EFF4E6] hover:bg-[#DCE7CF] rounded-xl transition-colors cursor-pointer border border-[#CCD8B8]"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-tikkun-brand-deep bg-[#EFF4E6] hover:bg-[#DCE7CF] rounded-xl transition-colors cursor-pointer border border-[#CCD8B8]"
                               >
                                 <Edit3 className="w-3.5 h-3.5 text-[#556F48]" />
                                 <span>Editar</span>
@@ -763,7 +764,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
               </div>
             )}
 
-            {/* Subtle reset option for default cabins */}
+            {/* Restablecer los datos de las cabañas predeterminadas. */}
             <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-stone-500">
               {confirmResetCabins ? (
                 <div className="flex items-center gap-2">
@@ -796,13 +797,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
           </div>
         )}
 
-        {/* TAB 2: PORTADA HERO */}
+        {/* Pestaña 2: portada. */}
         {activeTab === 'landing' && (
           <div className="space-y-5 animate-in fade-in duration-200">
             <div className="bg-white rounded-2xl p-5 sm:p-6 border border-[#D5DFCA] space-y-5 shadow-2xs">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-100 pb-4">
                 <div>
-                  <h2 className="text-base sm:text-lg font-serif font-bold text-[#1E311A] flex items-center gap-2">
+                  <h2 className="text-base sm:text-lg font-serif font-bold text-tikkun-brand-deep flex items-center gap-2">
                     <Monitor className="w-5 h-5 text-[#556F48]" />
                     <span>Módulo Portada Hero</span>
                     <span className="text-xs font-sans font-semibold text-[#556F48] px-2.5 py-0.5 rounded-full bg-[#EFF4E6] border border-[#CCD8B8]">
@@ -827,9 +828,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                 </button>
               </div>
 
-              {/* Upload & URL Bar */}
+              {/* Cargar una imagen o ingresar su dirección. */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <label className="p-4 bg-[#FAF8F2] border-2 border-dashed border-[#9FB386] hover:border-[#1E311A] rounded-2xl flex items-center justify-center gap-2 text-xs sm:text-sm font-bold text-[#1E311A] transition-colors cursor-pointer text-center">
+                <label className="p-4 bg-tikkun-brand-cream border-2 border-dashed border-[#9FB386] hover:border-tikkun-brand-deep rounded-2xl flex items-center justify-center gap-2 text-xs sm:text-sm font-bold text-tikkun-brand-deep transition-colors cursor-pointer text-center">
                   <Upload className="w-4 h-4 text-[#556F48]" />
                   <span>Subir nueva imagen al Hero desde tu dispositivo</span>
                   <input
@@ -847,11 +848,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                     value={heroUrlInput}
                     onChange={(e) => setHeroUrlInput(e.target.value)}
                     placeholder="O pega el enlace (URL) de una imagen..."
-                    className="flex-1 bg-[#FAF8F2] border border-[#CCD8B8] focus:border-[#1E311A] rounded-xl px-3.5 py-3 text-xs sm:text-sm text-[#1E311A] focus:outline-hidden"
+                    className="flex-1 bg-tikkun-brand-cream border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3.5 py-3 text-xs sm:text-sm text-tikkun-brand-deep focus:outline-hidden"
                   />
                   <button
                     type="submit"
-                    className="px-4 py-3 bg-[#1E311A] hover:bg-[#2C4623] text-white text-xs font-bold rounded-xl cursor-pointer shrink-0 transition-all shadow-xs"
+                    className="px-4 py-3 bg-tikkun-brand-deep hover:bg-[#2C4623] text-white text-xs font-bold rounded-xl cursor-pointer shrink-0 transition-all shadow-xs"
                   >
                     Agregar
                   </button>
@@ -859,13 +860,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
               </div>
             </div>
 
-            {/* Grid of Hero Images */}
+            {/* Imágenes de la portada. */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {heroImages.map((imgUrl, idx) => (
                 <div
                   key={idx}
                   className={`bg-white rounded-2xl border ${
-                    idx === 0 ? 'border-[#1E311A] ring-2 ring-[#B6C29A]' : 'border-[#D5DFCA]'
+                    idx === 0 ? 'border-tikkun-brand-deep ring-2 ring-tikkun-brand-sage' : 'border-[#D5DFCA]'
                   } overflow-hidden shadow-2xs flex flex-col group`}
                 >
                   <div className="relative aspect-16/10 bg-stone-100 overflow-hidden">
@@ -874,11 +875,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                       alt={`Hero ${idx + 1}`}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-black/20" />
 
                     <div className="absolute top-3 left-3">
                       {idx === 0 ? (
-                        <span className="bg-[#1E311A] text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm">
+                        <span className="bg-tikkun-brand-deep text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm">
                           Portada Principal
                         </span>
                       ) : (
@@ -889,9 +890,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                     </div>
                   </div>
 
-                  <div className="p-3.5 flex items-center justify-between gap-2 bg-[#FAF8F2]">
+                  <div className="p-3.5 flex items-center justify-between gap-2 bg-tikkun-brand-cream">
                     <div className="flex items-center gap-1.5">
-                      <label className="inline-flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-semibold text-[#1E311A] bg-[#EFF4E6] hover:bg-[#DCE7CF] rounded-lg border border-[#CCD8B8] transition-colors cursor-pointer">
+                      <label className="inline-flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-semibold text-tikkun-brand-deep bg-[#EFF4E6] hover:bg-[#DCE7CF] rounded-lg border border-[#CCD8B8] transition-colors cursor-pointer">
                         <Upload className="w-3 h-3 text-[#556F48]" />
                         <span>Reemplazar</span>
                         <input
@@ -906,7 +907,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                         <button
                           type="button"
                           onClick={() => handleMakeFirstHeroImage(idx)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-semibold text-stone-700 hover:text-[#1E311A] bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors cursor-pointer"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-semibold text-stone-700 hover:text-tikkun-brand-deep bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors cursor-pointer"
                         >
                           <ArrowUp className="w-3 h-3" />
                           <span>Hacer 1ª</span>
@@ -935,7 +936,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
             <div className="bg-white rounded-2xl p-5 sm:p-6 border border-[#D5DFCA] space-y-5 shadow-2xs">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-100 pb-4">
                 <div>
-                  <h2 className="text-base sm:text-lg font-serif font-bold text-[#1E311A] flex items-center gap-2">
+                  <h2 className="text-base sm:text-lg font-serif font-bold text-tikkun-brand-deep flex items-center gap-2">
                     <ImageIcon className="w-5 h-5 text-[#556F48]" />
                     <span>Módulo Galería de Experiencias</span>
                     <span className="text-xs font-sans font-semibold text-[#556F48] px-2.5 py-0.5 rounded-full bg-[#EFF4E6] border border-[#CCD8B8]">
@@ -960,9 +961,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                 </button>
               </div>
 
-              {/* Upload & URL Bar */}
+              {/* Cargar una imagen o ingresar su dirección. */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <label className="p-4 bg-[#FAF8F2] border-2 border-dashed border-[#9FB386] hover:border-[#1E311A] rounded-2xl flex items-center justify-center gap-2 text-xs sm:text-sm font-bold text-[#1E311A] transition-colors cursor-pointer text-center">
+                <label className="p-4 bg-tikkun-brand-cream border-2 border-dashed border-[#9FB386] hover:border-tikkun-brand-deep rounded-2xl flex items-center justify-center gap-2 text-xs sm:text-sm font-bold text-tikkun-brand-deep transition-colors cursor-pointer text-center">
                   <Upload className="w-4 h-4 text-[#556F48]" />
                   <span>Subir fotos a la galería desde tu dispositivo</span>
                   <input
@@ -980,11 +981,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                     value={galleryUrlInput}
                     onChange={(e) => setGalleryUrlInput(e.target.value)}
                     placeholder="O pega el enlace (URL) de una foto..."
-                    className="flex-1 bg-[#FAF8F2] border border-[#CCD8B8] focus:border-[#1E311A] rounded-xl px-3.5 py-3 text-xs sm:text-sm text-[#1E311A] focus:outline-hidden"
+                    className="flex-1 bg-tikkun-brand-cream border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3.5 py-3 text-xs sm:text-sm text-tikkun-brand-deep focus:outline-hidden"
                   />
                   <button
                     type="submit"
-                    className="px-4 py-3 bg-[#1E311A] hover:bg-[#2C4623] text-white text-xs font-bold rounded-xl cursor-pointer shrink-0 transition-all shadow-xs"
+                    className="px-4 py-3 bg-tikkun-brand-deep hover:bg-[#2C4623] text-white text-xs font-bold rounded-xl cursor-pointer shrink-0 transition-all shadow-xs"
                   >
                     Agregar
                   </button>
@@ -992,13 +993,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
               </div>
             </div>
 
-            {/* Grid of Gallery Photos */}
+            {/* Fotografías de la galería. */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {galleryImages.map((imgUrl, idx) => (
                 <div
                   key={idx}
                   className={`bg-white rounded-2xl border ${
-                    idx === 0 ? 'border-[#1E311A] ring-2 ring-[#B6C29A]' : 'border-[#D5DFCA]'
+                    idx === 0 ? 'border-tikkun-brand-deep ring-2 ring-tikkun-brand-sage' : 'border-[#D5DFCA]'
                   } overflow-hidden shadow-2xs flex flex-col group`}
                 >
                   <div className="relative aspect-4/3 bg-stone-100 overflow-hidden">
@@ -1007,11 +1008,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                       alt={`Foto Galería ${idx + 1}`}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-black/20" />
 
                     <div className="absolute top-2.5 left-2.5">
                       {idx === 0 ? (
-                        <span className="bg-[#1E311A] text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                        <span className="bg-tikkun-brand-deep text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm">
                           Destacada
                         </span>
                       ) : (
@@ -1022,8 +1023,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                     </div>
                   </div>
 
-                  <div className="p-2.5 flex items-center justify-between gap-1.5 bg-[#FAF8F2]">
-                    <label className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-semibold text-[#1E311A] bg-[#EFF4E6] hover:bg-[#DCE7CF] rounded-lg border border-[#CCD8B8] transition-colors cursor-pointer">
+                  <div className="p-2.5 flex items-center justify-between gap-1.5 bg-tikkun-brand-cream">
+                    <label className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-semibold text-tikkun-brand-deep bg-[#EFF4E6] hover:bg-[#DCE7CF] rounded-lg border border-[#CCD8B8] transition-colors cursor-pointer">
                       <Upload className="w-2.5 h-2.5 text-[#556F48]" />
                       <span>Cambiar</span>
                       <input
@@ -1038,7 +1039,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                       <button
                         type="button"
                         onClick={() => handleMakeFirstGalleryImage(idx)}
-                        className="p-1 text-stone-600 hover:text-[#1E311A] hover:bg-stone-200 rounded-lg text-[10px] cursor-pointer"
+                        className="p-1 text-stone-600 hover:text-tikkun-brand-deep hover:bg-stone-200 rounded-lg text-[10px] cursor-pointer"
                         title="Mover al primer lugar"
                       >
                         <ArrowUp className="w-3 h-3" />
@@ -1065,7 +1066,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
           <div className="space-y-4 animate-in fade-in duration-200">
             <div className="bg-white rounded-2xl p-5 border border-[#D5DFCA] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
               <div>
-                <h2 className="text-base sm:text-lg font-serif font-bold text-[#1E311A] flex items-center gap-2">
+                <h2 className="text-base sm:text-lg font-serif font-bold text-tikkun-brand-deep flex items-center gap-2">
                   <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
                   <span>Reseñas de Huéspedes ({reviews.length} / 10 máx.)</span>
                 </h2>
@@ -1079,12 +1080,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
               {reviews.map((rev) => (
                 <div
                   key={rev.id}
-                  className="bg-white rounded-2xl p-5 border border-[#D5DFCA] hover:border-[#1E311A] transition-all flex flex-col justify-between gap-4 shadow-2xs"
+                  className="bg-white rounded-2xl p-5 border border-[#D5DFCA] hover:border-tikkun-brand-deep transition-all flex flex-col justify-between gap-4 shadow-2xs"
                 >
                   <div className="space-y-2">
                     <div className="flex items-center justify-between gap-2">
                       <div>
-                        <span className="font-bold text-sm text-[#1E311A]">{rev.guestName}</span>
+                        <span className="font-bold text-sm text-tikkun-brand-deep">{rev.guestName}</span>
                         <span className="text-xs text-stone-400"> · {rev.guestCity}</span>
                       </div>
 
@@ -1123,7 +1124,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
 
       </div>
 
-      {/* Modal to Create or Edit Cabin */}
+      {/* Ventana para crear o editar una cabaña. */}
       <CabinEditorModal
         isOpen={isCabinModalOpen}
         onClose={() => setIsCabinModalOpen(false)}

@@ -1,3 +1,4 @@
+// Muestra una cabaña con galería de fotos, capacidad, tarifas y acciones de reserva.
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Users, Bed, ArrowRight, Eye, 
@@ -26,8 +27,7 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
     ? accommodation.galleryImages
     : [accommodation.image];
 
-  // Auto-rotating photo slideshow:
-  // Changes every 4 seconds, slightly staggered per cabin number so they don't flip synchronously
+  // Rotar las fotografías cada cuatro segundos, con un desfase según el número de cabaña.
   useEffect(() => {
     if (isHovered || images.length <= 1) return;
 
@@ -59,13 +59,10 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
       onClick={() => onViewDetails(accommodation)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="bg-white rounded-3xl border border-stone-200/90 hover:border-[#1E311A]/40 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col group cursor-pointer"
+      className="bg-white rounded-3xl border border-stone-200/90 hover:border-tikkun-brand-deep/40 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col group cursor-pointer"
     >
       
-      {/* 
-        1. IMAGE CAROUSEL WITH AUTO-ROTATING TRANSITION:
-        Smooth crossfading images with soft progress indicator
-      */}
+      {/* Carrusel de fotografías con transición y progreso. */}
       <div className="relative aspect-16/10 w-full overflow-hidden bg-stone-900">
         
         {images.map((img, idx) => (
@@ -83,24 +80,24 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
           </div>
         ))}
         
-        {/* Soft, gentle bottom gradient for contrast */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/25 z-2 pointer-events-none" />
+        {/* Degradado inferior para mejorar el contraste. */}
+        <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-black/25 z-2 pointer-events-none" />
 
-        {/* Top Badges: Soft, refined pill */}
+        {/* Identificador de la cabaña. */}
         <div className="absolute top-3.5 left-3.5 z-3 flex flex-wrap items-center gap-1.5">
           <span className="bg-black/60 backdrop-blur-md text-white px-2.5 py-1 rounded-full text-xs font-semibold shadow-xs">
             {accommodation.cabinNumberLabel}
           </span>
         </div>
 
-        {/* Rating overlay (soft pill) */}
+        {/* Calificación y número de reseñas. */}
         <div className="absolute top-3.5 right-3.5 z-3 bg-black/50 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-semibold text-white flex items-center gap-1 shadow-xs">
           <span className="text-amber-300">★</span>
           <span>{accommodation.rating}</span>
           <span className="text-white/60 text-[10px]">({accommodation.reviewsCount})</span>
         </div>
 
-        {/* Navigation Arrows (discreet on hover) */}
+        {/* Flechas de navegación, visibles al pasar el cursor. */}
         {images.length > 1 && (
           <>
             <button
@@ -122,7 +119,7 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
           </>
         )}
 
-        {/* Bottom Progress Dots */}
+        {/* Indicadores de posición del carrusel. */}
         <div className="absolute bottom-3 left-3 z-3 flex items-center gap-1.5">
           {images.map((_, idx) => (
             <button
@@ -145,21 +142,19 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
           </span>
         </div>
 
-        {/* View Details Hint */}
-        <div className="absolute bottom-3 right-3 z-3 bg-white/90 backdrop-blur-xs text-[#1E311A] px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1 opacity-90 group-hover:opacity-100 transition-opacity shadow-xs">
+        {/* Acceso visual al detalle de la cabaña. */}
+        <div className="absolute bottom-3 right-3 z-3 bg-white/90 backdrop-blur-xs text-tikkun-brand-deep px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1 opacity-90 group-hover:opacity-100 transition-opacity shadow-xs">
           <Eye className="w-3 h-3 text-[#5A744C]" />
           <span>Explorar</span>
         </div>
       </div>
 
-      {/* 
-        2. CONTENT DETAILS (Soft, neutral, friendly typography)
-      */}
+      {/* Información de la cabaña. */}
       <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4">
         
         <div className="space-y-2">
           
-          {/* Subtle specs line (Sentence case, clean icons - matching cabin creation fields only) */}
+          {/* Capacidad y distribución de camas. */}
           <div className="flex flex-wrap items-center gap-2 text-xs text-stone-500 font-normal">
             <span className="flex items-center gap-1">
               <Users className="w-3.5 h-3.5 text-[#5A744C]" />
@@ -172,17 +167,17 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
             </span>
           </div>
 
-          {/* Cabin Title */}
-          <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#1E311A] group-hover:text-[#3B5430] transition-colors leading-snug">
+          {/* Nombre de la cabaña. */}
+          <h3 className="text-xl sm:text-2xl font-serif font-bold text-tikkun-brand-deep group-hover:text-[#3B5430] transition-colors leading-snug">
             {accommodation.name}
           </h3>
 
-          {/* Short Description */}
+          {/* Descripción breve. */}
           <p className="text-xs sm:text-sm text-stone-600 leading-relaxed line-clamp-2 pt-1">
             {accommodation.description}
           </p>
 
-          {/* Key Inclusions (from cabin features configured on creation) */}
+          {/* Servicios destacados configurados para la cabaña. */}
           {accommodation.features && accommodation.features.length > 0 && (
             <div className="pt-3 border-t border-stone-100 space-y-1.5 text-xs text-stone-700">
               {accommodation.features.slice(0, 3).map((feat, idx) => (
@@ -196,9 +191,7 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
 
         </div>
 
-        {/* 
-          3. PRICING & ACTION BUTTONS
-        */}
+        {/* Tarifa y acciones disponibles. */}
         <div className="pt-4 border-t border-stone-100 flex items-center justify-between gap-3">
           
           <div>
@@ -211,7 +204,7 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
               </span>
             </div>
             <div className="flex items-baseline gap-1 mt-0.5">
-              <span className="text-xl sm:text-2xl font-serif font-bold text-[#1E311A]">
+              <span className="text-xl sm:text-2xl font-serif font-bold text-tikkun-brand-deep">
                 {formatCOP(rates.weekday)}
               </span>
               <span className="text-xs text-stone-500">COP</span>
@@ -223,27 +216,27 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
 
           <div className="flex items-center gap-2">
             
-            {/* View Details Button */}
+            {/* Abrir el detalle de la cabaña. */}
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 onViewDetails(accommodation);
               }}
-              className="px-3 py-2 text-xs font-semibold text-[#1E311A] bg-stone-100 hover:bg-stone-200 rounded-xl transition-colors cursor-pointer inline-flex items-center gap-1"
+              className="px-3 py-2 text-xs font-semibold text-tikkun-brand-deep bg-stone-100 hover:bg-stone-200 rounded-xl transition-colors cursor-pointer inline-flex items-center gap-1"
             >
               <span>Detalles</span>
               <ArrowRight className="w-3 h-3" />
             </button>
 
-            {/* Direct WhatsApp Reservation Button */}
+            {/* Iniciar una reserva por WhatsApp. */}
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 onBookNow(accommodation);
               }}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#1E311A] hover:bg-[#122210] rounded-xl transition-all shadow-xs hover:shadow-md active:scale-98 cursor-pointer"
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-tikkun-brand-deep hover:bg-[#122210] rounded-xl transition-all shadow-xs hover:shadow-md active:scale-98 cursor-pointer"
             >
               <MessageCircle className="w-3.5 h-3.5 text-[#25D366]" />
               <span>Reservar</span>

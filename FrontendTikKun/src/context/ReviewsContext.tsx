@@ -1,3 +1,4 @@
+// Comparte las reseñas, limita su cantidad y las sincroniza con el servidor.
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Resena, CrearResenaDTO } from '../types';
 import { APP_LIMITS, STORAGE_KEYS } from '../constants/storageKeys';
@@ -18,7 +19,7 @@ const ReviewsContext = createContext<ReviewsContextType | undefined>(undefined);
 export const ReviewsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [reviews, setReviews] = useState<Resena[]>(() => TikkunService.getReviewsFromStorage());
 
-  // Sync to localStorage enforcing max 10 reviews
+  // Sincronizar las reseñas con localStorage y mantener un máximo de diez.
   useEffect(() => {
     try {
       localStorage.setItem(
@@ -30,7 +31,7 @@ export const ReviewsProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }, [reviews]);
 
-  // Filter reviews strictly for a specific cabin (respecting custom and modified cabins)
+  // Filtrar las reseñas de una cabaña, incluidas las personalizadas o modificadas.
   const getCabinReviews = (cabinId: string): Resena[] => {
     const allCabins = TikkunService.getEffectiveCabinsFromStorage();
     const targetCabin = allCabins.find((a) => a.id === cabinId);
@@ -48,7 +49,7 @@ export const ReviewsProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
   };
 
-  // Compute rating stats for a specific cabin
+  // Calcular las estadísticas de calificación de una cabaña.
   const getCabinStats = (cabinId: string) => {
     const cabinRevs = getCabinReviews(cabinId);
     if (cabinRevs.length === 0) {
@@ -84,10 +85,10 @@ export const ReviewsProvider: React.FC<{ children: React.ReactNode }> = ({ child
       verifiedBooking: true
     };
 
-    // Maximum of 10 reviews: when a new one enters and exceeds 10, the oldest review is removed
+    // Mantener como máximo diez reseñas y retirar la más antigua al superar el límite.
     setReviews((prev) => [newReview, ...prev].slice(0, APP_LIMITS.MAX_REVIEWS));
 
-    // Non-blocking sync to Backend API
+    // Sincronizar con la API del servidor sin bloquear la interfaz.
     void TikkunService.syncReviewToBackend(newReview, input);
   };
 

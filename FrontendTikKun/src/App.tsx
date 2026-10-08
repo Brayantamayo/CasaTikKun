@@ -306,7 +306,7 @@ function MainApp() {
       {currentView !== 'admin' && (
         <aside aria-label="Contacto flotante" className="fixed bottom-6 right-6 z-30 flex flex-col gap-2">
           <a
-            href={`https://wa.me/${TIKKUN_CONTACT.whatsappNumber}?text=${encodeURIComponent('Hola Casa Tikkun, quisiera consultar información para reservar en sus cabañas.')}`}
+            href={`https://wa.me/${TIKKUN_CONTACT.numeroWhatsapp}?text=${encodeURIComponent('Hola Casa Tikkun, quisiera consultar información para reservar en sus cabañas.')}`}
             target="_blank"
             rel="noopener noreferrer"
             className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#25D366] hover:bg-[#20BD5A] text-white shadow-xl flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 group"

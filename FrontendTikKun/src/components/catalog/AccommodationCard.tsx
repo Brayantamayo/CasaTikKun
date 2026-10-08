@@ -23,15 +23,15 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
   const [isHovered, setIsHovered] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const images = accommodation.galleryImages && accommodation.galleryImages.length > 0
-    ? accommodation.galleryImages
-    : [accommodation.image];
+  const images = accommodation.imagenesGaleria && accommodation.imagenesGaleria.length > 0
+    ? accommodation.imagenesGaleria
+    : [accommodation.imagenPrincipal];
 
   // Rotar las fotografías cada cuatro segundos, con un desfase según el número de cabaña.
   useEffect(() => {
     if (isHovered || images.length <= 1) return;
 
-    const intervalTime = 3800 + (accommodation.cabinNumber * 350);
+    const intervalTime = 3800 + (accommodation.numeroCabana * 350);
 
     timerRef.current = setInterval(() => {
       setActiveImageIndex((prev) => (prev + 1) % images.length);
@@ -40,7 +40,7 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isHovered, images.length, accommodation.cabinNumber]);
+  }, [isHovered, images.length, accommodation.numeroCabana]);
 
   const rates = getEffectiveCabinRates(accommodation);
 
@@ -74,7 +74,7 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
           >
             <img
               src={img}
-              alt={`${accommodation.name} - Foto ${idx + 1}`}
+              alt={`${accommodation.nombre} - Foto ${idx + 1}`}
               className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-700 ease-out"
             />
           </div>
@@ -86,15 +86,15 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
         {/* Identificador de la cabaña. */}
         <div className="absolute top-3.5 left-3.5 z-3 flex flex-wrap items-center gap-1.5">
           <span className="bg-black/60 backdrop-blur-md text-white px-2.5 py-1 rounded-full text-xs font-semibold shadow-xs">
-            {accommodation.cabinNumberLabel}
+            {accommodation.etiquetaNumeroCabana}
           </span>
         </div>
 
         {/* Calificación y número de reseñas. */}
         <div className="absolute top-3.5 right-3.5 z-3 bg-black/50 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-semibold text-white flex items-center gap-1 shadow-xs">
           <span className="text-amber-300">★</span>
-          <span>{accommodation.rating}</span>
-          <span className="text-white/60 text-[10px]">({accommodation.reviewsCount})</span>
+          <span>{accommodation.calificacion}</span>
+          <span className="text-white/60 text-[10px]">({accommodation.cantidadResenas})</span>
         </div>
 
         {/* Flechas de navegación, visibles al pasar el cursor. */}
@@ -158,29 +158,29 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
           <div className="flex flex-wrap items-center gap-2 text-xs text-stone-500 font-normal">
             <span className="flex items-center gap-1">
               <Users className="w-3.5 h-3.5 text-[#5A744C]" />
-              Hasta {accommodation.capacity} huéspedes
+              Hasta {accommodation.capacidad} huéspedes
             </span>
             <span className="text-stone-300">•</span>
             <span className="flex items-center gap-1 truncate max-w-[180px]">
               <Bed className="w-3.5 h-3.5 text-[#5A744C] shrink-0" />
-              {accommodation.beds}
+              {accommodation.camas}
             </span>
           </div>
 
           {/* Nombre de la cabaña. */}
           <h3 className="text-xl sm:text-2xl font-serif font-bold text-tikkun-brand-deep group-hover:text-[#3B5430] transition-colors leading-snug">
-            {accommodation.name}
+            {accommodation.nombre}
           </h3>
 
           {/* Descripción breve. */}
           <p className="text-xs sm:text-sm text-stone-600 leading-relaxed line-clamp-2 pt-1">
-            {accommodation.description}
+            {accommodation.descripcion}
           </p>
 
           {/* Servicios destacados configurados para la cabaña. */}
-          {accommodation.features && accommodation.features.length > 0 && (
+          {accommodation.caracteristicas && accommodation.caracteristicas.length > 0 && (
             <div className="pt-3 border-t border-stone-100 space-y-1.5 text-xs text-stone-700">
-              {accommodation.features.slice(0, 3).map((feat, idx) => (
+              {accommodation.caracteristicas.slice(0, 3).map((feat, idx) => (
                 <div key={idx} className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-[#4A6E3B] shrink-0" />
                   <span className="truncate">{feat}</span>
@@ -205,12 +205,12 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
             </div>
             <div className="flex items-baseline gap-1 mt-0.5">
               <span className="text-xl sm:text-2xl font-serif font-bold text-tikkun-brand-deep">
-                {formatCOP(rates.weekday)}
+                {formatCOP(rates.diaSemana)}
               </span>
               <span className="text-xs text-stone-500">COP</span>
             </div>
             <span className="text-[10px] text-stone-400 block mt-0.5">
-              Vie: {formatCOP(rates.friday)} · Sáb/Fest: {formatCOP(rates.weekendHoliday)}
+              Vie: {formatCOP(rates.viernes)} · Sáb/Fest: {formatCOP(rates.finDeSemanaFestivo)}
             </span>
           </div>
 

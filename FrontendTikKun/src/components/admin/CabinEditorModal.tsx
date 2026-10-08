@@ -28,18 +28,18 @@ const PRESET_GALLERY_IMAGES = [
   { label: 'Jacuzzi Atardecer Bosque', url: jacuzziSunset }
 ];
 
-const PRESET_AMENITIES = [
-  { iconName: 'Eye', label: 'Mirador a los Pinos' },
-  { iconName: 'Flame', label: 'Chimenea de Leña' },
-  { iconName: 'Coffee', label: 'Desayuno Campesino' },
-  { iconName: 'Wifi', label: 'Starlink Wi-Fi' },
-  { iconName: 'Sparkles', label: 'Baño de Lujo' },
-  { iconName: 'Heart', label: 'Ideal Parejas' },
-  { iconName: 'Users', label: 'Familiar & Amigos' },
-  { iconName: 'Utensils', label: 'Cocina Equipada' },
-  { iconName: 'Music', label: 'Audio Marshall' },
-  { iconName: 'Flame', label: 'Fogatero Privado' },
-  { iconName: 'Car', label: 'Parqueadero Privado' }
+const PRESET_AMENITIES: ComodidadCabana[] = [
+  { nombreIcono: 'Eye', etiqueta: 'Mirador a los Pinos' },
+  { nombreIcono: 'Flame', etiqueta: 'Chimenea de Leña' },
+  { nombreIcono: 'Coffee', etiqueta: 'Desayuno Campesino' },
+  { nombreIcono: 'Wifi', etiqueta: 'Starlink Wi-Fi' },
+  { nombreIcono: 'Sparkles', etiqueta: 'Baño de Lujo' },
+  { nombreIcono: 'Heart', etiqueta: 'Ideal Parejas' },
+  { nombreIcono: 'Users', etiqueta: 'Familiar & Amigos' },
+  { nombreIcono: 'Utensils', etiqueta: 'Cocina Equipada' },
+  { nombreIcono: 'Music', etiqueta: 'Audio Marshall' },
+  { nombreIcono: 'Flame', etiqueta: 'Fogatero Privado' },
+  { nombreIcono: 'Car', etiqueta: 'Parqueadero Privado' }
 ];
 
 const SUGGESTED_TEMPLATES = [
@@ -127,75 +127,69 @@ export const CabinEditorModal: React.FC<CabinEditorModalProps> = ({
   // Restablecer o inicializar el formulario al abrir la ventana.
   useEffect(() => {
     if (cabinToEdit) {
-      setCabinNumberInput(String(cabinToEdit.cabinNumber || nextCabinNumber));
-      setName(cabinToEdit.name || '');
-      setDescription(cabinToEdit.description || '');
-      setCapacityInput(String(cabinToEdit.capacity || 2));
-      setBeds(cabinToEdit.beds || '');
+      setCabinNumberInput(String(cabinToEdit.numeroCabana || nextCabinNumber));
+      setName(cabinToEdit.nombre || '');
+      setDescription(cabinToEdit.descripcion || '');
+      setCapacityInput(String(cabinToEdit.capacidad || 2));
+      setBeds(cabinToEdit.camas || '');
 
-      const r = cabinToEdit.rates || {
-        weekday: cabinToEdit.priceCOP,
-        friday: Math.round(cabinToEdit.priceCOP * 1.15),
-        weekendHoliday: Math.round(cabinToEdit.priceCOP * 1.25)
+      const r = cabinToEdit.tarifas || {
+        diaSemana: cabinToEdit.precioCOP,
+        viernes: Math.round(cabinToEdit.precioCOP * 1.15),
+        finDeSemanaFestivo: Math.round(cabinToEdit.precioCOP * 1.25)
       };
-      setWeekdayPriceInput(String(r.weekday));
-      setFridayPriceInput(String(r.friday));
-      setWeekendPriceInput(String(r.weekendHoliday));
+      setWeekdayPriceInput(String(r.diaSemana));
+      setFridayPriceInput(String(r.viernes));
+      setWeekendPriceInput(String(r.finDeSemanaFestivo));
 
-      setFeatures(cabinToEdit.features || []);
-      setSelectedAmenities(cabinToEdit.amenities || []);
+      setFeatures(cabinToEdit.caracteristicas || []);
+      setSelectedAmenities(cabinToEdit.comodidades || []);
 
-      const imgs = cabinToEdit.galleryImages && cabinToEdit.galleryImages.length > 0
-        ? cabinToEdit.galleryImages
-        : cabinToEdit.image
-          ? [cabinToEdit.image]
-          : [];
+      const imgs = cabinToEdit.imagenesGaleria && cabinToEdit.imagenesGaleria.length > 0
+        ? cabinToEdit.imagenesGaleria
+        : [cabinToEdit.imagenPrincipal];
       setGalleryImages(imgs);
+      setErrorMsg(null);
     } else {
       setCabinNumberInput(String(nextCabinNumber));
-      setName('');
+      setName(`Cabaña ${nextCabinNumber}`);
       setDescription('');
       setCapacityInput('2');
-      setBeds('');
-      setWeekdayPriceInput('');
-      setFridayPriceInput('');
-      setWeekendPriceInput('');
-      setFeatures([]);
-      setNewFeatureText('');
-      setSelectedAmenities([]);
-      setCustomAmenityText('');
-      setGalleryImages([]);
-      setUrlInput('');
+      setBeds('1 Cama King Size');
+      setWeekdayPriceInput('380000');
+      setFridayPriceInput('440000');
+      setWeekendPriceInput('480000');
+      setFeatures([
+        'Chimenea de leña tradicional con provisión incluida',
+        'Terraza mirador privada con vista a los pinos',
+        'Desayuno campesino artesanal servido al despertar',
+        'Copa de vino de bienvenida & fogata nocturna'
+      ]);
+      setSelectedAmenities([
+        PRESET_AMENITIES[0],
+        PRESET_AMENITIES[1],
+        PRESET_AMENITIES[2],
+        PRESET_AMENITIES[3]
+      ]);
+      setGalleryImages([cabinLuxury]);
+      setErrorMsg(null);
     }
-    setEditorTab('general');
-    setErrorMsg(null);
   }, [cabinToEdit, nextCabinNumber, isOpen]);
 
-  if (!isOpen) return null;
+  const handleApplyTemplate = (tmpl: typeof SUGGESTED_TEMPLATES[0]) => {
+    setName(tmpl.name);
+    setDescription(tmpl.description);
+    setCapacityInput(String(tmpl.capacity));
+    setBeds(tmpl.beds);
+    setWeekdayPriceInput(String(tmpl.weekday));
+    setFridayPriceInput(String(tmpl.friday));
+    setWeekendPriceInput(String(tmpl.weekend));
+    setFeatures(tmpl.features);
 
-  // Plantilla rápida para agilizar el llenado del formulario.
-  const handleLoadTemplate = () => {
-    const template = SUGGESTED_TEMPLATES[Math.floor(Math.random() * SUGGESTED_TEMPLATES.length)];
-    setName(template.name);
-    setDescription(template.description);
-    setCapacityInput(String(template.capacity));
-    setBeds(template.beds);
-    setWeekdayPriceInput(String(template.weekday));
-    setFridayPriceInput(String(template.friday));
-    setWeekendPriceInput(String(template.weekend));
-    setFeatures(template.features);
-
-    const matchedAmenities: ComodidadCabana[] = PRESET_AMENITIES
-      .filter((a) => template.amenities.includes(a.label))
-      .map((a) => ({ iconName: a.iconName, label: a.label }));
-    setSelectedAmenities(matchedAmenities);
-
-    if (galleryImages.length === 0) {
-      setGalleryImages([cabanaMirador, interiorBedroom, campfireNight]);
-    }
+    const matched = PRESET_AMENITIES.filter((a) => tmpl.amenities.includes(a.etiqueta));
+    setSelectedAmenities(matched);
   };
 
-  // Calculadora de tarifas.
   const handleAutoCalculateRates = () => {
     const base = parseInt(weekdayPriceInput, 10);
     if (!base || isNaN(base) || base <= 0) {
@@ -225,9 +219,9 @@ export const CabinEditorModal: React.FC<CabinEditorModalProps> = ({
 
   // Acciones para administrar las comodidades.
   const toggleAmenity = (amenity: ComodidadCabana) => {
-    const exists = selectedAmenities.some((a) => a.label === amenity.label);
+    const exists = selectedAmenities.some((a) => a.etiqueta === amenity.etiqueta);
     if (exists) {
-      setSelectedAmenities(selectedAmenities.filter((a) => a.label !== amenity.label));
+      setSelectedAmenities(selectedAmenities.filter((a) => a.etiqueta !== amenity.etiqueta));
     } else {
       setSelectedAmenities([...selectedAmenities, amenity]);
     }
@@ -235,8 +229,8 @@ export const CabinEditorModal: React.FC<CabinEditorModalProps> = ({
 
   const handleAddCustomAmenity = () => {
     const label = customAmenityText.trim();
-    if (label && !selectedAmenities.some((a) => a.label.toLowerCase() === label.toLowerCase())) {
-      setSelectedAmenities([...selectedAmenities, { iconName: 'Sparkles', label }]);
+    if (label && !selectedAmenities.some((a) => a.etiqueta.toLowerCase() === label.toLowerCase())) {
+      setSelectedAmenities([...selectedAmenities, { nombreIcono: 'Sparkles', etiqueta: label }]);
       setCustomAmenityText('');
     }
   };
@@ -343,342 +337,251 @@ export const CabinEditorModal: React.FC<CabinEditorModalProps> = ({
     const newCabin: Cabana = {
       ...(cabinToEdit || {}),
       id,
-      cabinNumber: parsedCabinNumber,
-      cabinNumberLabel,
-      name: name.trim(),
-      type: cabinToEdit?.type || 'cabana',
-      tagline: cabinToEdit?.tagline || '',
-      description: description.trim(),
-      capacity: parsedCapacity,
-      beds: beds.trim(),
-      bathrooms: cabinToEdit?.bathrooms || 1,
-      sizeM2: cabinToEdit?.sizeM2 || 0,
-      priceCOP: parsedWeekday,
-      priceUSD: Math.round(parsedWeekday / 4000),
-      rates: {
-        weekday: parsedWeekday,
-        friday: parsedFriday,
-        weekendHoliday: parsedWeekend
+      numeroCabana: parsedCabinNumber,
+      etiquetaNumeroCabana: cabinNumberLabel,
+      nombre: name.trim(),
+      tipo: cabinToEdit?.tipo || 'cabana',
+      subtitulo: cabinToEdit?.subtitulo || '',
+      descripcion: description.trim(),
+      capacidad: parsedCapacity,
+      camas: beds.trim(),
+      banos: cabinToEdit?.banos || 1,
+      tamanoM2: cabinToEdit?.tamanoM2 || 0,
+      precioCOP: parsedWeekday,
+      precioUSD: Math.round(parsedWeekday / 4000),
+      tarifas: {
+        diaSemana: parsedWeekday,
+        viernes: parsedFriday,
+        finDeSemanaFestivo: parsedWeekend
       },
-      rating: cabinToEdit?.rating || 5.0,
-      reviewsCount: cabinToEdit?.reviewsCount || 0,
-      popularBadge: cabinToEdit?.popularBadge,
-      image: galleryImages[0],
-      galleryImages,
-      features,
-      amenities: selectedAmenities
+      calificacion: cabinToEdit?.calificacion || 5.0,
+      cantidadResenas: cabinToEdit?.cantidadResenas || 0,
+      insigniaPopular: cabinToEdit?.insigniaPopular,
+      imagenPrincipal: galleryImages[0],
+      imagenesGaleria: galleryImages,
+      caracteristicas: features,
+      comodidades: selectedAmenities
     };
 
     onSave(newCabin);
     onClose();
   };
 
+  if (!isOpen) return null;
+
   return (
     <div 
       onClick={onClose}
       className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-stone-950/70 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-200"
     >
-      <div 
-        className="relative w-full max-w-4xl bg-white text-tikkun-brand-deep rounded-3xl shadow-2xl border border-[#D5DFCA] overflow-hidden my-auto max-h-[92vh] flex flex-col font-sans"
+      <div
         onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl border border-stone-200 my-auto overflow-hidden max-h-[92vh] flex flex-col font-sans"
       >
-        {/* Encabezado del editor. */}
-        <div className="flex items-center justify-between px-6 py-4.5 bg-tikkun-brand-deep text-white border-b border-[#2C4623]">
+        {/* Encabezado. */}
+        <div className="flex items-center justify-between px-6 py-4.5 border-b border-stone-100 bg-[#F9F7F2]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-tikkun-brand-sage text-tikkun-brand-deep flex items-center justify-center shrink-0 shadow-sm">
-              <Home className="w-5 h-5 stroke-[2.2]" />
+            <div className="w-10 h-10 rounded-2xl bg-[#EFECE2] text-tikkun-brand-deep flex items-center justify-center shrink-0">
+              <Home className="w-5 h-5 text-tikkun-brand-deep" />
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-serif font-bold text-white tracking-wide leading-tight">
-                {isEditing ? `Editar · ${cabinToEdit?.name}` : 'Crear Nueva Cabaña'}
+              <h3 className="text-base sm:text-lg font-serif font-bold text-tikkun-brand-deep">
+                {isEditing ? `Editar Cabaña: ${cabinToEdit?.nombre}` : 'Agregar Nueva Cabaña'}
               </h3>
-              <p className="text-xs text-tikkun-brand-sage">
-                Casa Tikkun · Santa Elena, Antioquia
+              <p className="text-xs text-stone-500">
+                Configura tarifas por noche, comodidades, capacidad y galería de fotos
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {!isEditing && (
-              <button
-                type="button"
-                onClick={handleLoadTemplate}
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer"
-                title="Carga datos de ejemplo para editar más rápido"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-tikkun-brand-sage" />
-                <span>Cargar Plantilla</span>
-              </button>
-            )}
-
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-8 h-8 rounded-full hover:bg-stone-200/60 text-stone-400 hover:text-stone-700 flex items-center justify-center transition-colors cursor-pointer"
+            aria-label="Cerrar modal"
+          >
+            <X className="w-4 h-4 stroke-[2.5]" />
+          </button>
         </div>
 
-        {/* Pestañas de navegación del editor. */}
-        <div className="flex items-center gap-1.5 px-6 pt-3.5 pb-2.5 border-b border-[#E2EBD8] bg-tikkun-brand-cream text-xs font-medium overflow-x-auto">
+        {/* Pestañas de navegación interna. */}
+        <div className="flex border-b border-stone-200 bg-stone-50 px-6 overflow-x-auto">
           <button
             type="button"
             onClick={() => setEditorTab('general')}
-            className={`px-3.5 py-1.5 rounded-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+            className={`px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap cursor-pointer ${
               editorTab === 'general'
-                ? 'bg-tikkun-brand-deep text-white font-semibold shadow-xs'
-                : 'text-stone-600 hover:text-tikkun-brand-deep hover:bg-[#EFF4E6]'
+                ? 'border-tikkun-brand-deep text-tikkun-brand-deep bg-white'
+                : 'border-transparent text-stone-500 hover:text-stone-800'
             }`}
           >
-            <span>1. Información General</span>
+            1. Información General
           </button>
+
           <button
             type="button"
             onClick={() => setEditorTab('rates')}
-            className={`px-3.5 py-1.5 rounded-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+            className={`px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap cursor-pointer ${
               editorTab === 'rates'
-                ? 'bg-tikkun-brand-deep text-white font-semibold shadow-xs'
-                : 'text-stone-600 hover:text-tikkun-brand-deep hover:bg-[#EFF4E6]'
+                ? 'border-tikkun-brand-deep text-tikkun-brand-deep bg-white'
+                : 'border-transparent text-stone-500 hover:text-stone-800'
             }`}
           >
-            <span>2. Tarifas por Noche</span>
+            2. Tarifas por Noche
           </button>
+
           <button
             type="button"
             onClick={() => setEditorTab('amenities')}
-            className={`px-3.5 py-1.5 rounded-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+            className={`px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap cursor-pointer ${
               editorTab === 'amenities'
-                ? 'bg-tikkun-brand-deep text-white font-semibold shadow-xs'
-                : 'text-stone-600 hover:text-tikkun-brand-deep hover:bg-[#EFF4E6]'
+                ? 'border-tikkun-brand-deep text-tikkun-brand-deep bg-white'
+                : 'border-transparent text-stone-500 hover:text-stone-800'
             }`}
           >
-            <span>3. Comodidades & Destacados ({features.length + selectedAmenities.length})</span>
+            3. Comodidades ({selectedAmenities.length})
           </button>
+
           <button
             type="button"
             onClick={() => setEditorTab('photos')}
-            className={`px-3.5 py-1.5 rounded-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+            className={`px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap cursor-pointer ${
               editorTab === 'photos'
-                ? 'bg-tikkun-brand-deep text-white font-semibold shadow-xs'
-                : 'text-stone-600 hover:text-tikkun-brand-deep hover:bg-[#EFF4E6]'
+                ? 'border-tikkun-brand-deep text-tikkun-brand-deep bg-white'
+                : 'border-transparent text-stone-500 hover:text-stone-800'
             }`}
           >
-            <span>4. Fotos ({galleryImages.length})</span>
+            4. Fotografías ({galleryImages.length})
           </button>
         </div>
 
-        {/* Contenido desplazable del formulario. */}
-        <div className="overflow-y-auto p-6 sm:p-7 flex-1 space-y-6 bg-white">
-          {errorMsg && (
-            <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-xs text-red-800 font-semibold flex items-center gap-2.5 animate-in fade-in">
-              <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
-              <span>{errorMsg}</span>
-            </div>
-          )}
+        {/* Mensaje de error si falta algún campo. */}
+        {errorMsg && (
+          <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 font-medium flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
+            <span>{errorMsg}</span>
+          </div>
+        )}
 
-          <form id="cabin-form" onSubmit={handleSubmit} className="space-y-6">
+        {/* Contenido del editor. */}
+        <div className="p-6 overflow-y-auto flex-1 space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             
-            {/* TAB 1: INFORMACIÓN GENERAL */}
+            {/* Pestaña 1: Información General. */}
             {editorTab === 'general' && (
               <div className="space-y-5 animate-in fade-in duration-150">
+                
+                {/* Plantillas sugeridas para agilizar la creación. */}
+                {!isEditing && (
+                  <div className="bg-[#EFF4E6] p-4 rounded-2xl border border-[#CCD8B8] space-y-2">
+                    <span className="text-[11px] font-bold text-[#3B5430] uppercase tracking-wider block">
+                      Plantillas Rápidas (Haz clic para autocompletar)
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {SUGGESTED_TEMPLATES.map((tmpl, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => handleApplyTemplate(tmpl)}
+                          className="p-2.5 bg-white hover:bg-stone-50 rounded-xl border border-[#CCD8B8] text-left transition-colors cursor-pointer group"
+                        >
+                          <span className="block text-xs font-bold text-tikkun-brand-deep group-hover:text-[#2C4623]">
+                            {tmpl.name}
+                          </span>
+                          <span className="block text-[11px] text-stone-500 truncate">
+                            Hasta {tmpl.capacity} personas · {tmpl.beds}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-tikkun-brand-deep mb-1.5">
-                      Número de Cabaña *
+                    <label className="block text-xs font-bold text-tikkun-brand-deep uppercase tracking-wider mb-1">
+                      Número de Cabaña
                     </label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-[#556F48] font-bold">#</span>
-                      <input
-                        type="number"
-                        min="1"
-                        required
-                        value={cabinNumberInput}
-                        onChange={(e) => setCabinNumberInput(e.target.value)}
-                        placeholder="Ej. 6"
-                        className="w-full bg-tikkun-brand-cream border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl pl-8 pr-3.5 py-2.5 text-xs sm:text-sm text-tikkun-brand-deep focus:outline-hidden"
-                      />
-                    </div>
+                    <input
+                      type="number"
+                      required
+                      min={1}
+                      value={cabinNumberInput}
+                      onChange={(e) => setCabinNumberInput(e.target.value)}
+                      className="w-full bg-tikkun-brand-cream border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3 py-2.5 text-xs text-tikkun-brand-deep font-bold focus:outline-hidden"
+                    />
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-semibold text-tikkun-brand-deep mb-1.5">
+                    <label className="block text-xs font-bold text-tikkun-brand-deep uppercase tracking-wider mb-1">
                       Nombre de la Cabaña *
                     </label>
                     <input
                       type="text"
                       required
+                      placeholder="Ej. Cabaña 6 · Shalom"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="Ej. Cabaña Mirador del Bosque"
-                      className="w-full bg-tikkun-brand-cream border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-tikkun-brand-deep focus:outline-hidden font-medium"
+                      className="w-full bg-tikkun-brand-cream border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-tikkun-brand-deep font-bold focus:outline-hidden"
                     />
                   </div>
                 </div>
 
-                {/* Capacidad y camas. */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className=" text-xs font-semibold text-tikkun-brand-deep mb-1.5 flex items-center gap-1.5">
-                      <Users className="w-3.5 h-3.5 text-[#556F48]" />
-                      <span>Capacidad Máxima (Huéspedes) *</span>
+                    <label className="block text-xs font-bold text-tikkun-brand-deep uppercase tracking-wider mb-1">
+                      Capacidad Máxima de Huéspedes *
                     </label>
                     <input
                       type="number"
-                      min="1"
-                      max="12"
                       required
+                      min={1}
+                      max={12}
                       value={capacityInput}
                       onChange={(e) => setCapacityInput(e.target.value)}
-                      placeholder="Ej. 2"
-                      className="w-full bg-tikkun-brand-cream border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-tikkun-brand-deep focus:outline-hidden"
+                      className="w-full bg-tikkun-brand-cream border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3.5 py-2.5 text-xs text-tikkun-brand-deep font-semibold focus:outline-hidden"
                     />
                   </div>
 
                   <div>
-                    <label className=" text-xs font-semibold text-tikkun-brand-deep mb-1.5 flex items-center gap-1.5">
-                      <Bed className="w-3.5 h-3.5 text-[#556F48]" />
-                      <span>Acomodación y Camas *</span>
+                    <label className="block text-xs font-bold text-tikkun-brand-deep uppercase tracking-wider mb-1">
+                      Acomodación / Camas *
                     </label>
                     <input
                       type="text"
                       required
+                      placeholder="Ej. 1 Cama King Size + 1 Sofá Cama Queen"
                       value={beds}
                       onChange={(e) => setBeds(e.target.value)}
-                      placeholder="Ej. 1 Cama King + Malla catamarán"
-                      className="w-full bg-tikkun-brand-cream border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-tikkun-brand-deep focus:outline-hidden"
+                      className="w-full bg-tikkun-brand-cream border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3.5 py-2.5 text-xs text-tikkun-brand-deep font-semibold focus:outline-hidden"
                     />
                   </div>
                 </div>
 
-                {/* Descripción. */}
                 <div>
-                  <label className="block text-xs font-semibold text-tikkun-brand-deep mb-1.5">
-                    Descripción del Refugio *
+                  <label className="block text-xs font-bold text-tikkun-brand-deep uppercase tracking-wider mb-1">
+                    Descripción Completa *
                   </label>
                   <textarea
-                    rows={4}
                     required
+                    rows={4}
+                    placeholder="Describe los ventanales, la chimenea de leña, el balcón mirador y la atmósfera de descanso..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Describe la experiencia de descanso, la vista a los pinos, chimenea y detalles especiales..."
-                    className="w-full bg-tikkun-brand-cream border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl p-3.5 text-xs sm:text-sm text-tikkun-brand-deep focus:outline-hidden leading-relaxed resize-none"
+                    className="w-full bg-tikkun-brand-cream border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-2xl p-3.5 text-xs sm:text-sm text-tikkun-brand-deep leading-relaxed focus:outline-hidden resize-none"
                   />
-                  <span className="text-[11px] text-stone-500 block mt-1">
-                    Esta descripción es la que verán los huéspedes al ingresar al detalle de la cabaña.
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {/* Pestaña 2: tarifas por noche. */}
-            {editorTab === 'rates' && (
-              <div className="space-y-5 animate-in fade-in duration-150">
-                <div className="p-4 bg-[#EFF4E6] border border-[#CCD8B8] rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <span className="text-xs font-bold text-tikkun-brand-deep flex items-center gap-1.5">
-                      <Calculator className="w-4 h-4 text-[#556F48]" />
-                      Calculadora de Tarifas Recomendadas
-                    </span>
-                    <p className="text-[11px] text-stone-600 mt-0.5">
-                      Ingresa el valor entre semana y calcula automáticamente las tarifas de fin de semana y festivos.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleAutoCalculateRates}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-tikkun-brand-deep hover:bg-[#2C4623] text-white rounded-xl text-xs font-semibold cursor-pointer shrink-0 transition-all shadow-xs"
-                  >
-                    <span>Calcular (+15% / +25%)</span>
-                  </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="p-4 bg-tikkun-brand-cream rounded-2xl border border-[#D5DFCA] space-y-2">
-                    <span className="text-[11px] uppercase tracking-wider text-[#556F48] font-bold block">
-                      Domingo a Jueves *
-                    </span>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-stone-500 font-bold">$</span>
-                      <input
-                        type="number"
-                        min="50000"
-                        step="5000"
-                        required
-                        value={weekdayPriceInput}
-                        onChange={(e) => setWeekdayPriceInput(e.target.value)}
-                        placeholder="280000"
-                        className="w-full bg-white border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl pl-7 pr-3 py-2 text-xs sm:text-sm text-tikkun-brand-deep font-bold focus:outline-hidden"
-                      />
-                    </div>
-                    <span className="text-[10.5px] text-stone-500 block">
-                      {weekdayPriceInput ? `${formatCOP(Number(weekdayPriceInput))} COP` : 'Tarifa base regular'}
-                    </span>
-                  </div>
-
-                  <div className="p-4 bg-tikkun-brand-cream rounded-2xl border border-[#D5DFCA] space-y-2">
-                    <span className="text-[11px] uppercase tracking-wider text-[#556F48] font-bold block">
-                      Viernes *
-                    </span>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-stone-500 font-bold">$</span>
-                      <input
-                        type="number"
-                        min="50000"
-                        step="5000"
-                        required
-                        value={fridayPriceInput}
-                        onChange={(e) => setFridayPriceInput(e.target.value)}
-                        placeholder="320000"
-                        className="w-full bg-white border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl pl-7 pr-3 py-2 text-xs sm:text-sm text-tikkun-brand-deep font-bold focus:outline-hidden"
-                      />
-                    </div>
-                    <span className="text-[10.5px] text-stone-500 block">
-                      {fridayPriceInput ? `${formatCOP(Number(fridayPriceInput))} COP` : 'Aprox. +15%'}
-                    </span>
-                  </div>
-
-                  <div className="p-4 bg-tikkun-brand-cream rounded-2xl border border-[#D5DFCA] space-y-2">
-                    <span className="text-[11px] uppercase tracking-wider text-[#556F48] font-bold block">
-                      Sábados / Festivos *
-                    </span>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-stone-500 font-bold">$</span>
-                      <input
-                        type="number"
-                        min="50000"
-                        step="5000"
-                        required
-                        value={weekendPriceInput}
-                        onChange={(e) => setWeekendPriceInput(e.target.value)}
-                        placeholder="350000"
-                        className="w-full bg-white border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl pl-7 pr-3 py-2 text-xs sm:text-sm text-tikkun-brand-deep font-bold focus:outline-hidden"
-                      />
-                    </div>
-                    <span className="text-[10.5px] text-stone-500 block">
-                      {weekendPriceInput ? `${formatCOP(Number(weekendPriceInput))} COP` : 'Aprox. +25%'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Pestaña 3: comodidades y servicios destacados. */}
-            {editorTab === 'amenities' && (
-              <div className="space-y-6 animate-in fade-in duration-150">
-                {/* Servicios destacados. */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-tikkun-brand-deep uppercase tracking-wider">
-                      Puntos Clave Destacados ({features.length})
-                    </label>
-                    <span className="text-[11px] text-stone-500">Aparecen en la tarjeta y en la ficha</span>
-                  </div>
+                {/* Lista de servicios destacados. */}
+                <div className="space-y-2 pt-2 border-t border-stone-200">
+                  <label className="block text-xs font-bold text-tikkun-brand-deep uppercase tracking-wider">
+                    Servicios y Atributos Destacados
+                  </label>
 
                   <div className="flex gap-2">
                     <input
                       type="text"
+                      placeholder="Ej. Terraza privada con malla catamarán"
                       value={newFeatureText}
                       onChange={(e) => setNewFeatureText(e.target.value)}
                       onKeyDown={(e) => {
@@ -687,125 +590,236 @@ export const CabinEditorModal: React.FC<CabinEditorModalProps> = ({
                           handleAddFeature();
                         }
                       }}
-                      placeholder="Ej. Tina de hidromasaje privada con vista a los pinos"
-                      className="flex-1 bg-tikkun-brand-cream border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3.5 py-2 text-xs sm:text-sm text-tikkun-brand-deep focus:outline-hidden"
+                      className="flex-1 bg-tikkun-brand-cream border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3 py-2 text-xs text-tikkun-brand-deep focus:outline-hidden"
                     />
                     <button
                       type="button"
                       onClick={() => handleAddFeature()}
-                      className="px-3.5 py-2 bg-tikkun-brand-deep hover:bg-[#2C4623] text-white text-xs font-bold rounded-xl cursor-pointer shrink-0 transition-colors"
+                      className="px-3.5 py-2 bg-tikkun-brand-deep text-white text-xs font-bold rounded-xl cursor-pointer hover:bg-[#2C4623] transition-colors"
                     >
                       Añadir
                     </button>
                   </div>
 
-                  {features.length > 0 && (
-                    <div className="space-y-1.5 pt-1">
-                      {features.map((feat, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center justify-between gap-2 p-2.5 bg-tikkun-brand-cream rounded-xl border border-[#E2EBD8] text-xs text-tikkun-brand-deep"
+                  <div className="space-y-1.5 pt-1">
+                    {features.map((feat, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between p-2 rounded-xl bg-tikkun-brand-cream border border-[#CCD8B8] text-xs text-[#2A3F23]"
+                      >
+                        <span className="truncate pr-2">• {feat}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveFeature(idx)}
+                          className="text-stone-400 hover:text-red-600 transition-colors p-1"
                         >
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#556F48] shrink-0" />
-                            <span className="truncate">{feat}</span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveFeature(idx)}
-                            className="text-stone-400 hover:text-red-600 p-1 cursor-pointer shrink-0"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
-                {/* Comodidades disponibles. */}
-                <div className="space-y-3 pt-3 border-t border-stone-200">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-tikkun-brand-deep uppercase tracking-wider">
-                      Comodidades de la Cabaña ({selectedAmenities.length} seleccionadas)
-                    </label>
-                    <span className="text-[11px] text-stone-500">Toca para marcar o desmarcar</span>
+              </div>
+            )}
+
+            {/* Pestaña 2: Tarifas por Noche. */}
+            {editorTab === 'rates' && (
+              <div className="space-y-5 animate-in fade-in duration-150">
+                
+                <div className="bg-[#EFF4E6] p-4 rounded-2xl border border-[#CCD8B8] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <span className="text-xs font-bold text-tikkun-brand-deep block">
+                      Cálculo Automático de Tarifas
+                    </span>
+                    <span className="text-[11px] text-stone-600">
+                      Calcula +15% para Viernes y +25% para Sábados/Festivos
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAutoCalculateRates}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-tikkun-brand-deep text-white text-xs font-bold hover:bg-[#2C4623] transition-colors cursor-pointer shrink-0"
+                  >
+                    <Calculator className="w-3.5 h-3.5" />
+                    <span>Autocalcular Viernes & Festivos</span>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="p-4 rounded-2xl bg-tikkun-brand-cream border border-[#CCD8B8] space-y-2">
+                    <span className="block text-xs font-bold uppercase tracking-wider text-[#557048]">
+                      Domingo a Jueves (COP) *
+                    </span>
+                    <input
+                      type="number"
+                      required
+                      step={5000}
+                      value={weekdayPriceInput}
+                      onChange={(e) => setWeekdayPriceInput(e.target.value)}
+                      className="w-full bg-white border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3 py-2 text-base font-serif font-bold text-tikkun-brand-deep focus:outline-hidden"
+                    />
+                    <span className="block text-[10.5px] text-stone-500">
+                      Tarifa estándar entre semana: {formatCOP(parseInt(weekdayPriceInput, 10) || 0)}
+                    </span>
                   </div>
 
-                  <div className="flex flex-wrap gap-2">
-                    {PRESET_AMENITIES.map((amenity, idx) => {
-                      const isSelected = selectedAmenities.some((a) => a.label === amenity.label);
-                      return (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => toggleAmenity(amenity)}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                  <div className="p-4 rounded-2xl bg-tikkun-brand-cream border border-[#CCD8B8] space-y-2">
+                    <span className="block text-xs font-bold uppercase tracking-wider text-[#7A5C29]">
+                      Noche de Viernes (COP) *
+                    </span>
+                    <input
+                      type="number"
+                      required
+                      step={5000}
+                      value={fridayPriceInput}
+                      onChange={(e) => setFridayPriceInput(e.target.value)}
+                      className="w-full bg-white border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3 py-2 text-base font-serif font-bold text-tikkun-brand-deep focus:outline-hidden"
+                    />
+                    <span className="block text-[10.5px] text-stone-500">
+                      Inicio de fin de semana: {formatCOP(parseInt(fridayPriceInput, 10) || 0)}
+                    </span>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-[#EFF4E6] border border-[#CCD8B8] space-y-2">
+                    <span className="block text-xs font-bold uppercase tracking-wider text-tikkun-brand-deep">
+                      Sáb, Dom & Festivos (COP) *
+                    </span>
+                    <input
+                      type="number"
+                      required
+                      step={5000}
+                      value={weekendPriceInput}
+                      onChange={(e) => setWeekendPriceInput(e.target.value)}
+                      className="w-full bg-white border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3 py-2 text-base font-serif font-bold text-tikkun-brand-deep focus:outline-hidden"
+                    />
+                    <span className="block text-[10.5px] text-stone-500">
+                      Puentes y fin de semana: {formatCOP(parseInt(weekendPriceInput, 10) || 0)}
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+            )}
+
+            {/* Pestaña 3: Comodidades. */}
+            {editorTab === 'amenities' && (
+              <div className="space-y-4 animate-in fade-in duration-150">
+                <div>
+                  <span className="text-xs font-bold text-tikkun-brand-deep uppercase tracking-wider block mb-1">
+                    Selecciona las comodidades de esta cabaña
+                  </span>
+                  <p className="text-xs text-stone-500">
+                    Se mostrarán en la tarjeta del catálogo y en la vista detallada
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                  {PRESET_AMENITIES.map((amenity, idx) => {
+                    const isSelected = selectedAmenities.some((a) => a.etiqueta === amenity.etiqueta);
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => toggleAmenity(amenity)}
+                        className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-2.5 ${
+                          isSelected
+                            ? 'bg-[#EFF4E6] border-tikkun-brand-deep shadow-2xs'
+                            : 'bg-tikkun-brand-cream border-[#CCD8B8] hover:bg-stone-50'
+                        }`}
+                      >
+                        <div
+                          className={`w-5 h-5 rounded-lg flex items-center justify-center shrink-0 border ${
                             isSelected
-                              ? 'bg-tikkun-brand-deep text-white font-bold shadow-xs'
-                              : 'bg-[#F4F7EE] text-[#2C4623] hover:bg-[#E6EDDD] border border-[#CCD8B8]'
+                              ? 'bg-tikkun-brand-deep border-tikkun-brand-deep text-white'
+                              : 'bg-white border-stone-300 text-transparent'
                           }`}
                         >
-                          {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
-                          <span>{amenity.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
+                          <Check className="w-3.5 h-3.5 stroke-[3]" />
+                        </div>
+                        <span className={`text-xs font-bold truncate ${isSelected ? 'text-tikkun-brand-deep' : 'text-stone-700'}`}>
+                          {amenity.etiqueta}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
 
-                  {/* Campo para agregar una comodidad personalizada. */}
-                  <div className="flex gap-2 pt-2">
+                {/* Agregar comodidad personalizada. */}
+                <div className="pt-3 border-t border-stone-200 space-y-2">
+                  <span className="text-xs font-bold text-tikkun-brand-deep uppercase tracking-wider block">
+                    ¿Falta alguna comodidad personalizada?
+                  </span>
+                  <div className="flex gap-2">
                     <input
                       type="text"
+                      placeholder="Ej. Tina hidromasaje nórdica"
                       value={customAmenityText}
                       onChange={(e) => setCustomAmenityText(e.target.value)}
-                      placeholder="O escribe otra comodidad personalizada..."
-                      className="flex-1 bg-tikkun-brand-cream border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3 py-1.5 text-xs text-tikkun-brand-deep focus:outline-hidden"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddCustomAmenity();
+                        }
+                      }}
+                      className="flex-1 bg-tikkun-brand-cream border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3 py-2 text-xs text-tikkun-brand-deep focus:outline-hidden"
                     />
                     <button
                       type="button"
                       onClick={handleAddCustomAmenity}
-                      className="px-3 py-1.5 bg-[#EFF4E6] hover:bg-[#DCE7CF] text-tikkun-brand-deep text-xs font-semibold rounded-xl cursor-pointer shrink-0 border border-[#CCD8B8]"
+                      className="px-3.5 py-2 bg-tikkun-brand-deep text-white font-bold text-xs rounded-xl cursor-pointer hover:bg-[#2C4623] transition-colors"
                     >
-                      Añadir
+                      Añadir Comodidad
                     </button>
                   </div>
                 </div>
+
               </div>
             )}
 
-            {/* Pestaña 4: fotografías y galería. */}
+            {/* Pestaña 4: Fotografías. */}
             {editorTab === 'photos' && (
-              <div className="space-y-6 animate-in fade-in duration-150">
-                {/* Cargar fotografías o ingresar sus direcciones. */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <label className="p-4 bg-tikkun-brand-cream border-2 border-dashed border-[#9FB386] hover:border-tikkun-brand-deep rounded-2xl flex items-center justify-center gap-2 text-xs font-bold text-tikkun-brand-deep cursor-pointer transition-colors text-center">
-                    <Upload className="w-4 h-4 text-[#556F48] shrink-0" />
-                    <span>Subir fotos desde tu dispositivo</span>
-                    <input
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                    />
-                  </label>
+              <div className="space-y-5 animate-in fade-in duration-150">
+                
+                {/* Cargar archivos locales o ingresar una dirección URL. */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-4 bg-[#EFF4E6] rounded-2xl border border-[#CCD8B8] space-y-2">
+                    <span className="text-xs font-bold text-tikkun-brand-deep uppercase tracking-wider block">
+                      Subir fotos desde tu equipo
+                    </span>
+                    <label className="inline-flex items-center justify-center gap-2 w-full px-4 py-3 bg-tikkun-brand-deep hover:bg-[#2C4623] text-white font-bold text-xs rounded-xl cursor-pointer transition-colors shadow-xs">
+                      <Upload className="w-4 h-4" />
+                      <span>Seleccionar fotografías (PNG, JPG)</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
 
-                  <div className="flex gap-2 items-center">
-                    <input
-                      type="url"
-                      value={urlInput}
-                      onChange={(e) => setUrlInput(e.target.value)}
-                      placeholder="O pega el enlace de una foto..."
-                      className="flex-1 bg-tikkun-brand-cream border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3.5 py-3 text-xs text-tikkun-brand-deep focus:outline-hidden"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleAddImageUrl}
-                      className="px-3.5 py-3 bg-tikkun-brand-deep text-white font-bold text-xs rounded-xl cursor-pointer shrink-0 hover:bg-[#2C4623] transition-colors"
-                    >
-                      Añadir
-                    </button>
+                  <div className="p-4 bg-tikkun-brand-cream rounded-2xl border border-[#CCD8B8] space-y-2">
+                    <span className="text-xs font-bold text-tikkun-brand-deep uppercase tracking-wider block">
+                      O ingresar dirección web / URL
+                    </span>
+                    <div className="flex gap-2">
+                      <input
+                        type="url"
+                        placeholder="https://..."
+                        value={urlInput}
+                        onChange={(e) => setUrlInput(e.target.value)}
+                        className="flex-1 bg-tikkun-brand-cream border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3.5 py-3 text-xs text-tikkun-brand-deep focus:outline-hidden"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddImageUrl}
+                        className="px-3.5 py-3 bg-tikkun-brand-deep text-white font-bold text-xs rounded-xl cursor-pointer shrink-0 hover:bg-[#2C4623] transition-colors"
+                      >
+                        Añadir
+                      </button>
+                    </div>
                   </div>
                 </div>
 

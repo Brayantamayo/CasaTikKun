@@ -192,9 +192,9 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const addCabin = (newCabin: Cabana) => {
     const enriched: Cabana = {
       ...newCabin,
-      rules: newCabin.rules || TIKKUN_RULES,
-      courtesies: newCabin.courtesies || TIKKUN_COURTESIES,
-      specifications: newCabin.specifications || TIKKUN_SPECIFICATIONS
+      reglas: newCabin.reglas || TIKKUN_RULES,
+      cortesias: newCabin.cortesias || TIKKUN_COURTESIES,
+      especificaciones: newCabin.especificaciones || TIKKUN_SPECIFICATIONS
     };
 
     setCustomCabins((prev) => {
@@ -207,8 +207,8 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       return updated;
     });
 
-    if (enriched.rates) {
-      updateCabinRates(enriched.id, enriched.rates);
+    if (enriched.tarifas) {
+      updateCabinRates(enriched.id, enriched.tarifas);
     }
 
     // Sincronizar con la API del servidor sin bloquear la interfaz.
@@ -244,8 +244,8 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       });
     }
 
-    if (updatedCabin.rates) {
-      updateCabinRates(updatedCabin.id, updatedCabin.rates);
+    if (updatedCabin.tarifas) {
+      updateCabinRates(updatedCabin.id, updatedCabin.tarifas);
     }
 
     // Sincronizar con la API del servidor sin bloquear la interfaz.
@@ -299,13 +299,13 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     } catch {
       // Usar el comportamiento alternativo si se alcanza el límite de localStorage.
     }
-    void TikkunService.syncMediaToBackend({ heroImages: urls });
+    void TikkunService.syncMediaToBackend({ imagenesHero: urls });
   };
 
   const resetHeroImagesToDefault = () => {
     setHeroImages(DEFAULT_HERO_IMAGES);
     localStorage.removeItem(STORAGE_KEYS.HERO_IMAGES);
-    void TikkunService.syncMediaToBackend({ heroImages: DEFAULT_HERO_IMAGES });
+    void TikkunService.syncMediaToBackend({ imagenesHero: DEFAULT_HERO_IMAGES });
   };
 
   // Acciones para administrar las imágenes de la galería.
@@ -316,13 +316,13 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     } catch {
       // Usar el comportamiento alternativo si se alcanza el límite de localStorage.
     }
-    void TikkunService.syncMediaToBackend({ galleryImages: urls });
+    void TikkunService.syncMediaToBackend({ imagenesGaleria: urls });
   };
 
   const resetGalleryImagesToDefault = () => {
     setGalleryImages(DEFAULT_GALLERY_IMAGES);
     localStorage.removeItem(STORAGE_KEYS.GALLERY_IMAGES);
-    void TikkunService.syncMediaToBackend({ galleryImages: DEFAULT_GALLERY_IMAGES });
+    void TikkunService.syncMediaToBackend({ imagenesGaleria: DEFAULT_GALLERY_IMAGES });
   };
 
   const getEffectiveAccommodations = (): Cabana[] => {
@@ -333,8 +333,8 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         const merged = { ...acc, ...mod };
         const customRates = ratesOverrides[acc.id];
         if (customRates) {
-          merged.rates = customRates;
-          merged.priceCOP = customRates.weekday;
+          merged.tarifas = customRates;
+          merged.precioCOP = customRates.diaSemana;
         }
         return merged;
       });
@@ -346,8 +346,8 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         if (customRates) {
           return {
             ...acc,
-            rates: customRates,
-            priceCOP: customRates.weekday
+            tarifas: customRates,
+            precioCOP: customRates.diaSemana
           };
         }
         return acc;

@@ -36,11 +36,11 @@ export const ReviewsProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const allCabins = TikkunService.getEffectiveCabinsFromStorage();
     const targetCabin = allCabins.find((a) => a.id === cabinId);
     return reviews.filter((r) => {
-      if (r.accommodationId === cabinId) return true;
-      if (targetCabin && r.accommodationName) {
-        const accLower = r.accommodationName.toLowerCase();
-        const shortName = getCabinShortName(targetCabin.name).toLowerCase();
-        const labelLower = targetCabin.cabinNumberLabel.toLowerCase();
+      if (r.cabanaId === cabinId) return true;
+      if (targetCabin && r.nombreCabana) {
+        const accLower = r.nombreCabana.toLowerCase();
+        const shortName = getCabinShortName(targetCabin.nombre).toLowerCase();
+        const labelLower = targetCabin.etiquetaNumeroCabana.toLowerCase();
         if (accLower.includes(labelLower) || (shortName && accLower.includes(shortName))) {
           return true;
         }
@@ -56,11 +56,11 @@ export const ReviewsProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const allCabins = TikkunService.getEffectiveCabinsFromStorage();
       const targetCabin = allCabins.find((a) => a.id === cabinId);
       return {
-        average: targetCabin ? targetCabin.rating : 5.0,
+        average: targetCabin ? targetCabin.calificacion : 5.0,
         count: 0
       };
     }
-    const sum = cabinRevs.reduce((acc, curr) => acc + curr.rating, 0);
+    const sum = cabinRevs.reduce((acc, curr) => acc + curr.calificacion, 0);
     const avg = Number((sum / cabinRevs.length).toFixed(1));
     return {
       average: avg,
@@ -70,19 +70,19 @@ export const ReviewsProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const addReview = (input: CrearResenaDTO) => {
     const allCabins = TikkunService.getEffectiveCabinsFromStorage();
-    const targetCabin = allCabins.find((a) => a.id === input.accommodationId) || allCabins[0];
+    const targetCabin = allCabins.find((a) => a.id === input.cabanaId) || allCabins[0];
 
     const newReview: Resena = {
       id: `rev-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-      guestName: input.guestName.trim(),
-      guestCity: input.guestCity?.trim() || 'Medellín, Colombia',
-      rating: input.rating,
-      date: 'Hace un momento',
-      accommodationId: targetCabin ? targetCabin.id : input.accommodationId,
-      accommodationName: input.accommodationName || (targetCabin ? targetCabin.name : 'Cabaña Casa Tikkun'),
-      comment: input.comment.trim(),
-      travelType: input.travelType || 'En Pareja',
-      verifiedBooking: true
+      nombreHuesped: input.nombreHuesped.trim(),
+      ciudadHuesped: input.ciudadHuesped?.trim() || 'Medellín, Colombia',
+      calificacion: input.calificacion,
+      fecha: 'Hace un momento',
+      cabanaId: targetCabin ? targetCabin.id : input.cabanaId,
+      nombreCabana: input.nombreCabana || (targetCabin ? targetCabin.nombre : 'Cabaña Casa Tikkun'),
+      comentario: input.comentario.trim(),
+      tipoViaje: input.tipoViaje || 'En Pareja',
+      reservaVerificada: true
     };
 
     // Mantener como máximo diez reseñas y retirar la más antigua al superar el límite.

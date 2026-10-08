@@ -8,9 +8,6 @@ import {
 import { formatLocalDateISO } from './formatters';
 
 export type { NivelTarifaDia, CalculoNoche, ResultadoCalculoEstadia };
-export type DayTier = NivelTarifaDia;
-export type NightCalculation = CalculoNoche;
-export type StayCalculationResult = ResultadoCalculoEstadia;
 
 /**
  * Festivos oficiales de Colombia (2025-2027).
@@ -37,24 +34,24 @@ const COLOMBIAN_HOLIDAYS = new Set<string>([
 /**
  * Devuelve la estructura garantizada de 3 tarifas por noche para cualquier cabaña.
  */
-export function getEffectiveCabinRates(accommodation: Pick<Cabana, 'rates' | 'priceCOP'>): TarifasCabana {
-  if (accommodation.rates) {
-    return accommodation.rates;
+export function getEffectiveCabinRates(accommodation: Pick<Cabana, 'tarifas' | 'precioCOP'>): TarifasCabana {
+  if (accommodation.tarifas) {
+    return accommodation.tarifas;
   }
   return {
-    weekday: accommodation.priceCOP,
-    friday: Math.round(accommodation.priceCOP * 1.15),
-    weekendHoliday: Math.round(accommodation.priceCOP * 1.25)
+    diaSemana: accommodation.precioCOP,
+    viernes: Math.round(accommodation.precioCOP * 1.15),
+    finDeSemanaFestivo: Math.round(accommodation.precioCOP * 1.25)
   };
 }
 
 /**
  * Determina cuál de los 3 niveles tarifarios de Casa Tikkun aplica para una noche:
- * - Viernes (day === 5): 'friday'
- * - Sábados, Domingos de Puente y vísperas de Festivos: 'weekendHoliday'
- * - Domingo a Jueves (ordinarios): 'weekday'
+ * - Viernes (day === 5): 'viernes'
+ * - Sábados, Domingos de Puente y vísperas de Festivos: 'finDeSemanaFestivo'
+ * - Domingo a Jueves (ordinarios): 'diaSemana'
  */
-export function getNightTier(date: Date): { tier: NivelTarifaDia; label: string; badge: string } {
+export function getNightTier(date: Date): { nivelTarifa: NivelTarifaDia; label: string; badge: string } {
   const day = date.getDay(); // 0 = Domingo, 5 = Viernes, 6 = Sábado
   const dateStr = formatLocalDateISO(date);
 
@@ -66,7 +63,7 @@ export function getNightTier(date: Date): { tier: NivelTarifaDia; label: string;
 
   if (day === 6 || (day === 0 && isHolidayEveOrDay) || COLOMBIAN_HOLIDAYS.has(nextDayStr)) {
     return {
-      tier: 'weekendHoliday',
+      nivelTarifa: 'finDeSemanaFestivo',
       label: 'Sábados, Domingos & Festivos',
       badge: 'Fin de Semana & Festivo'
     };
@@ -74,14 +71,14 @@ export function getNightTier(date: Date): { tier: NivelTarifaDia; label: string;
 
   if (day === 5) {
     return {
-      tier: 'friday',
+      nivelTarifa: 'viernes',
       label: 'Viernes',
       badge: 'Viernes'
     };
   }
 
   return {
-    tier: 'weekday',
+    nivelTarifa: 'diaSemana',
     label: 'Domingo a Jueves',
     badge: 'Entre Semana'
   };
@@ -98,11 +95,11 @@ export function calculateStayNights(
 ): ResultadoCalculoEstadia {
   if (!checkInStr || !checkOutStr) {
     return {
-      nights: [],
-      totalAccommodationCOP: fallbackBasePrice,
-      weekdayCount: 0,
-      fridayCount: 0,
-      weekendHolidayCount: 0
+      noches: [],
+      totalAlojamientoCOP: fallbackBasePrice,
+      cantidadDiasSemana: 0,
+      cantidadViernes: 0,
+      cantidadFinDeSemanaFestivo: 0
     };
   }
 
@@ -111,47 +108,47 @@ export function calculateStayNights(
 
   if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime()) || checkOut <= checkIn) {
     return {
-      nights: [],
-      totalAccommodationCOP: fallbackBasePrice,
-      weekdayCount: 0,
-      fridayCount: 0,
-      weekendHolidayCount: 0
+      noches: [],
+      totalAlojamientoCOP: fallbackBasePrice,
+      cantidadDiasSemana: 0,
+      cantidadViernes: 0,
+      cantidadFinDeSemanaFestivo: 0
     };
   }
 
-  const nights: CalculoNoche[] = [];
+  const noches: CalculoNoche[] = [];
   const current = new Date(checkIn);
   let total = 0;
-  let weekdayCount = 0;
-  let fridayCount = 0;
-  let weekendHolidayCount = 0;
+  let cantidadDiasSemana = 0;
+  let cantidadViernes = 0;
+  let cantidadFinDeSemanaFestivo = 0;
 
   while (current < checkOut) {
-    const dayOfWeek = current.getDay();
-    const { tier, label } = getNightTier(current);
+    const diaDeSemana = current.getDay();
+    const { nivelTarifa, label } = getNightTier(current);
     let price = fallbackBasePrice;
 
     if (rates) {
-      if (tier === 'weekday') {
-        price = rates.weekday;
-        weekdayCount++;
-      } else if (tier === 'friday') {
-        price = rates.friday;
-        fridayCount++;
+      if (nivelTarifa === 'diaSemana') {
+        price = rates.diaSemana;
+        cantidadDiasSemana++;
+      } else if (nivelTarifa === 'viernes') {
+        price = rates.viernes;
+        cantidadViernes++;
       } else {
-        price = rates.weekendHoliday;
-        weekendHolidayCount++;
+        price = rates.finDeSemanaFestivo;
+        cantidadFinDeSemanaFestivo++;
       }
     } else {
-      weekdayCount++;
+      cantidadDiasSemana++;
     }
 
-    nights.push({
-      dateStr: formatLocalDateISO(current),
-      dayOfWeek,
-      tier,
-      tierLabel: label,
-      priceCOP: price
+    noches.push({
+      fechaStr: formatLocalDateISO(current),
+      diaDeSemana,
+      nivelTarifa,
+      etiquetaNivel: label,
+      precioCOP: price
     });
 
     total += price;
@@ -159,10 +156,10 @@ export function calculateStayNights(
   }
 
   return {
-    nights,
-    totalAccommodationCOP: total,
-    weekdayCount,
-    fridayCount,
-    weekendHolidayCount
+    noches,
+    totalAlojamientoCOP: total,
+    cantidadDiasSemana,
+    cantidadViernes,
+    cantidadFinDeSemanaFestivo
   };
 }

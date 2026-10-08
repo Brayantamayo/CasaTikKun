@@ -35,41 +35,41 @@ export const FaqView: React.FC<FaqViewProps> = ({
     // Añadir preguntas prácticas para esta vista.
     const extraFaqs = [
       {
-        question: '¿A qué distancia queda Casa Tikkun de Medellín y cómo es la carretera?',
-        answer: 'Estamos ubicados en Santa Elena KM 6, a tan solo 35 minutos de Medellín. Todo el trayecto es carretera pavimentada en excelente estado y el acceso es apto y cómodo para cualquier tipo de automóvil particular o taxi.',
-        category: 'ubicacion'
+        pregunta: '¿A qué distancia queda Casa Tikkun de Medellín y cómo es la carretera?',
+        respuesta: 'Estamos ubicados en Santa Elena KM 6, a tan solo 35 minutos de Medellín. Todo el trayecto es carretera pavimentada en excelente estado y el acceso es apto y cómodo para cualquier tipo de automóvil particular o taxi.',
+        categoria: 'ubicacion'
       },
       {
-        question: '¿Qué clima hace en Santa Elena y qué ropa recomiendan llevar?',
-        answer: 'Santa Elena tiene un clima de montaña fresco y acogedor. Durante el día la temperatura suele estar entre 18°C y 22°C con sol suave, y en las noches baja a entre 12°C y 16°C con niebla andina. Te recomendamos traer abrigo, suéter, ropa cómoda y calzado para caminar si deseas explorar los senderos.',
-        category: 'ubicacion'
+        pregunta: '¿Qué clima hace en Santa Elena y qué ropa recomiendan llevar?',
+        respuesta: 'Santa Elena tiene un clima de montaña fresco y acogedor. Durante el día la temperatura suele estar entre 18°C y 22°C con sol suave, y en las noches baja a entre 12°C y 16°C con niebla andina. Te recomendamos traer abrigo, suéter, ropa cómoda y calzado para caminar si deseas explorar los senderos.',
+        categoria: 'ubicacion'
       },
       {
-        question: '¿Las cabañas cuentan con chimenea de leña y cobijas térmicas?',
-        answer: 'Sí. Cada una de las 5 cabañas cuenta con chimenea de leña tradicional con provisión de leña seca de roble incluida, cobijas térmicas afelpadas y fogatero exterior para disfrutar del frío y la niebla de Santa Elena.',
-        category: 'alojamiento'
+        pregunta: '¿Las cabañas cuentan con chimenea de leña y cobijas térmicas?',
+        respuesta: 'Sí. Cada una de las 5 cabañas cuenta con chimenea de leña tradicional con provisión de leña seca de roble incluida, cobijas térmicas afelpadas y fogatero exterior para disfrutar del frío y la niebla de Santa Elena.',
+        categoria: 'alojamiento'
       },
       {
-        question: '¿Cómo funciona el proceso de reserva directa por WhatsApp?',
-        answer: 'Es muy sencillo y seguro: seleccionas tu cabaña y fechas preferidas, y te ponemos en contacto directo con el anfitrión por WhatsApp. Verificamos la disponibilidad en tiempo real, te compartimos fotos y videos si lo deseas, y coordinas el anticipo mediante transferencia bancaria (Bancolombia, Nequi, etc.) sin comisiones de intermediarios.',
-        category: 'alojamiento'
+        pregunta: '¿Cómo funciona el proceso de reserva directa por WhatsApp?',
+        respuesta: 'Es muy sencillo y seguro: seleccionas tu cabaña y fechas preferidas, y te ponemos en contacto directo con el anfitrión por WhatsApp. Verificamos la disponibilidad en tiempo real, te compartimos fotos y videos si lo deseas, y coordinas el anticipo mediante transferencia bancaria (Bancolombia, Nequi, etc.) sin comisiones de intermediarios.',
+        categoria: 'alojamiento'
       },
       {
-        question: '¿Qué incluye el desayuno campesino?',
-        answer: 'Todas las estadías incluyen desayuno típico preparado con ingredientes locales frescos de Santa Elena: café recién colado, arepa de choclo caliente, quesito fresco de finca, huevos al gusto y fruta de temporada.',
-        category: 'servicios'
+        pregunta: '¿Qué incluye el desayuno campesino?',
+        respuesta: 'Todas las estadías incluyen desayuno típico preparado con ingredientes locales frescos de Santa Elena: café recién colado, arepa de choclo caliente, quesito fresco de finca, huevos al gusto y fruta de temporada.',
+        categoria: 'servicios'
       },
       {
-        question: '¿Son Pet Friendly (aceptan mascotas)?',
-        answer: '¡Sí! En Casa Tikkun amamos a los animales. Tus perritos o gatitos son bienvenidos con previo aviso al momento de reservar para coordinar los detalles de su estadía en el entorno natural.',
-        category: 'politicas'
+        pregunta: '¿Son Pet Friendly (aceptan mascotas)?',
+        respuesta: '¡Sí! En Casa Tikkun amamos a los animales. Tus perritos o gatitos son bienvenidos con previo aviso al momento de reservar para coordinar los detalles de su estadía en el entorno natural.',
+        categoria: 'politicas'
       }
     ];
 
     // Combinar las preguntas sin repetir coincidencias exactas.
     const combined = [...base];
     extraFaqs.forEach((extra) => {
-      if (!combined.some(f => f.question.toLowerCase() === extra.question.toLowerCase())) {
+      if (!combined.some(f => f.pregunta.toLowerCase() === extra.pregunta.toLowerCase())) {
         combined.push(extra);
       }
     });
@@ -80,10 +80,10 @@ export const FaqView: React.FC<FaqViewProps> = ({
   // Filtrar por categoría y término de búsqueda.
   const filteredFaqs = useMemo(() => {
     return allFaqs.filter((faq) => {
-      const matchesCategory = selectedCategory === 'todos' || faq.category === selectedCategory;
+      const matchesCategory = selectedCategory === 'todos' || faq.categoria === selectedCategory;
       const matchesSearch = searchQuery === '' || 
-        faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+        faq.pregunta.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        faq.respuesta.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
   }, [allFaqs, selectedCategory, searchQuery]);
@@ -201,7 +201,7 @@ export const FaqView: React.FC<FaqViewProps> = ({
                   className="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 cursor-pointer focus:outline-hidden"
                 >
                   <span className="text-sm sm:text-base font-serif font-bold text-tikkun-brand-deep leading-snug">
-                    {faq.question}
+                    {faq.pregunta}
                   </span>
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors shrink-0 ${
                     isOpen ? 'bg-tikkun-brand-deep text-white' : 'bg-stone-100 text-stone-600'
@@ -212,7 +212,7 @@ export const FaqView: React.FC<FaqViewProps> = ({
 
                 {isOpen && (
                   <div className="px-4 pb-4 sm:px-5 sm:pb-5 pt-0 text-xs sm:text-sm text-stone-600 leading-relaxed border-t border-stone-100 mt-1 animate-in fade-in duration-150">
-                    <p>{faq.answer}</p>
+                    <p>{faq.respuesta}</p>
                   </div>
                 )}
               </div>
@@ -242,7 +242,7 @@ export const FaqView: React.FC<FaqViewProps> = ({
 
           <div className="flex flex-col sm:flex-row items-center gap-2.5 shrink-0 w-full sm:w-auto">
             <a
-              href={`https://wa.me/${TIKKUN_CONTACT.whatsappNumber}?text=${encodeURIComponent('Hola Casa Tikkun, tengo una pregunta antes de realizar mi reserva.')}`}
+              href={`https://wa.me/${TIKKUN_CONTACT.numeroWhatsapp}?text=${encodeURIComponent('Hola Casa Tikkun, tengo una pregunta antes de realizar mi reserva.')}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 text-xs sm:text-sm font-semibold text-white bg-[#25D366] hover:bg-[#20BD5A] rounded-xl shadow-xs transition-all cursor-pointer"

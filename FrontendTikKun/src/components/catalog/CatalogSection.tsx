@@ -25,8 +25,8 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
     { id: 'all', label: `Nuestras ${allAccommodations.length} Cabañas`, number: null },
     ...allAccommodations.map((acc) => ({
       id: acc.id,
-      label: getCabinShortName(acc.name),
-      number: String(acc.cabinNumber || '')
+      label: getCabinShortName(acc.nombre),
+      number: String(acc.numeroCabana || '')
     }))
   ], [allAccommodations]);
 

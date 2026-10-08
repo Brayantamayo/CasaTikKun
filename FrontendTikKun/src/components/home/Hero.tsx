@@ -86,7 +86,7 @@ export const Hero: React.FC<HeroProps> = ({
   const [guests, setGuests] = useState<number>(2);
 
   const selectedCabin = allAccommodations.find((a) => a.id === selectedCabinId) || allAccommodations[0];
-  const maxGuests = selectedCabin?.capacity || 6;
+  const maxGuests = selectedCabin?.capacidad || 6;
 
   // Seleccionar la primera cabaña disponible si aún no hay una elegida.
   useEffect(() => {
@@ -235,7 +235,7 @@ export const Hero: React.FC<HeroProps> = ({
                 >
                   {allAccommodations.map((acc) => (
                     <option key={acc.id} value={acc.id}>
-                      {acc.cabinNumberLabel} - {acc.name}
+                      {acc.etiquetaNumeroCabana} - {acc.nombre}
                     </option>
                   ))}
                 </select>

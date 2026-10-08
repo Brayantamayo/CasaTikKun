@@ -79,8 +79,8 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
 
   // Ajustar el número de huéspedes si se elige una cabaña con menor capacidad.
   useEffect(() => {
-    if (accommodation && guests > accommodation.capacity) {
-      setGuests(accommodation.capacity);
+    if (accommodation && guests > accommodation.capacidad) {
+      setGuests(accommodation.capacidad);
     }
   }, [accommodation, guests]);
 
@@ -99,30 +99,30 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
   // 2. Viernes
   // 3. Sábados, Domingos y Festivos
   const stayBreakdown = useMemo(() => {
-    return calculateStayNights(checkIn, checkOut, effectiveRates, accommodation.priceCOP);
-  }, [checkIn, checkOut, effectiveRates, accommodation.priceCOP]);
+    return calculateStayNights(checkIn, checkOut, effectiveRates, accommodation.precioCOP);
+  }, [checkIn, checkOut, effectiveRates, accommodation.precioCOP]);
 
-  const nights = stayBreakdown.nights.length > 0 ? stayBreakdown.nights.length : 1;
-  const estimatedTotal = stayBreakdown.totalAccommodationCOP;
+  const nights = stayBreakdown.noches.length > 0 ? stayBreakdown.noches.length : 1;
+  const estimatedTotal = stayBreakdown.totalAlojamientoCOP;
   const deposit50 = Math.round(estimatedTotal * 0.5);
 
   // Crear el mensaje de WhatsApp con el desglose exacto de las tarifas.
   const messageText = useMemo(() => {
     const rateLines: string[] = [];
-    if (stayBreakdown.weekdayCount > 0) {
-      rateLines.push(`  • ${stayBreakdown.weekdayCount} noche(s) Entre semana (Dom-Jue)`);
+    if (stayBreakdown.cantidadDiasSemana > 0) {
+      rateLines.push(`  • ${stayBreakdown.cantidadDiasSemana} noche(s) Entre semana (Dom-Jue)`);
     }
-    if (stayBreakdown.fridayCount > 0) {
-      rateLines.push(`  • ${stayBreakdown.fridayCount} noche(s) Viernes`);
+    if (stayBreakdown.cantidadViernes > 0) {
+      rateLines.push(`  • ${stayBreakdown.cantidadViernes} noche(s) Viernes`);
     }
-    if (stayBreakdown.weekendHolidayCount > 0) {
-      rateLines.push(`  • ${stayBreakdown.weekendHolidayCount} noche(s) Sáb/Dom/Festivo`);
+    if (stayBreakdown.cantidadFinDeSemanaFestivo > 0) {
+      rateLines.push(`  • ${stayBreakdown.cantidadFinDeSemanaFestivo} noche(s) Sáb/Dom/Festivo`);
     }
 
     const lines = [
       `🌿 *CONSULTA DE RESERVA - CASA TIKKUN* 🌿`,
       ``,
-      `¡Hola Casa Tikkun! Quisiera consultar disponibilidad para reservar en la *${accommodation.cabinNumberLabel} (${accommodation.name})*.`,
+      `¡Hola Casa Tikkun! Quisiera consultar disponibilidad para reservar en la *${accommodation.etiquetaNumeroCabana} (${accommodation.nombre})*.`,
       ``,
       `📅 *Llegada (Check-in):* ${formatHumanDate(checkIn)} (3:00 PM)`,
       `📅 *Salida (Check-out):* ${formatHumanDate(checkOut)} (12:00 M)`,
@@ -136,11 +136,11 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
       `💰 *Total estimado:* ${formatCOP(estimatedTotal)} COP`,
       `🔒 *Anticipo del 50%:* ${formatCOP(deposit50)} COP (50% restante al ingresar)`,
       ``,
-      `🛏️ *Acomodación:* ${accommodation.beds} (Hasta ${accommodation.capacity} personas)`,
+      `🛏️ *Acomodación:* ${accommodation.camas} (Hasta ${accommodation.capacidad} personas)`,
       `✨ *Cortesía Tikkun:* Café selecto, aromáticas, huevos campesinos, aguas, sal y maíz crispetas`,
       `🕒 *Horarios:* Check-in 3:00 PM · Check-Out 12:00 M`,
-      accommodation.features && accommodation.features.length > 0
-        ? `🌟 *Lo más destacado:* ${accommodation.features.slice(0, 2).join(' · ')}`
+      accommodation.caracteristicas && accommodation.caracteristicas.length > 0
+        ? `🌟 *Lo más destacado:* ${accommodation.caracteristicas.slice(0, 2).join(' · ')}`
         : '',
       ``,
       `¿Tienen disponibilidad para estas fechas? Quedo atento(a) para confirmar los detalles. ¡Muchas gracias!`
@@ -149,7 +149,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
     return lines.join('\n');
   }, [accommodation, checkIn, checkOut, nights, guests, name, email, phone, notes, estimatedTotal, deposit50, stayBreakdown]);
 
-  const whatsappUrl = buildWhatsAppUrl(TIKKUN_CONTACT.whatsappNumber, messageText);
+  const whatsappUrl = buildWhatsAppUrl(TIKKUN_CONTACT.numeroWhatsapp, messageText);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -167,18 +167,18 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
 
     // Registrar la solicitud localmente y en la API del servidor.
     void TikkunService.recordBookingInquiry({
-      accommodationId: accommodation.id,
-      accommodationName: accommodation.name,
-      guestName: name.trim(),
-      guestEmail: email.trim() || undefined,
-      guestPhone: phone.trim() || undefined,
-      checkIn,
-      checkOut,
-      nights,
-      guestsCount: guests,
-      estimatedTotalCOP: estimatedTotal,
-      deposit50COP: deposit50,
-      notes: notes.trim() || undefined
+      cabanaId: accommodation.id,
+      nombreCabana: accommodation.nombre,
+      nombreHuesped: name.trim(),
+      emailHuesped: email.trim() || undefined,
+      telefonoHuesped: phone.trim() || undefined,
+      fechaEntrada: checkIn,
+      fechaSalida: checkOut,
+      noches: nights,
+      cantidadHuespedes: guests,
+      totalEstimadoCOP: estimatedTotal,
+      anticipo50COP: deposit50,
+      notas: notes.trim() || undefined
     });
 
     // Abrir la conversación de WhatsApp.
@@ -237,7 +237,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
                   ¡Te hemos redirigido a WhatsApp!
                 </h4>
                 <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
-                  Se ha generado tu solicitud de reserva para <strong>{accommodation.name}</strong>. Nuestro anfitrión te confirmará en breve.
+                  Se ha generado tu solicitud de reserva para <strong>{accommodation.nombre}</strong>. Nuestro anfitrión te confirmará en breve.
                 </p>
               </div>
 
@@ -245,7 +245,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
               <div className="bg-tikkun-brand-cream rounded-2xl p-4 border border-stone-200 text-left text-xs space-y-2">
                 <div className="flex justify-between text-stone-700 font-medium">
                   <span className="text-stone-500">Cabaña:</span>
-                  <span>{accommodation.name}</span>
+                  <span>{accommodation.nombre}</span>
                 </div>
                 <div className="flex justify-between text-stone-700">
                   <span className="text-stone-500">Fechas:</span>
@@ -294,7 +294,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
                 <div className="grid grid-cols-5 gap-1.5 p-1 bg-[#F5F2EA] rounded-2xl border border-stone-200/70">
                   {allAccommodations.map((acc) => {
                     const isSelected = acc.id === currentAccId;
-                    const shortName = getCabinShortName(acc.name);
+                    const shortName = getCabinShortName(acc.nombre);
                     return (
                       <button
                         key={acc.id}
@@ -307,7 +307,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
                         }`}
                       >
                         <span className="block text-xs truncate">
-                          {acc.cabinNumberLabel}
+                          {acc.etiquetaNumeroCabana}
                         </span>
                         <span className={`block text-[10px] truncate ${isSelected ? 'text-tikkun-brand-sage' : 'text-stone-400'}`}>
                           {shortName}
@@ -322,23 +322,23 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
               <div className="bg-tikkun-brand-cream rounded-2xl border border-stone-200 p-3 space-y-2.5">
                 <div className="flex items-center gap-3">
                   <img
-                    src={accommodation.image}
-                    alt={accommodation.name}
+                    src={accommodation.imagenPrincipal}
+                    alt={accommodation.nombre}
                     className="w-14 h-12 rounded-xl object-cover shrink-0 border border-stone-200"
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-bold text-tikkun-brand-deep truncate">
-                        {accommodation.name}
+                        {accommodation.nombre}
                       </span>
                       <span className="text-[11px] text-[#557048] font-medium hidden sm:inline">
-                        · Hasta {accommodation.capacity} pers.
+                        · Hasta {accommodation.capacidad} pers.
                       </span>
                     </div>
                     <div className="flex items-baseline gap-1 mt-0.5">
                       <span className="text-xs text-stone-500 font-normal">Desde</span>
                       <span className="text-xs font-bold text-tikkun-brand-deep">
-                        {formatCOP(accommodation.rates?.weekday || accommodation.priceCOP)}
+                        {formatCOP(accommodation.tarifas?.diaSemana || accommodation.precioCOP)}
                       </span>
                       <span className="text-[11px] text-stone-500 font-normal">/ noche · Chimenea & desayuno</span>
                     </div>
@@ -350,19 +350,19 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
                   <div className="p-1.5 bg-white rounded-lg border border-[#D5DFCA]">
                     <span className="block text-stone-500 text-[9px] font-medium">Dom a Jue</span>
                     <strong className="block text-tikkun-brand-deep font-bold text-[11px]">
-                      {formatCOP(accommodation.rates?.weekday || accommodation.priceCOP)}
+                      {formatCOP(accommodation.tarifas?.diaSemana || accommodation.precioCOP)}
                     </strong>
                   </div>
                   <div className="p-1.5 bg-white rounded-lg border border-[#D5DFCA]">
                     <span className="block text-amber-700 text-[9px] font-medium">Viernes</span>
                     <strong className="block text-tikkun-brand-deep font-bold text-[11px]">
-                      {formatCOP(accommodation.rates?.friday || Math.round(accommodation.priceCOP * 1.15))}
+                      {formatCOP(accommodation.tarifas?.viernes || Math.round(accommodation.precioCOP * 1.15))}
                     </strong>
                   </div>
                   <div className="p-1.5 bg-white rounded-lg border border-[#D5DFCA]">
                     <span className="block text-tikkun-brand-deep text-[9px] font-medium">Sáb/Dom/Fest</span>
                     <strong className="block text-tikkun-brand-deep font-bold text-[11px]">
-                      {formatCOP(accommodation.rates?.weekendHoliday || Math.round(accommodation.priceCOP * 1.25))}
+                      {formatCOP(accommodation.tarifas?.finDeSemanaFestivo || Math.round(accommodation.precioCOP * 1.25))}
                     </strong>
                   </div>
                 </div>
@@ -429,7 +429,7 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
                     onChange={(e) => setGuests(Number(e.target.value))}
                     className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-xs sm:text-sm text-stone-800 font-medium focus:ring-2 focus:ring-[#3B5430]/20 focus:border-[#2D4523] focus:outline-hidden transition-all cursor-pointer"
                   >
-                    {Array.from({ length: accommodation.capacity }, (_, i) => i + 1).map((num) => (
+                    {Array.from({ length: accommodation.capacidad }, (_, i) => i + 1).map((num) => (
                       <option key={num} value={num}>
                         {num} {num === 1 ? 'huésped' : 'huéspedes'} {num === 2 ? '(pareja)' : ''}
                       </option>
@@ -512,18 +512,18 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
                 <div className="flex flex-wrap items-center justify-between gap-1 font-bold text-tikkun-brand-deep">
                   <span className="flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-[#547343]" />
-                    {accommodation.cabinNumberLabel} · {accommodation.name}
+                    {accommodation.etiquetaNumeroCabana} · {accommodation.nombre}
                   </span>
                   <span className="text-[10px] bg-white/80 px-2 py-0.5 rounded-md text-[#486637] border border-[#CCD8B8]/60 font-semibold">
-                    Hasta {accommodation.capacity} huéspedes
+                    Hasta {accommodation.capacidad} huéspedes
                   </span>
                 </div>
                 <div className="text-[11px] text-[#364F2C] leading-snug space-y-1">
-                  <p>• <strong>Acomodación:</strong> {accommodation.beds}</p>
+                  <p>• <strong>Acomodación:</strong> {accommodation.camas}</p>
                   <p>• <strong>Cortesía Tikkun incluida:</strong> Café selecto, aromáticas, huevos campesinos, aguas, sal y maíz para crispetas.</p>
                   <p>• <strong>Horarios generales:</strong> Check-in 3:00 PM · Check-Out 12:00 M (Self check-in con instrucciones).</p>
-                  {accommodation.features && accommodation.features.length > 0 && (
-                    <p className="pt-0.5">• <strong>Refugio:</strong> {accommodation.features.slice(0, 2).join(' · ')}</p>
+                  {accommodation.caracteristicas && accommodation.caracteristicas.length > 0 && (
+                    <p className="pt-0.5">• <strong>Refugio:</strong> {accommodation.caracteristicas.slice(0, 2).join(' · ')}</p>
                   )}
                 </div>
               </div>
@@ -539,11 +539,11 @@ export const WhatsAppBookingModal: React.FC<WhatsAppBookingModalProps> = ({
                 <div className="w-full sm:w-auto">
                   <div className="flex items-center gap-1.5 text-xs text-stone-600">
                     <span className="font-semibold text-tikkun-brand-deep">Total ({nights} {nights === 1 ? 'noche' : 'noches'}):</span>
-                    {stayBreakdown.nights.length > 0 && (
+                    {stayBreakdown.noches.length > 0 && (
                       <span className="text-[10px] text-[#4A643E] bg-[#EFF4E6] px-1.5 py-0.5 rounded font-medium">
-                        {stayBreakdown.weekdayCount > 0 ? `${stayBreakdown.weekdayCount} Dom-Jue ` : ''}
-                        {stayBreakdown.fridayCount > 0 ? `${stayBreakdown.fridayCount} Vie ` : ''}
-                        {stayBreakdown.weekendHolidayCount > 0 ? `${stayBreakdown.weekendHolidayCount} Fds/Fest ` : ''}
+                        {stayBreakdown.cantidadDiasSemana > 0 ? `${stayBreakdown.cantidadDiasSemana} Dom-Jue ` : ''}
+                        {stayBreakdown.cantidadViernes > 0 ? `${stayBreakdown.cantidadViernes} Vie ` : ''}
+                        {stayBreakdown.cantidadFinDeSemanaFestivo > 0 ? `${stayBreakdown.cantidadFinDeSemanaFestivo} Fds/Fest ` : ''}
                       </span>
                     )}
                   </div>

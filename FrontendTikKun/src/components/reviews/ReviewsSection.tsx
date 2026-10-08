@@ -23,7 +23,7 @@ export const ReviewsSection: React.FC = () => {
 
   const filteredReviews = useMemo(() => {
     if (selectedCabinFilter === 'all') return reviews;
-    return reviews.filter((r) => r.accommodationId === selectedCabinFilter);
+    return reviews.filter((r) => r.cabanaId === selectedCabinFilter);
   }, [reviews, selectedCabinFilter]);
 
   const handleAddReview = (e: React.FormEvent) => {
@@ -31,12 +31,12 @@ export const ReviewsSection: React.FC = () => {
     if (!name.trim() || !comment.trim()) return;
 
     addReview({
-      guestName: name,
-      guestCity: city,
-      rating,
-      accommodationId,
-      comment,
-      travelType
+      nombreHuesped: name,
+      ciudadHuesped: city,
+      calificacion: rating,
+      cabanaId: accommodationId,
+      comentario: comment,
+      tipoViaje: travelType
     });
 
     setIsModalOpen(false);
@@ -157,8 +157,8 @@ export const ReviewsSection: React.FC = () => {
             Todas ({reviews.length})
           </button>
           {allAccommodations.map((acc) => {
-            const count = reviews.filter((r) => r.accommodationId === acc.id).length;
-            const shortName = acc.name.split('·')[1]?.trim() || acc.name;
+            const count = reviews.filter((r) => r.cabanaId === acc.id).length;
+            const shortName = acc.nombre.split('·')[1]?.trim() || acc.nombre;
             return (
               <button
                 key={acc.id}
@@ -170,7 +170,7 @@ export const ReviewsSection: React.FC = () => {
                     : 'bg-tikkun-brand-cream text-[#384E33] hover:bg-[#DCE6CA] border border-[#CCD8B8]'
                 }`}
               >
-                {acc.cabinNumberLabel} · {shortName} ({count})
+                {acc.etiquetaNumeroCabana} · {shortName} ({count})
               </button>
             );
           })}
@@ -187,23 +187,23 @@ export const ReviewsSection: React.FC = () => {
                 {/* Calificación y datos de la reseña. */}
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-1 text-[#C48E2E]">
-                    {[...Array(rev.rating)].map((_, i) => (
+                    {[...Array(rev.calificacion)].map((_, i) => (
                       <Star key={i} className="w-4 h-4 fill-current" />
                     ))}
                   </div>
                   <span className="text-[11px] text-[#698256] font-semibold">
-                    {rev.date}
+                    {rev.fecha}
                   </span>
                 </div>
 
                 {/* Cabaña asociada a la reseña. */}
                 <div className="inline-block px-2.5 py-1 bg-tikkun-brand-sage/40 text-tikkun-brand-deep text-xs font-bold rounded-md mb-3">
-                  {rev.accommodationName}
+                  {rev.nombreCabana}
                 </div>
 
                 {/* Comentario del huésped. */}
                 <p className="text-sm text-[#384E33] leading-relaxed italic">
-                  &ldquo;{rev.comment}&rdquo;
+                  &ldquo;{rev.comentario}&rdquo;
                 </p>
               </div>
 
@@ -211,14 +211,14 @@ export const ReviewsSection: React.FC = () => {
               <div className="pt-4 mt-4 border-t border-[#DEE6D5] flex items-center justify-between">
                 <div>
                   <h5 className="text-xs font-bold text-tikkun-brand-deep">
-                    {rev.guestName}
+                    {rev.nombreHuesped}
                   </h5>
                   <p className="text-[11px] text-[#5B7549]">
-                    {rev.guestCity} · {rev.travelType}
+                    {rev.ciudadHuesped} · {rev.tipoViaje}
                   </p>
                 </div>
 
-                {rev.verifiedBooking && (
+                {rev.reservaVerificada && (
                   <span className="flex items-center gap-1 text-[11px] font-bold text-[#3E652E]">
                     <CheckCircle className="w-3.5 h-3.5 stroke-[2.5]" />
                     Verificada
@@ -362,7 +362,7 @@ export const ReviewsSection: React.FC = () => {
                       >
                         {allAccommodations.map((a) => (
                           <option key={a.id} value={a.id}>
-                            {a.cabinNumberLabel} · {a.name}
+                            {a.etiquetaNumeroCabana} · {a.nombre}
                           </option>
                         ))}
                       </select>

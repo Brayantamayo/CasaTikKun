@@ -48,7 +48,7 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
 
   const [checkIn, setCheckIn] = useState<string>(tomorrowStr);
   const [checkOut, setCheckOut] = useState<string>(dayAfterStr);
-  const [guests, setGuests] = useState<number>(Math.min(2, accommodation.capacity));
+  const [guests, setGuests] = useState<number>(Math.min(2, accommodation.capacidad));
   const [copiedLink, setCopiedLink] = useState(false);
 
   const effectiveRates = getEffectiveCabinRates(accommodation);
@@ -58,10 +58,10 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
     checkIn,
     checkOut,
     effectiveRates,
-    accommodation.priceCOP
+    accommodation.precioCOP
   );
-  const stayNightsCount = stayBreakdown.nights.length > 0 ? stayBreakdown.nights.length : 1;
-  const stayTotalCOP = stayBreakdown.totalAccommodationCOP;
+  const stayNightsCount = stayBreakdown.noches.length > 0 ? stayBreakdown.noches.length : 1;
+  const stayTotalCOP = stayBreakdown.totalAlojamientoCOP;
   const deposit50 = Math.round(stayTotalCOP * 0.5);
 
   // Estado de la ventana para publicar una reseña de esta cabaña.
@@ -75,13 +75,13 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
   // Restablecer la fotografía activa y el desplazamiento al cambiar de cabaña.
   useEffect(() => {
     setActiveImageIndex(0);
-    setGuests(Math.min(2, accommodation.capacity));
+    setGuests(Math.min(2, accommodation.capacidad));
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [cabinId, accommodation.capacity]);
+  }, [cabinId, accommodation.capacidad]);
 
-  const images = accommodation.galleryImages && accommodation.galleryImages.length > 0
-    ? accommodation.galleryImages
-    : [accommodation.image];
+  const images = accommodation.imagenesGaleria && accommodation.imagenesGaleria.length > 0
+    ? accommodation.imagenesGaleria
+    : [accommodation.imagenPrincipal];
 
   const handleNextPhoto = () => {
     setActiveImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
@@ -104,12 +104,12 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
     if (!revName.trim() || !revComment.trim()) return;
 
     addReview({
-      guestName: revName,
-      guestCity: revCity,
-      rating: revRating,
-      accommodationId: accommodation.id,
-      comment: revComment,
-      travelType: revTravelType
+      nombreHuesped: revName,
+      ciudadHuesped: revCity,
+      calificacion: revRating,
+      cabanaId: accommodation.id,
+      comentario: revComment,
+      tipoViaje: revTravelType
     });
 
     setIsReviewModalOpen(false);
@@ -121,7 +121,7 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
 
   // Obtener las otras cabañas para mostrarlas al final de la página.
   const otherCabins = allAccommodations.filter((a) => a.id !== accommodation.id);
-  const shortName = getCabinShortName(accommodation.name);
+  const shortName = getCabinShortName(accommodation.nombre);
 
   return (
     <div className="pt-28 sm:pt-32 lg:pt-36 pb-16 bg-tikkun-brand-cream min-h-screen">
@@ -148,7 +148,7 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
             </span>
             {allAccommodations.map((acc) => {
               const isCurrent = acc.id === accommodation.id;
-              const cabinShort = getCabinShortName(acc.name);
+              const cabinShort = getCabinShortName(acc.nombre);
               return (
                 <button
                   key={acc.id}
@@ -160,7 +160,7 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
                       : 'bg-tikkun-brand-cream text-[#334E2B] hover:bg-tikkun-brand-sage/30 border border-[#CCD8B8]'
                   }`}
                 >
-                  <span className="opacity-75">{acc.cabinNumberLabel} · </span>
+                  <span className="opacity-75">{acc.etiquetaNumeroCabana} · </span>
                   <span>{cabinShort}</span>
                 </button>
               );
@@ -174,7 +174,7 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-2">
               <span className="px-3 py-1 bg-tikkun-brand-deep text-white rounded-lg text-xs font-bold uppercase tracking-wider">
-                {accommodation.cabinNumberLabel}
+                {accommodation.etiquetaNumeroCabana}
               </span>
               {/* Calificación y cantidad de reseñas de esta cabaña. */}
               <span className="px-3 py-1 bg-[#EFF4E6] text-[#2C4423] border border-[#CCD8B8] rounded-lg text-xs font-semibold flex items-center gap-1">
@@ -184,7 +184,7 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-tikkun-brand-deep tracking-tight">
-              {accommodation.name}
+              {accommodation.nombre}
             </h1>
           </div>
 
@@ -205,7 +205,7 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
           <div className="relative rounded-2xl overflow-hidden aspect-16/10 sm:aspect-16/9 lg:aspect-21/9 bg-[#101D0E] shadow-xl group">
             <img
               src={images[activeImageIndex]}
-              alt={`${accommodation.name} - Foto ${activeImageIndex + 1}`}
+              alt={`${accommodation.nombre} - Foto ${activeImageIndex + 1}`}
               className="w-full h-full object-cover transition-all duration-300"
             />
             
@@ -272,12 +272,12 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
               <div className="space-y-0.5">
                 <Users className="w-4 h-4 text-[#5B7947] mx-auto" />
                 <span className="text-[10px] uppercase font-bold text-[#556F48] block">Capacidad</span>
-                <span className="text-xs font-bold text-tikkun-brand-deep">Hasta {accommodation.capacity} pers.</span>
+                <span className="text-xs font-bold text-tikkun-brand-deep">Hasta {accommodation.capacidad} pers.</span>
               </div>
               <div className="space-y-0.5 border-l border-[#CCD8B8]">
                 <Bed className="w-4 h-4 text-[#5B7947] mx-auto" />
                 <span className="text-[10px] uppercase font-bold text-[#556F48] block">Acomodación</span>
-                <span className="text-xs font-bold text-tikkun-brand-deep truncate block px-1">{accommodation.beds}</span>
+                <span className="text-xs font-bold text-tikkun-brand-deep truncate block px-1">{accommodation.camas}</span>
               </div>
             </div>
 
@@ -287,7 +287,7 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
                 Acerca de este refugio
               </h3>
               <p className="text-xs sm:text-sm text-[#384E33] leading-relaxed">
-                {accommodation.description}
+                {accommodation.descripcion}
               </p>
             </div>
 
@@ -297,7 +297,7 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
                 Lo más destacado de {shortName}
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-[#2A3F26]">
-                {accommodation.features.map((feature, idx) => (
+                {accommodation.caracteristicas.map((feature, idx) => (
                   <div key={idx} className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-[#5B7947] shrink-0 mt-0.5" />
                     <span className="text-[#253921] leading-snug">{feature}</span>
@@ -312,10 +312,10 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
                 Comodidades
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {accommodation.amenities.map((amenity, idx) => (
+                {accommodation.comodidades.map((amenity, idx) => (
                   <div key={idx} className="p-2.5 bg-[#EFF4E6] rounded-lg border border-[#CCD8B8] flex items-center gap-2">
                     <Sparkles className="w-3.5 h-3.5 text-[#5D7743] shrink-0" />
-                    <span className="text-xs font-semibold text-tikkun-brand-deep">{amenity.label}</span>
+                    <span className="text-xs font-semibold text-tikkun-brand-deep">{amenity.etiqueta}</span>
                   </div>
                 ))}
               </div>
@@ -329,11 +329,11 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
             {/* Reglas, horarios y cortesías de la cabaña. */}
             <div className="pt-5 border-t border-[#D6DFC7]">
               <CabinRulesAndCourtesies
-                cabinName={accommodation.name}
-                cabinNumberLabel={accommodation.cabinNumberLabel}
-                rules={accommodation.rules}
-                courtesies={accommodation.courtesies}
-                specifications={accommodation.specifications}
+                cabinName={accommodation.nombre}
+                cabinNumberLabel={accommodation.etiquetaNumeroCabana}
+                rules={accommodation.reglas}
+                courtesies={accommodation.cortesias}
+                specifications={accommodation.especificaciones}
               />
             </div>
 
@@ -366,8 +366,8 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
                   )}
                 </div>
                 <div className="text-right">
-                  <span className="text-[10.5px] text-[#5B7947] font-bold block">{accommodation.cabinNumberLabel}</span>
-                  <span className="text-[10px] text-stone-500 font-medium">Desde {formatCOP(accommodation.rates?.weekday || accommodation.priceCOP)} / noche</span>
+                  <span className="text-[10.5px] text-[#5B7947] font-bold block">{accommodation.etiquetaNumeroCabana}</span>
+                  <span className="text-[10px] text-stone-500 font-medium">Desde {formatCOP(accommodation.tarifas?.diaSemana || accommodation.precioCOP)} / noche</span>
                 </div>
               </div>
 
@@ -416,7 +416,7 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
                     onChange={(e) => setGuests(Number(e.target.value))}
                     className="w-full bg-[#EFF5E8] border border-[#C5D3B0] focus:border-tikkun-brand-deep rounded-lg px-2.5 py-1.5 text-xs font-semibold text-tikkun-brand-deep focus:outline-hidden"
                   >
-                    {[...Array(accommodation.capacity)].map((_, i) => (
+                    {[...Array(accommodation.capacidad)].map((_, i) => (
                       <option key={i + 1} value={i + 1}>
                         {i + 1} {i === 0 ? 'Huésped' : i === 1 ? 'Huéspedes (Pareja)' : 'Huéspedes'}
                       </option>
@@ -430,18 +430,18 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
               <div className="space-y-2 text-xs text-[#3E5636] pt-2.5 border-t border-[#D6DFC7]">
                 <div className="flex items-center gap-2 text-tikkun-brand-deep">
                   <Users className="w-3.5 h-3.5 text-[#5B7947] shrink-0" />
-                  <span>Capacidad máxima: <strong>Hasta {accommodation.capacity} personas</strong></span>
+                  <span>Capacidad máxima: <strong>Hasta {accommodation.capacidad} personas</strong></span>
                 </div>
                 <div className="flex items-center gap-2 text-tikkun-brand-deep">
                   <Bed className="w-3.5 h-3.5 text-[#5B7947] shrink-0" />
-                  <span>Acomodación: <strong>{accommodation.beds}</strong></span>
+                  <span>Acomodación: <strong>{accommodation.camas}</strong></span>
                 </div>
-                {accommodation.features && accommodation.features.length > 0 && (
+                {accommodation.caracteristicas && accommodation.caracteristicas.length > 0 && (
                   <div className="space-y-1 pt-1.5 border-t border-[#D6DFC7]/60">
                     <span className="text-[10px] font-bold text-[#556F48] uppercase tracking-wider block">
                       Incluido en este refugio:
                     </span>
-                    {accommodation.features.slice(0, 2).map((feat, idx) => (
+                    {accommodation.caracteristicas.slice(0, 2).map((feat, idx) => (
                       <div key={idx} className="flex items-start gap-1.5 text-[11px] text-[#3E5636]">
                         <Check className="w-3 h-3 text-[#5B7947] shrink-0 mt-0.5" />
                         <span className="line-clamp-1">{feat}</span>
@@ -486,10 +486,10 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
                 <span className="text-xs font-bold text-tikkun-brand-deep">Llámanos al celular</span>
               </div>
               <a
-                href={`tel:${TIKKUN_CONTACT.phone}`}
+                href={`tel:${TIKKUN_CONTACT.telefono}`}
                 className="px-3 py-1 rounded-lg bg-tikkun-brand-deep text-white text-xs font-bold hover:bg-[#122210] transition-colors"
               >
-                {TIKKUN_CONTACT.phone}
+                {TIKKUN_CONTACT.telefono}
               </a>
             </div>
 
@@ -504,10 +504,10 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-tikkun-brand-sage text-tikkun-brand-deep rounded-md text-xs font-bold uppercase tracking-wider mb-2">
                 <Star className="w-3.5 h-3.5 fill-tikkun-brand-deep" />
-                <span>Reseñas Exclusivas · {accommodation.cabinNumberLabel}</span>
+                <span>Reseñas Exclusivas · {accommodation.etiquetaNumeroCabana}</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-serif font-bold text-tikkun-brand-deep">
-                Opiniones sobre {accommodation.name}
+                Opiniones sobre {accommodation.nombre}
               </h2>
               <p className="text-xs sm:text-sm text-[#465E3C] mt-1">
                 Comentarios y calificaciones reales de huéspedes que se alojaron en esta cabaña.
@@ -545,7 +545,7 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
                   ))}
                 </div>
                 <p className="text-xs text-[#48623E] font-medium">
-                  {cabinReviews.length} {cabinReviews.length === 1 ? 'opinión verificada' : 'opiniones verificadas'} para {accommodation.name}
+                  {cabinReviews.length} {cabinReviews.length === 1 ? 'opinión verificada' : 'opiniones verificadas'} para {accommodation.nombre}
                 </p>
               </div>
             </div>
@@ -568,18 +568,18 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
                     {/* Calificación y fecha de la reseña. */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1 text-[#C48E2E]">
-                        {[...Array(rev.rating)].map((_, i) => (
+                        {[...Array(rev.calificacion)].map((_, i) => (
                           <Star key={i} className="w-4 h-4 fill-current" />
                         ))}
                       </div>
                       <span className="text-[11px] text-[#698256] font-medium">
-                        {rev.date}
+                        {rev.fecha}
                       </span>
                     </div>
 
                     {/* Comentario del huésped. */}
                     <p className="text-xs sm:text-sm text-[#2E4529] leading-relaxed italic">
-                      &ldquo;{rev.comment}&rdquo;
+                      &ldquo;{rev.comentario}&rdquo;
                     </p>
                   </div>
 
@@ -587,14 +587,14 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
                   <div className="pt-3 mt-4 border-t border-stone-100 flex items-center justify-between">
                     <div>
                       <h4 className="text-xs font-bold text-tikkun-brand-deep">
-                        {rev.guestName}
+                        {rev.nombreHuesped}
                       </h4>
                       <p className="text-[11px] text-[#5B7549]">
-                        {rev.guestCity} · {rev.travelType}
+                        {rev.ciudadHuesped} · {rev.tipoViaje}
                       </p>
                     </div>
 
-                    {rev.verifiedBooking && (
+                    {rev.reservaVerificada && (
                       <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-[#3E652E] bg-[#EFF4E6] px-2 py-0.5 rounded-md">
                         <CheckCircle className="w-3 h-3 text-[#3E652E]" />
                         Estadía en {shortName}
@@ -608,7 +608,7 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
             <div className="bg-white rounded-2xl p-8 border border-[#CCD8B8] text-center space-y-3">
               <Star className="w-8 h-8 text-[#C48E2E] mx-auto opacity-60" />
               <h4 className="text-base font-serif font-bold text-tikkun-brand-deep">
-                Sé el primero en calificar {accommodation.name}
+                Sé el primero en calificar {accommodation.nombre}
               </h4>
               <p className="text-xs text-[#526D46] max-w-md mx-auto">
                 ¿Te has hospedado en esta cabaña? Comparte tus recuerdos sobre la chimenea, el despertar en la niebla y tu descanso.
@@ -655,28 +655,28 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
               >
                 <div className="relative aspect-16/10 overflow-hidden bg-[#1E2E20]">
                   <img
-                    src={other.image}
-                    alt={other.name}
+                    src={other.imagenPrincipal}
+                    alt={other.nombre}
                     className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
                   />
                   <div className="absolute top-2 left-2 bg-tikkun-brand-deep text-white text-[9px] font-bold px-1.5 py-0.5 rounded-sm">
-                    {other.cabinNumberLabel}
+                    {other.etiquetaNumeroCabana}
                   </div>
                 </div>
 
                 <div className="p-3 flex-1 flex flex-col justify-between space-y-1">
                   <div>
                     <h4 className="text-xs sm:text-sm font-serif font-bold text-tikkun-brand-deep group-hover:text-[#3B5430] transition-colors truncate">
-                      {other.name}
+                      {other.nombre}
                     </h4>
                     <p className="text-[10px] text-[#526D46] truncate">
-                      Hasta {other.capacity} pers. · {other.beds}
+                      Hasta {other.capacidad} pers. · {other.camas}
                     </p>
                   </div>
 
                   <div className="pt-1.5 border-t border-[#DEE6D5] flex items-center justify-between text-xs">
                     <span className="font-bold text-tikkun-brand-deep">
-                      {formatCOP(other.priceCOP)}
+                      {formatCOP(other.precioCOP)}
                     </span>
                     <span className="text-[10px] font-bold text-[#5B7947]">
                       Ver →
@@ -712,10 +712,10 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
 
             <div>
               <div className="inline-block px-2.5 py-0.5 bg-tikkun-brand-sage text-tikkun-brand-deep rounded-md text-[10px] font-bold uppercase tracking-wider mb-1">
-                {accommodation.cabinNumberLabel}
+                {accommodation.etiquetaNumeroCabana}
               </div>
               <h3 className="text-xl font-serif font-bold text-tikkun-brand-deep">
-                Tu opinión sobre {accommodation.name}
+                Tu opinión sobre {accommodation.nombre}
               </h3>
               <p className="text-xs text-[#48623E] mt-0.5">
                 Cuéntale a la comunidad cómo fue tu estadía en esta cabaña.

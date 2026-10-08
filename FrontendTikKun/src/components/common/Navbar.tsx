@@ -157,7 +157,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               
               {/* Contacto directo por WhatsApp en escritorio. */}
               <a
-                href={`https://wa.me/${TIKKUN_CONTACT.whatsappNumber}?text=${encodeURIComponent('Hola Casa Tikkun, quisiera consultar información sobre disponibilidad.')}`}
+                href={`https://wa.me/${TIKKUN_CONTACT.numeroWhatsapp}?text=${encodeURIComponent('Hola Casa Tikkun, quisiera consultar información sobre disponibilidad.')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-tikkun-brand-deep transition-all ${

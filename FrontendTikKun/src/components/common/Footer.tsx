@@ -36,7 +36,7 @@ export const Footer: React.FC<FooterProps> = ({
             </p>
             <div className="flex items-center gap-2 text-xs text-[#95A891]">
               <MapPin className="w-3.5 h-3.5 text-[#86B47F]" />
-              <span>{TIKKUN_CONTACT.location}</span>
+              <span>{TIKKUN_CONTACT.ubicacion}</span>
             </div>
           </div>
 
@@ -125,7 +125,7 @@ export const Footer: React.FC<FooterProps> = ({
                     onClick={() => (onViewCabin ? onViewCabin(cabin.id) : onNavigate('catalogo'))}
                     className="hover:text-white transition-colors text-left truncate max-w-full cursor-pointer"
                   >
-                    {cabin.name}
+                    {cabin.nombre}
                   </button>
                 </li>
               ))}
@@ -149,19 +149,19 @@ export const Footer: React.FC<FooterProps> = ({
             <div className="space-y-2 text-xs text-[#A9BAA5]">
               <div className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-[#86B47F]" />
-                <a href={`mailto:${TIKKUN_CONTACT.email}`} className="hover:text-white">
-                  {TIKKUN_CONTACT.email}
+                <a href={`mailto:${TIKKUN_CONTACT.correo}`} className="hover:text-white">
+                  {TIKKUN_CONTACT.correo}
                 </a>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-[#86B47F]" />
-                <a href={`tel:${TIKKUN_CONTACT.phone}`} className="hover:text-white">
-                  Celular: {TIKKUN_CONTACT.phone}
+                <a href={`tel:${TIKKUN_CONTACT.celular}`} className="hover:text-white">
+                  Celular: {TIKKUN_CONTACT.celular}
                 </a>
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="w-3.5 h-3.5 text-[#86B47F]" />
-                <span>{TIKKUN_CONTACT.address}</span>
+                <span>{TIKKUN_CONTACT.direccion}</span>
               </div>
               <div className="flex items-center gap-2 pt-1">
                 <Instagram className="w-3.5 h-3.5 text-[#86B47F]" />

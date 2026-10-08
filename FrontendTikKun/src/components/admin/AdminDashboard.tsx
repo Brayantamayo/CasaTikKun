@@ -73,14 +73,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
   };
 
   // Indicadores y métricas.
-  const totalCapacity = allAccommodations.reduce((acc, c) => acc + (c.capacity || 2), 0);
+  const totalCapacity = allAccommodations.reduce((acc, c) => acc + (c.capacidad || 2), 0);
   const averageWeekdayPrice = allAccommodations.length > 0
-    ? Math.round(allAccommodations.reduce((acc, c) => acc + (c.rates?.weekday || c.priceCOP || 0), 0) / allAccommodations.length)
+    ? Math.round(allAccommodations.reduce((acc, c) => acc + (c.tarifas?.diaSemana || c.precioCOP || 0), 0) / allAccommodations.length)
     : 0;
 
   // Número de la siguiente cabaña.
   const nextCabinNumber = allAccommodations.length > 0 
-    ? Math.max(...allAccommodations.map((a) => a.cabinNumber || 0)) + 1
+    ? Math.max(...allAccommodations.map((a) => a.numeroCabana || 0)) + 1
     : 1;
 
   // Cabañas filtradas.
@@ -88,9 +88,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
     return (
-      cabin.name.toLowerCase().includes(q) ||
-      cabin.cabinNumberLabel.toLowerCase().includes(q) ||
-      cabin.beds.toLowerCase().includes(q)
+      cabin.nombre.toLowerCase().includes(q) ||
+      cabin.etiquetaNumeroCabana.toLowerCase().includes(q) ||
+      cabin.camas.toLowerCase().includes(q)
     );
   });
 
@@ -108,10 +108,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
   const handleSaveCabinFromModal = (savedCabin: Cabana) => {
     if (cabinEditingTarget) {
       updateCabin(savedCabin);
-      showSuccess(`Cabaña "${savedCabin.name}" actualizada con éxito.`);
+      showSuccess(`Cabaña "${savedCabin.nombre}" actualizada con éxito.`);
     } else {
       addCabin(savedCabin);
-      showSuccess(`Nueva cabaña "${savedCabin.name}" creada y publicada con éxito.`);
+      showSuccess(`Nueva cabaña "${savedCabin.nombre}" creada y publicada con éxito.`);
     }
   };
 
@@ -123,7 +123,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
     }
     deleteCabin(cabin.id);
     setConfirmDeleteId(null);
-    showSuccess(`Cabaña "${cabin.name}" eliminada.`);
+    showSuccess(`Cabaña "${cabin.nombre}" eliminada.`);
   };
 
   const handleResetAllCabins = () => {
@@ -505,11 +505,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
             {viewMode === 'grid' && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredCabins.map((cabin) => {
-                  const photosCount = cabin.galleryImages?.length || (cabin.image ? 1 : 0);
-                  const r = cabin.rates || {
-                    weekday: cabin.priceCOP,
-                    friday: Math.round(cabin.priceCOP * 1.15),
-                    weekendHoliday: Math.round(cabin.priceCOP * 1.25)
+                  const photosCount = cabin.imagenesGaleria?.length || (cabin.imagenPrincipal ? 1 : 0);
+                  const r = cabin.tarifas || {
+                    diaSemana: cabin.precioCOP,
+                    viernes: Math.round(cabin.precioCOP * 1.15),
+                    finDeSemanaFestivo: Math.round(cabin.precioCOP * 1.25)
                   };
                   const isConfirmingDelete = confirmDeleteId === cabin.id;
 
@@ -521,15 +521,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                       {/* Fotografía de la cabaña. */}
                       <div className="relative aspect-16/10 bg-stone-100 overflow-hidden">
                         <img
-                          src={cabin.image}
-                          alt={cabin.name}
+                          src={cabin.imagenPrincipal}
+                          alt={cabin.nombre}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                         <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-black/20" />
 
                         <div className="absolute top-3 left-3 flex items-center gap-1.5">
                           <span className="bg-white/95 backdrop-blur-xs text-tikkun-brand-deep text-[11px] font-bold px-2.5 py-1 rounded-full shadow-xs border border-stone-200">
-                            {cabin.cabinNumberLabel}
+                            {cabin.etiquetaNumeroCabana}
                           </span>
                         </div>
 
@@ -542,7 +542,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
 
                         <div className="absolute bottom-3 left-3 right-3">
                           <h3 className="text-base sm:text-lg font-serif font-bold text-white truncate drop-shadow-sm">
-                            {cabin.name}
+                            {cabin.nombre}
                           </h3>
                         </div>
                       </div>
@@ -551,18 +551,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                       <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-4">
                         <div className="space-y-3">
                           <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
-                            {cabin.description}
+                            {cabin.descripcion}
                           </p>
 
                           {/* Capacidad y camas. */}
                           <div className="flex flex-wrap items-center gap-3 text-xs text-stone-700 pt-1">
                             <span className="inline-flex items-center gap-1.5 font-semibold text-tikkun-brand-deep">
                               <Users className="w-3.5 h-3.5 text-[#556F48]" />
-                              <span>Hasta {cabin.capacity} personas</span>
+                              <span>Hasta {cabin.capacidad} personas</span>
                             </span>
                             <span className="inline-flex items-center gap-1.5 text-stone-600">
                               <Bed className="w-3.5 h-3.5 text-[#556F48]" />
-                              <span className="truncate max-w-[160px]">{cabin.beds}</span>
+                              <span className="truncate max-w-[160px]">{cabin.camas}</span>
                             </span>
                           </div>
 
@@ -570,15 +570,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                           <div className="grid grid-cols-3 gap-1.5 pt-2 border-t border-stone-100 text-center">
                             <div className="p-2 bg-tikkun-brand-cream rounded-xl border border-[#E2EBD8]">
                               <span className="block text-[9px] uppercase tracking-wider text-stone-500">Dom-Jue</span>
-                              <strong className="text-xs text-tikkun-brand-deep font-bold">{formatCOP(r.weekday)}</strong>
+                              <strong className="text-xs text-tikkun-brand-deep font-bold">{formatCOP(r.diaSemana)}</strong>
                             </div>
                             <div className="p-2 bg-tikkun-brand-cream rounded-xl border border-[#E2EBD8]">
                               <span className="block text-[9px] uppercase tracking-wider text-stone-500">Viernes</span>
-                              <strong className="text-xs text-tikkun-brand-deep font-bold">{formatCOP(r.friday)}</strong>
+                              <strong className="text-xs text-tikkun-brand-deep font-bold">{formatCOP(r.viernes)}</strong>
                             </div>
                             <div className="p-2 bg-[#EFF4E6] rounded-xl border border-[#CCD8B8]">
                               <span className="block text-[9px] uppercase tracking-wider text-[#556F48] font-bold">Sáb/Fest</span>
-                              <strong className="text-xs text-tikkun-brand-deep font-bold">{formatCOP(r.weekendHoliday)}</strong>
+                              <strong className="text-xs text-tikkun-brand-deep font-bold">{formatCOP(r.finDeSemanaFestivo)}</strong>
                             </div>
                           </div>
                         </div>
@@ -646,11 +646,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
 
                 <div className="divide-y divide-stone-100">
                   {filteredCabins.map((cabin) => {
-                    const photosCount = cabin.galleryImages?.length || (cabin.image ? 1 : 0);
-                    const r = cabin.rates || {
-                      weekday: cabin.priceCOP,
-                      friday: Math.round(cabin.priceCOP * 1.15),
-                      weekendHoliday: Math.round(cabin.priceCOP * 1.25)
+                    const photosCount = cabin.imagenesGaleria?.length || (cabin.imagenPrincipal ? 1 : 0);
+                    const r = cabin.tarifas || {
+                      diaSemana: cabin.precioCOP,
+                      viernes: Math.round(cabin.precioCOP * 1.15),
+                      finDeSemanaFestivo: Math.round(cabin.precioCOP * 1.25)
                     };
                     const isConfirmingDelete = confirmDeleteId === cabin.id;
 
@@ -665,8 +665,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                             className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-stone-200 bg-stone-100 cursor-pointer group"
                           >
                             <img
-                              src={cabin.image}
-                              alt={cabin.name}
+                              src={cabin.imagenPrincipal}
+                              alt={cabin.nombre}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                             />
                             <span className="absolute bottom-1 right-1 bg-black/75 text-white text-[9px] px-1 rounded flex items-center gap-0.5">
@@ -677,16 +677,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
 
                           <div className="min-w-0 flex-1">
                             <span className="text-[11px] text-[#556F48] font-bold block">
-                              {cabin.cabinNumberLabel}
+                              {cabin.etiquetaNumeroCabana}
                             </span>
                             <h3
                               onClick={() => handleOpenEditCabin(cabin)}
                               className="text-sm font-serif font-bold text-tikkun-brand-deep hover:text-[#2C4623] truncate cursor-pointer"
                             >
-                              {cabin.name}
+                              {cabin.nombre}
                             </h3>
                             <p className="text-xs text-stone-500 line-clamp-1 mt-0.5">
-                              {cabin.description}
+                              {cabin.descripcion}
                             </p>
                           </div>
                         </div>
@@ -694,26 +694,26 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                         <div className="lg:col-span-3 space-y-1 text-xs">
                           <div className="flex items-center gap-1.5 font-semibold text-tikkun-brand-deep">
                             <Users className="w-3.5 h-3.5 text-[#556F48] shrink-0" />
-                            <span>Hasta {cabin.capacity} personas</span>
+                            <span>Hasta {cabin.capacidad} personas</span>
                           </div>
                           <div className="flex items-center gap-1.5 text-stone-600 truncate">
                             <Bed className="w-3.5 h-3.5 text-[#556F48] shrink-0" />
-                            <span className="truncate">{cabin.beds}</span>
+                            <span className="truncate">{cabin.camas}</span>
                           </div>
                         </div>
 
                         <div className="lg:col-span-3 grid grid-cols-3 gap-2 text-xs">
                           <div className="p-2 bg-tikkun-brand-cream rounded-xl border border-[#E2EBD8]">
                             <span className="block text-[9px] text-stone-500">Dom-Jue</span>
-                            <strong className="text-tikkun-brand-deep font-bold">{formatCOP(r.weekday)}</strong>
+                            <strong className="text-tikkun-brand-deep font-bold">{formatCOP(r.diaSemana)}</strong>
                           </div>
                           <div className="p-2 bg-tikkun-brand-cream rounded-xl border border-[#E2EBD8]">
                             <span className="block text-[9px] text-stone-500">Viernes</span>
-                            <strong className="text-tikkun-brand-deep font-bold">{formatCOP(r.friday)}</strong>
+                            <strong className="text-tikkun-brand-deep font-bold">{formatCOP(r.viernes)}</strong>
                           </div>
                           <div className="p-2 bg-[#EFF4E6] rounded-xl border border-[#CCD8B8]">
                             <span className="block text-[9px] text-[#556F48] font-semibold">Sáb/Fest</span>
-                            <strong className="text-tikkun-brand-deep font-bold">{formatCOP(r.weekendHoliday)}</strong>
+                            <strong className="text-tikkun-brand-deep font-bold">{formatCOP(r.finDeSemanaFestivo)}</strong>
                           </div>
                         </div>
 
@@ -1085,23 +1085,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between gap-2">
                       <div>
-                        <span className="font-bold text-sm text-tikkun-brand-deep">{rev.guestName}</span>
-                        <span className="text-xs text-stone-400"> · {rev.guestCity}</span>
+                        <span className="font-bold text-sm text-tikkun-brand-deep">{rev.nombreHuesped}</span>
+                        <span className="text-xs text-stone-400"> · {rev.ciudadHuesped}</span>
                       </div>
 
                       <div className="flex text-amber-500">
-                        {Array.from({ length: rev.rating }).map((_, i) => (
+                        {Array.from({ length: rev.calificacion }).map((_, i) => (
                           <Star key={i} className="w-3.5 h-3.5 fill-current" />
                         ))}
                       </div>
                     </div>
 
                     <div className="text-xs text-[#556F48] font-medium">
-                      {rev.accommodationName || 'Cabaña'} · {rev.travelType} · <span className="text-stone-400">{rev.date}</span>
+                      {rev.nombreCabana || 'Cabaña'} · {rev.tipoViaje} · <span className="text-stone-400">{rev.fecha}</span>
                     </div>
 
                     <p className="text-xs sm:text-sm text-stone-700 leading-relaxed italic">
-                      "{rev.comment}"
+                      "{rev.comentario}"
                     </p>
                   </div>
 

@@ -112,7 +112,7 @@ export const LocationSection: React.FC = () => {
               {/* Contactar al anfitrión por WhatsApp. */}
               <div className="mt-6 pt-4 border-t border-[#D6DFC7]">
                 <a
-                  href={`https://wa.me/${TIKKUN_CONTACT.whatsappNumber}?text=${encodeURIComponent('Hola Casa Tikkun, quisiera consultar sobre la ubicación en Santa Elena y cómo llegar.')}`}
+                  href={`https://wa.me/${TIKKUN_CONTACT.numeroWhatsapp}?text=${encodeURIComponent('Hola Casa Tikkun, quisiera consultar sobre la ubicación en Santa Elena y cómo llegar.')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-white bg-tikkun-brand-deep hover:bg-[#122210] rounded-xl transition-all shadow-md active:scale-95"

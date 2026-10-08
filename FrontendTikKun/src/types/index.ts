@@ -2,13 +2,7 @@
  * ============================================================================
  * TIPOS Y MODELOS DE DOMINIO - CASA TIKKUN (SANTA ELENA, ANTIOQUIA)
  * ============================================================================
- * Archivo centralizado y organizado por módulos en español:
- * 1. Cabañas, Tarifas y Reglas
- * 2. Cotización por Noche y Reservas
- * 3. Servicios Adicionales (Experiencias)
- * 4. Reseñas de Huéspedes (Máx. 10 FIFO)
- * 5. Galería y Preguntas Frecuentes (FAQ)
- * 6. Información de Contacto
+ * Modelos 100% en español sincronizados con el schema de Prisma.
  */
 
 // ============================================================================
@@ -20,11 +14,11 @@
  */
 export interface TarifasCabana {
   /** Domingo a Jueves ordinarios (ej. 380.000 COP) */
-  weekday: number;
+  diaSemana: number;
   /** Noche de Viernes (ej. 440.000 COP) */
-  friday: number;
+  viernes: number;
   /** Sábados, Domingos de puente y Festivos (ej. 480.000 COP) */
-  weekendHoliday: number;
+  finDeSemanaFestivo: number;
 }
 
 /**
@@ -36,8 +30,8 @@ export type TipoAlojamiento = 'chalet' | 'cabana' | 'suite' | 'villa';
  * Comodidad o equipamiento destacado dentro de una cabaña.
  */
 export interface ComodidadCabana {
-  iconName: string;
-  label: string;
+  nombreIcono: string;
+  etiqueta: string;
 }
 
 /**
@@ -45,9 +39,9 @@ export interface ComodidadCabana {
  */
 export interface ElementoCortesia {
   id: string;
-  name: string;
-  description: string;
-  iconName: string;
+  nombre: string;
+  descripcion: string;
+  nombreIcono: string;
 }
 
 /**
@@ -55,23 +49,23 @@ export interface ElementoCortesia {
  */
 export interface ReglaCabana {
   id: string;
-  title: string;
-  description: string;
-  iconName: string;
-  highlight?: boolean;
-  actionType?: 'whatsapp_transport' | 'none';
+  titulo: string;
+  descripcion: string;
+  nombreIcono: string;
+  destacado?: boolean;
+  tipoAccion?: 'whatsapp_transport' | 'none';
 }
 
 /**
  * Especificaciones de llegada, ubicación y horarios de cada cabaña.
  */
 export interface EspecificacionesCabana {
-  location: string;
-  distance: string;
-  checkIn: string;
-  checkOut: string;
-  selfCheckIn: string;
-  accessInfo: string;
+  ubicacion: string;
+  distancia: string;
+  horaEntrada: string;
+  horaSalida: string;
+  autoIngreso: string;
+  informacionAcceso: string;
 }
 
 /**
@@ -79,29 +73,29 @@ export interface EspecificacionesCabana {
  */
 export interface Cabana {
   id: string;
-  cabinNumber: number;
-  cabinNumberLabel: string;
-  name: string;
-  type: TipoAlojamiento;
-  tagline: string;
-  description: string;
-  capacity: number;
-  beds: string;
-  bathrooms: number;
-  priceCOP: number;
-  priceUSD: number;
-  rates?: TarifasCabana;
-  rating: number;
-  reviewsCount: number;
-  image: string;
-  galleryImages: string[];
-  features: string[];
-  amenities: ComodidadCabana[];
-  popularBadge?: string;
-  sizeM2: number;
-  rules?: ReglaCabana[];
-  courtesies?: ElementoCortesia[];
-  specifications?: EspecificacionesCabana;
+  numeroCabana: number;
+  etiquetaNumeroCabana: string;
+  nombre: string;
+  tipo: TipoAlojamiento;
+  subtitulo: string;
+  descripcion: string;
+  capacidad: number;
+  camas: string;
+  banos: number;
+  precioCOP: number;
+  precioUSD: number;
+  tarifas?: TarifasCabana;
+  calificacion: number;
+  cantidadResenas: number;
+  imagenPrincipal: string;
+  imagenesGaleria: string[];
+  caracteristicas: string[];
+  comodidades: ComodidadCabana[];
+  insigniaPopular?: string;
+  tamanoM2: number;
+  reglas?: ReglaCabana[];
+  cortesias?: ElementoCortesia[];
+  especificaciones?: EspecificacionesCabana;
 }
 
 // ============================================================================
@@ -111,56 +105,56 @@ export interface Cabana {
 /**
  * Categoría tarifaria aplicable según el día de la semana o festivo.
  */
-export type NivelTarifaDia = 'weekday' | 'friday' | 'weekendHoliday';
+export type NivelTarifaDia = 'diaSemana' | 'viernes' | 'finDeSemanaFestivo';
 
 /**
  * Desglose individual de una noche dentro del cálculo de estadía.
  */
 export interface CalculoNoche {
-  dateStr: string;
-  dayOfWeek: number;
-  tier: NivelTarifaDia;
-  tierLabel: string;
-  priceCOP: number;
+  fechaStr: string;
+  diaDeSemana: number;
+  nivelTarifa: NivelTarifaDia;
+  etiquetaNivel: string;
+  precioCOP: number;
 }
 
 /**
  * Resultado completo del cálculo de noches y precio total de la estadía.
  */
 export interface ResultadoCalculoEstadia {
-  nights: CalculoNoche[];
-  totalAccommodationCOP: number;
-  weekdayCount: number;
-  fridayCount: number;
-  weekendHolidayCount: number;
+  noches: CalculoNoche[];
+  totalAlojamientoCOP: number;
+  cantidadDiasSemana: number;
+  cantidadViernes: number;
+  cantidadFinDeSemanaFestivo: number;
 }
 
 /**
  * Estados posibles de una reserva.
  */
-export type EstadoReserva = 'confirmada' | 'pendiente';
+export type EstadoReserva = 'confirmada' | 'pendiente' | 'cancelada';
 
 /**
  * Datos completos de una reserva registrada.
  */
 export interface DatosReserva {
   id: string;
-  accommodationId: string;
-  accommodationName: string;
-  guestName: string;
-  guestEmail: string;
-  guestPhone: string;
-  checkIn: string; // YYYY-MM-DD
-  checkOut: string; // YYYY-MM-DD
-  nights: number;
-  guestsCount: number;
-  selectedExtras: string[];
-  extrasTotalCOP: number;
-  accommodationTotalCOP: number;
-  grandTotalCOP: number;
-  specialRequests?: string;
-  status: EstadoReserva;
-  createdAt: string;
+  cabanaId: string;
+  nombreCabana: string;
+  nombreHuesped: string;
+  emailHuesped: string;
+  telefonoHuesped: string;
+  fechaEntrada: string; // YYYY-MM-DD
+  fechaSalida: string; // YYYY-MM-DD
+  noches: number;
+  cantidadHuespedes: number;
+  serviciosExtrasSeleccionados: string[];
+  totalExtrasCOP: number;
+  totalAlojamientoCOP: number;
+  totalGeneralCOP: number;
+  solicitudesEspeciales?: string;
+  estado: EstadoReserva;
+  creadoEn: string;
 }
 
 // ============================================================================
@@ -174,11 +168,11 @@ export type CategoriaServicioExtra = 'romance' | 'wellness' | 'gastronomia' | 'a
  */
 export interface ServicioExtra {
   id: string;
-  name: string;
-  description: string;
-  priceCOP: number;
-  priceUSD: number;
-  category: CategoriaServicioExtra;
+  nombre: string;
+  descripcion: string;
+  precioCOP: number;
+  precioUSD: number;
+  categoria: CategoriaServicioExtra;
 }
 
 // ============================================================================
@@ -190,15 +184,15 @@ export interface ServicioExtra {
  */
 export interface Resena {
   id: string;
-  guestName: string;
-  guestCity: string;
-  rating: number;
-  date: string;
-  accommodationId: string;
-  accommodationName: string;
-  comment: string;
-  travelType: string;
-  verifiedBooking: boolean;
+  nombreHuesped: string;
+  ciudadHuesped: string;
+  calificacion: number;
+  fecha: string;
+  cabanaId: string;
+  nombreCabana: string;
+  comentario: string;
+  tipoViaje: string;
+  reservaVerificada: boolean;
 }
 
 // ============================================================================
@@ -219,11 +213,11 @@ export type CategoriaGaleria =
  */
 export interface ElementoGaleria {
   id: string;
-  imageUrl: string;
-  title?: string;
-  category?: CategoriaGaleria;
-  description?: string;
-  aspect?: 'landscape' | 'portrait' | 'square';
+  urlImagen: string;
+  titulo?: string;
+  categoria?: CategoriaGaleria;
+  descripcion?: string;
+  aspecto?: 'horizontal' | 'vertical' | 'cuadrado' | 'landscape' | 'portrait' | 'square';
 }
 
 export type CategoriaPreguntaFrecuente =
@@ -239,9 +233,9 @@ export type CategoriaPreguntaFrecuente =
  * Pregunta y respuesta del Centro de Ayuda (FAQ).
  */
 export interface PreguntaFrecuente {
-  question: string;
-  answer: string;
-  category: CategoriaPreguntaFrecuente;
+  pregunta: string;
+  respuesta: string;
+  categoria: CategoriaPreguntaFrecuente;
 }
 
 // ============================================================================
@@ -249,16 +243,16 @@ export interface PreguntaFrecuente {
 // ============================================================================
 
 export interface InformacionContacto {
-  phone: string;
-  cellphone: string;
-  secondaryPhone: string;
-  whatsappNumber: string;
-  email: string;
-  secondaryEmail: string;
+  telefono: string;
+  celular: string;
+  telefonoSecundario: string;
+  numeroWhatsapp: string;
+  correo: string;
+  correoSecundario: string;
   instagram: string;
-  location: string;
-  address: string;
-  mapsCoords: string;
+  ubicacion: string;
+  direccion: string;
+  coordenadasMapa: string;
 }
 
 // ============================================================================

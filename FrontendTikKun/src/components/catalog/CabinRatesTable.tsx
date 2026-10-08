@@ -24,7 +24,7 @@ export const CabinRatesTable: React.FC<CabinRatesTableProps> = ({
             Dom - Jue
           </span>
           <span className="block text-xs sm:text-sm font-serif font-bold text-tikkun-brand-deep mt-0.5">
-            {formatCOP(rates.weekday)}
+            {formatCOP(rates.diaSemana)}
           </span>
         </div>
 
@@ -33,7 +33,7 @@ export const CabinRatesTable: React.FC<CabinRatesTableProps> = ({
             Viernes
           </span>
           <span className="block text-xs sm:text-sm font-serif font-bold text-tikkun-brand-deep mt-0.5">
-            {formatCOP(rates.friday)}
+            {formatCOP(rates.viernes)}
           </span>
         </div>
 
@@ -42,7 +42,7 @@ export const CabinRatesTable: React.FC<CabinRatesTableProps> = ({
             Sáb / Dom / Fest
           </span>
           <span className="block text-xs sm:text-sm font-serif font-bold text-tikkun-brand-deep mt-0.5">
-            {formatCOP(rates.weekendHoliday)}
+            {formatCOP(rates.finDeSemanaFestivo)}
           </span>
         </div>
       </div>
@@ -67,21 +67,21 @@ export const CabinRatesTable: React.FC<CabinRatesTableProps> = ({
         <div className="p-3 rounded-xl bg-[#F8FAF5] border border-[#DCE6D0] flex sm:flex-col items-center sm:items-start justify-between gap-1">
           <span className="text-xs font-medium text-stone-600">Domingo a Jueves</span>
           <span className="text-base sm:text-lg font-serif font-bold text-tikkun-brand-deep tabular-nums">
-            {formatCOP(rates.weekday)}
+            {formatCOP(rates.diaSemana)}
           </span>
         </div>
 
         <div className="p-3 rounded-xl bg-[#FBF9F4] border border-[#EDE3CE] flex sm:flex-col items-center sm:items-start justify-between gap-1">
           <span className="text-xs font-medium text-stone-600">Noche de Viernes</span>
           <span className="text-base sm:text-lg font-serif font-bold text-tikkun-brand-deep tabular-nums">
-            {formatCOP(rates.friday)}
+            {formatCOP(rates.viernes)}
           </span>
         </div>
 
         <div className="p-3 rounded-xl bg-[#F2F6EC] border border-[#C6D5B5] flex sm:flex-col items-center sm:items-start justify-between gap-1">
           <span className="text-xs font-semibold text-tikkun-brand-deep">Sáb, Dom y Festivos</span>
           <span className="text-base sm:text-lg font-serif font-bold text-tikkun-brand-deep tabular-nums">
-            {formatCOP(rates.weekendHoliday)}
+            {formatCOP(rates.finDeSemanaFestivo)}
           </span>
         </div>
       </div>

@@ -59,13 +59,13 @@ export const TikkunService = {
         const merged: Cabana = {
           ...acc,
           ...mod,
-          rules: mod.rules || acc.rules || TIKKUN_RULES,
-          courtesies: mod.courtesies || acc.courtesies || TIKKUN_COURTESIES,
-          specifications: mod.specifications || acc.specifications || TIKKUN_SPECIFICATIONS
+          reglas: mod.reglas || acc.reglas || TIKKUN_RULES,
+          cortesias: mod.cortesias || acc.cortesias || TIKKUN_COURTESIES,
+          especificaciones: mod.especificaciones || acc.especificaciones || TIKKUN_SPECIFICATIONS
         };
         if (ratesOverrides[acc.id]) {
-          merged.rates = ratesOverrides[acc.id];
-          merged.priceCOP = ratesOverrides[acc.id].weekday;
+          merged.tarifas = ratesOverrides[acc.id];
+          merged.precioCOP = ratesOverrides[acc.id].diaSemana;
         }
         return merged;
       });
@@ -76,11 +76,11 @@ export const TikkunService = {
           const customRates = ratesOverrides[acc.id];
           return {
             ...acc,
-            rules: acc.rules || TIKKUN_RULES,
-            courtesies: acc.courtesies || TIKKUN_COURTESIES,
-            specifications: acc.specifications || TIKKUN_SPECIFICATIONS,
+            reglas: acc.reglas || TIKKUN_RULES,
+            cortesias: acc.cortesias || TIKKUN_COURTESIES,
+            especificaciones: acc.especificaciones || TIKKUN_SPECIFICATIONS,
             ...(customRates
-              ? { rates: customRates, priceCOP: customRates.weekday }
+              ? { tarifas: customRates, precioCOP: customRates.diaSemana }
               : {})
           };
         });
@@ -134,7 +134,7 @@ export const TikkunService = {
   async syncReviewToBackend(review: Resena, dto: CrearResenaDTO): Promise<void> {
     await safeFetchJson<Resena>(API_ENDPOINTS.REVIEWS, {
       method: 'POST',
-      body: JSON.stringify({ ...dto, id: review.id, date: review.date })
+      body: JSON.stringify({ ...dto, id: review.id, fecha: review.fecha })
     });
   },
 
@@ -155,7 +155,7 @@ export const TikkunService = {
     const record: SolicitudReservaDTO = {
       ...inquiry,
       id: inquiry.id || `inq-${Date.now()}`,
-      createdAt: inquiry.createdAt || new Date().toISOString()
+      creadoEn: inquiry.creadoEn || new Date().toISOString()
     };
 
     try {

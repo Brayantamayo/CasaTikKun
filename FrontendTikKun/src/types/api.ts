@@ -10,41 +10,41 @@ import { Cabana, TarifasCabana } from './index';
  * Estructura estándar de respuesta para todos los endpoints del Backend (`/api/*`).
  */
 export interface RespuestaApi<T> {
-  success: boolean;
-  data?: T;
+  exito: boolean;
+  datos?: T;
   error?: string;
-  timestamp: string;
+  marcaTiempo: string;
 }
 
 /**
  * Datos para crear o actualizar una Cabaña en el Backend.
  */
-export type GuardarCabanaDTO = Omit<Cabana, 'rules' | 'courtesies' | 'specifications'> & {
-  rules?: Cabana['rules'];
-  courtesies?: Cabana['courtesies'];
-  specifications?: Cabana['specifications'];
+export type GuardarCabanaDTO = Omit<Cabana, 'reglas' | 'cortesias' | 'especificaciones'> & {
+  reglas?: Cabana['reglas'];
+  cortesias?: Cabana['cortesias'];
+  especificaciones?: Cabana['especificaciones'];
 };
 
 /**
  * Datos para publicar una nueva Reseña de Huésped (se aplica límite máximo de 10 en cola FIFO).
  */
 export interface CrearResenaDTO {
-  guestName: string;
-  guestCity?: string;
-  rating: number;
-  accommodationId: string;
-  accommodationName?: string;
-  comment: string;
-  travelType?: string;
+  nombreHuesped: string;
+  ciudadHuesped?: string;
+  calificacion: number;
+  cabanaId: string;
+  nombreCabana?: string;
+  comentario: string;
+  tipoViaje?: string;
 }
 
 /**
  * Configuración de imágenes dinámicas de la Landing (Hero y Galería de Experiencias).
  */
 export interface ConfiguracionMultimediaDTO {
-  heroImages: string[];
-  galleryImages: string[];
-  updatedAt?: string;
+  imagenesHero: string[];
+  imagenesGaleria: string[];
+  actualizadoEn?: string;
 }
 
 /**
@@ -52,35 +52,35 @@ export interface ConfiguracionMultimediaDTO {
  */
 export interface SolicitudReservaDTO {
   id?: string;
-  accommodationId: string;
-  accommodationName: string;
-  guestName: string;
-  guestEmail?: string;
-  guestPhone?: string;
-  checkIn: string;
-  checkOut: string;
-  nights: number;
-  guestsCount: number;
-  estimatedTotalCOP: number;
-  deposit50COP: number;
-  notes?: string;
-  createdAt?: string;
+  cabanaId: string;
+  nombreCabana: string;
+  nombreHuesped: string;
+  emailHuesped?: string;
+  telefonoHuesped?: string;
+  fechaEntrada: string;
+  fechaSalida: string;
+  noches: number;
+  cantidadHuespedes: number;
+  totalEstimadoCOP: number;
+  anticipo50COP: number;
+  notas?: string;
+  creadoEn?: string;
 }
 
 /**
  * Solicitud y respuesta de inicio de sesión del Panel de Administración.
  */
 export interface SolicitudLoginAdminDTO {
-  username: string;
-  password: string;
+  usuario: string;
+  clave: string;
 }
 
 export interface RespuestaLoginAdminDTO {
-  authenticated: boolean;
+  autenticado: boolean;
   token?: string;
-  user?: {
-    email: string;
-    role: 'admin';
+  usuario?: {
+    correo: string;
+    rol: 'admin';
   };
 }
 
@@ -88,5 +88,5 @@ export interface RespuestaLoginAdminDTO {
  * Mapa de tarifas personalizadas por identificador de cabaña.
  */
 export interface MapaSobrescrituraTarifas {
-  [cabinId: string]: TarifasCabana;
-} // Se conservan las claves existentes para mantener la compatibilidad con la API.
+  [cabanaId: string]: TarifasCabana;
+}

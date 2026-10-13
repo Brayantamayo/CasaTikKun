@@ -8,6 +8,7 @@ import {
 import { Cabana, ComodidadCabana } from '../../types';
 import { formatCOP } from '../../utils/formatters';
 import { compressMultipleImageFiles } from '../../utils/imageUtils';
+import { uploadImagesToCloudinary } from '../../services/imageUpload';
 
 // Fotografías de alta calidad disponibles en los recursos locales.
 import heroGlamping from '../../assets/images/hero_glamping_dome_1790614291764.jpg';
@@ -257,6 +258,7 @@ export const CabinEditorModal: React.FC<CabinEditorModalProps> = ({
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Respeta el límite de 10 fotos, optimiza los archivos y guarda en el formulario las URLs remotas.
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
@@ -271,7 +273,8 @@ export const CabinEditorModal: React.FC<CabinEditorModalProps> = ({
 
     try {
       const compressed = await compressMultipleImageFiles(filesToProcess);
-      setGalleryImages((prev) => [...prev, ...compressed].slice(0, 10));
+      const uploaded = await uploadImagesToCloudinary(compressed, 'cabins');
+      setGalleryImages((prev) => [...prev, ...uploaded].slice(0, 10));
     } catch {
       setErrorMsg('No se pudo procesar una o más fotos.');
     }

@@ -4,7 +4,9 @@ import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config({
+  path: [path.resolve(process.cwd(), '.env'), path.resolve(process.cwd(), '../BackendTikKun/.env')]
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

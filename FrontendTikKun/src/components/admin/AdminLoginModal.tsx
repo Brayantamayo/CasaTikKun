@@ -1,6 +1,6 @@
 // Solicita y valida las credenciales para acceder al panel administrativo.
 import React, { useState } from 'react';
-import { X, Lock, ShieldCheck, KeyRound, AlertCircle, ArrowRight, Eye, EyeOff, Home } from 'lucide-react';
+import { X, ShieldCheck, AlertCircle, ArrowRight, Eye, EyeOff, Home } from 'lucide-react';
 import { useAdmin } from '../../context/AdminContext';
 
 interface AdminLoginModalProps {
@@ -15,7 +15,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
   onSuccess
 }) => {
   const { login } = useAdmin();
-  const [username, setUsername] = useState('admin@casatikkun.com');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,20 +23,15 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
-
-    setTimeout(() => {
-      const ok = login(username, password);
-      setIsLoading(false);
-      if (ok) {
-        onSuccess();
-      } else {
-        setError('Credenciales incorrectas. Verifica tu usuario o contraseña de administrador.');
-      }
-    }, 300);
+    // La autenticación real ocurre en el backend; aquí solo mostramos el resultado para la interfaz.
+    const ok = await login(username, password);
+    setIsLoading(false);
+    if (ok) onSuccess();
+    else setError('No se pudo iniciar sesi?n. Revisa tus datos e int?ntalo de nuevo.');
   };
 
   return (
@@ -79,15 +74,17 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
+            {/* El navegador ofrece autocompletado para credenciales sin almacenarlas en el frontend. */}
             <label className="block text-xs font-semibold text-stone-700 mb-1.5">
               Usuario o Correo
             </label>
             <input
-              type="text"
+              type="email"
+              autoComplete="username"
               required
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="admin@casatikkun.com"
+              placeholder="casatiktuk@gmail.com"
               className="w-full bg-tikkun-brand-cream border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-stone-900 focus:outline-hidden transition-colors"
             />
           </div>
@@ -97,8 +94,10 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
               <span>Contraseña</span>
             </label>
             <div className="relative">
+              {/* El estado showPassword solo alterna la visibilidad del campo en pantalla. */}
               <input
                 type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -112,18 +111,6 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
-            </div>
-          </div>
-
-          {/* Información de acceso. */}
-          <div className="p-3 bg-[#EFF4E6] rounded-xl border border-[#CCD8B8] text-[11px] text-[#2C4623] space-y-1">
-            <div className="flex items-center gap-1.5 font-bold">
-              <KeyRound className="w-3.5 h-3.5 text-[#556F48]" />
-              <span>Credenciales por defecto:</span>
-            </div>
-            <div className="text-[10.5px] text-stone-600 font-mono">
-              Usuario: <strong className="text-tikkun-brand-deep">admin@casatikkun.com</strong> (o <strong>admin</strong>)<br />
-              Clave: <strong className="text-tikkun-brand-deep">Tikkun2026*</strong>
             </div>
           </div>
 

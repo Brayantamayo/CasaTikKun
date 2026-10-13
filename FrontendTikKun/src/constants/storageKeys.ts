@@ -4,8 +4,6 @@
  */
 
 export const STORAGE_KEYS = {
-  ADMIN_AUTH: 'casatikkun_admin_auth',
-  ADMIN_PASS: 'casatikkun_admin_pass',
   RATES_OVERRIDES: 'casatikkun_rates_overrides',
   CUSTOM_CABINS: 'casatikkun_custom_cabins',
   MODIFIED_CABINS: 'casatikkun_modified_cabins',
@@ -28,12 +26,5 @@ export const API_ENDPOINTS = {
   CABINS: '/api/cabins',
   REVIEWS: '/api/reviews',
   MEDIA: '/api/media',
-  BOOKINGS: '/api/bookings',
-  AUTH_LOGIN: '/api/auth/login'
-} as const;
-
-export const DEFAULT_ADMIN_CREDENTIALS = {
-  USER: 'admin@casatikkun.com',
-  SHORT_USER: 'admin',
-  PASS: 'Tikkun2026*'
+  BOOKINGS: '/api/bookings'
 } as const;

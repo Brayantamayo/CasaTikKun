@@ -13,6 +13,7 @@ import { Cabana } from '../../types';
 import { CabinEditorModal } from './CabinEditorModal';
 import { formatCOP } from '../../utils/formatters';
 import { compressImageFile, compressMultipleImageFiles } from '../../utils/imageUtils';
+import { deleteImageFromCloudinary, uploadImageToCloudinary, uploadImagesToCloudinary } from '../../services/imageUpload';
 
 interface AdminDashboardProps {
   onBackToSite: () => void;
@@ -134,35 +135,45 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
 
   // --- ACCIONES DE LA PORTADA ---
   const handleHeroFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Lee los archivos, libera el input para permitir volver a elegirlos y procesa imágenes en lote.
     const files = e.target.files;
     if (!files || files.length === 0) return;
     const fileList = Array.from(files);
     e.target.value = '';
 
     try {
-      const loadedUrls = await compressMultipleImageFiles(fileList);
+      const compressed = await compressMultipleImageFiles(fileList);
+      const loadedUrls = await uploadImagesToCloudinary(compressed, 'hero');
       if (loadedUrls.length > 0) {
         setHeroImagesList([...heroImages, ...loadedUrls]);
         showSuccess('Imágenes optimizadas y agregadas a la portada (Hero).');
       }
     } catch {
-      showError('No se pudo procesar la imagen seleccionada.');
+      showError('No se pudo subir la imagen a Cloudinary. Verifica la conexión e inténtalo de nuevo.');
     }
   };
 
   const handleReplaceSingleHeroImage = async (idx: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    // Optimiza la imagen elegida y reemplaza solo la posición indicada después de subirla.
     const file = e.target.files?.[0];
     if (!file) return;
     e.target.value = '';
 
     try {
-      const result = await compressImageFile(file);
+      const compressed = await compressImageFile(file);
+      const result = await uploadImageToCloudinary(compressed, 'hero');
       const updated = [...heroImages];
       updated[idx] = result;
       setHeroImagesList(updated);
+      try {
+        await deleteImageFromCloudinary(heroImages[idx]);
+      } catch {
+        showError('La portada se reemplazó, pero no se pudo limpiar la imagen anterior de Cloudinary.');
+        return;
+      }
       showSuccess(`Imagen #${idx + 1} de la portada reemplazada.`);
     } catch {
-      showError('No se pudo reemplazar la imagen.');
+      showError('No se pudo reemplazar la imagen en Cloudinary.');
     }
   };
 
@@ -174,9 +185,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
     showSuccess('Imagen agregada a la portada.');
   };
 
-  const handleRemoveHeroImage = (idx: number) => {
+  const handleRemoveHeroImage = async (idx: number) => {
     if (heroImages.length <= 1) {
       showError('El Hero principal debe mantener al menos 1 imagen.');
+      return;
+    }
+    try {
+      await deleteImageFromCloudinary(heroImages[idx]);
+    } catch {
+      showError('No se pudo eliminar la imagen de Cloudinary. Inténtalo de nuevo.');
       return;
     }
     setHeroImagesList(heroImages.filter((_, i) => i !== idx));
@@ -193,35 +210,45 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
 
   // --- ACCIONES DE LA GALERÍA ---
   const handleGalleryFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Sube las imágenes optimizadas y las agrega al inicio de la galería.
     const files = e.target.files;
     if (!files || files.length === 0) return;
     const fileList = Array.from(files);
     e.target.value = '';
 
     try {
-      const loadedUrls = await compressMultipleImageFiles(fileList);
+      const compressed = await compressMultipleImageFiles(fileList);
+      const loadedUrls = await uploadImagesToCloudinary(compressed, 'gallery');
       if (loadedUrls.length > 0) {
         setGalleryImagesList([...loadedUrls, ...galleryImages]);
         showSuccess('Fotografía(s) agregada(s) a la Galería de Experiencias.');
       }
     } catch {
-      showError('No se pudo procesar la fotografía.');
+      showError('No se pudo subir la fotografía a Cloudinary. Verifica la conexión e inténtalo de nuevo.');
     }
   };
 
   const handleReplaceSingleGalleryImage = async (idx: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    // Mantiene las demás fotos de la galería y sustituye únicamente la seleccionada.
     const file = e.target.files?.[0];
     if (!file) return;
     e.target.value = '';
 
     try {
-      const result = await compressImageFile(file);
+      const compressed = await compressImageFile(file);
+      const result = await uploadImageToCloudinary(compressed, 'gallery');
       const updated = [...galleryImages];
       updated[idx] = result;
       setGalleryImagesList(updated);
+      try {
+        await deleteImageFromCloudinary(galleryImages[idx]);
+      } catch {
+        showError('La galería se actualizó, pero no se pudo limpiar la foto anterior de Cloudinary.');
+        return;
+      }
       showSuccess(`Fotografía #${idx + 1} de la galería reemplazada.`);
     } catch {
-      showError('No se pudo reemplazar la fotografía.');
+      showError('No se pudo reemplazar la fotografía en Cloudinary.');
     }
   };
 
@@ -233,9 +260,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToSite }) 
     showSuccess('Fotografía agregada a la Galería.');
   };
 
-  const handleRemoveGalleryImage = (idx: number) => {
+  const handleRemoveGalleryImage = async (idx: number) => {
     if (galleryImages.length <= 1) {
       showError('La galería debe mantener al menos 1 fotografía.');
+      return;
+    }
+    try {
+      await deleteImageFromCloudinary(galleryImages[idx]);
+    } catch {
+      showError('No se pudo eliminar la fotografía de Cloudinary. Inténtalo de nuevo.');
       return;
     }
     setGalleryImagesList(galleryImages.filter((_, i) => i !== idx));

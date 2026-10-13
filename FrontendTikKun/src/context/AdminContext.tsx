@@ -1,8 +1,8 @@
 // Comparte el estado administrativo y sincroniza los cambios del catálogo y las imágenes.
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { TarifasCabana, Cabana } from '../types';
 import { ACCOMMODATIONS, TIKKUN_RULES, TIKKUN_COURTESIES, TIKKUN_SPECIFICATIONS } from '../data/tikkunData';
-import { DEFAULT_ADMIN_CREDENTIALS, STORAGE_KEYS } from '../constants/storageKeys';
+import { STORAGE_KEYS } from '../constants/storageKeys';
 import { TikkunService } from '../services/api';
 
 // Recursos predeterminados para la portada y la galería.
@@ -37,9 +37,8 @@ export const DEFAULT_GALLERY_IMAGES: string[] = [
 
 interface AdminContextType {
   isAuthenticated: boolean;
-  login: (username: string, pass: string) => boolean;
-  logout: () => void;
-  updatePassword: (oldPass: string, newPass: string) => { success: boolean; error?: string };
+  login: (username: string, pass: string) => Promise<boolean>;
+  logout: () => Promise<void>;
   ratesOverrides: Record<string, TarifasCabana>;
   updateCabinRates: (cabinId: string, rates: TarifasCabana) => void;
   resetRatesToDefault: () => void;
@@ -65,9 +64,21 @@ interface AdminContextType {
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return localStorage.getItem(STORAGE_KEYS.ADMIN_AUTH) === 'true';
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    // Al cargar la app, pregunta al backend si la cookie HttpOnly todavía representa una sesión válida.
+    const authApi = import.meta.env.VITE_AUTH_API_BASE_URL || 'http://localhost:3001';
+    void fetch(`${authApi}/api/auth/me`, { credentials: 'include' })
+      .then((response) => setIsAuthenticated(response.ok))
+      .catch(() => setIsAuthenticated(false));
+    try {
+      localStorage.removeItem('casatikkun_admin_auth');
+      localStorage.removeItem('casatikkun_admin_pass');
+    } catch {
+      // La autenticación del servidor no depende del almacenamiento local.
+    }
+  }, []);
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
@@ -134,39 +145,36 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   });
 
   // Gestionar el inicio de sesión.
-  const login = (username: string, pass: string): boolean => {
-    const cleanUser = username.trim().toLowerCase();
-    const currentPass = localStorage.getItem(STORAGE_KEYS.ADMIN_PASS) || DEFAULT_ADMIN_CREDENTIALS.PASS;
-
-    const isValidUser =
-      cleanUser === DEFAULT_ADMIN_CREDENTIALS.USER || cleanUser === DEFAULT_ADMIN_CREDENTIALS.SHORT_USER;
-    const isValidPass = pass === currentPass;
-
-    if (isValidUser && isValidPass) {
+  const login = async (username: string, pass: string): Promise<boolean> => {
+    // credentials: 'include' permite enviar y recibir la cookie de sesión segura del backend.
+    const authApi = import.meta.env.VITE_AUTH_API_BASE_URL || 'http://localhost:3001';
+    try {
+      const response = await fetch(`${authApi}/api/auth/login`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: username, password: pass }),
+      });
+      if (!response.ok) return false;
       setIsAuthenticated(true);
-      localStorage.setItem(STORAGE_KEYS.ADMIN_AUTH, 'true');
       setIsLoginModalOpen(false);
       return true;
+    } catch {
+      return false;
     }
-    return false;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    // Solicita al backend borrar la cookie; la interfaz también se cierra si la API no responde.
+    const authApi = import.meta.env.VITE_AUTH_API_BASE_URL || 'http://localhost:3001';
+    try {
+      await fetch(`${authApi}/api/auth/logout`, { method: 'POST', credentials: 'include' });
+    } catch {
+      // La interfaz se cierra aunque el servidor no responda.
+    }
     setIsAuthenticated(false);
-    localStorage.removeItem(STORAGE_KEYS.ADMIN_AUTH);
   };
 
-  const updatePassword = (oldPass: string, newPass: string): { success: boolean; error?: string } => {
-    const currentPass = localStorage.getItem(STORAGE_KEYS.ADMIN_PASS) || DEFAULT_ADMIN_CREDENTIALS.PASS;
-    if (oldPass !== currentPass) {
-      return { success: false, error: 'La contraseña actual no es correcta.' };
-    }
-    if (!newPass || newPass.length < 6) {
-      return { success: false, error: 'La nueva contraseña debe tener mínimo 6 caracteres.' };
-    }
-    localStorage.setItem(STORAGE_KEYS.ADMIN_PASS, newPass);
-    return { success: true };
-  };
 
   const updateCabinRates = (cabinId: string, rates: TarifasCabana) => {
     setRatesOverrides((prev) => {
@@ -362,7 +370,6 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         isAuthenticated,
         login,
         logout,
-        updatePassword,
         ratesOverrides,
         updateCabinRates,
         resetRatesToDefault,

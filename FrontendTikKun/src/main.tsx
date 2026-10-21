@@ -1,8 +1,8 @@
-// Punto de entrada: monta la aplicación React en el elemento raíz del documento.
+// Punto de entrada: monta React y carga los estilos globales.
 import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
-import App from './App.tsx';
-import './index.css';
+import App from '@/aplicacion/App';
+import '@/index.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -1,0 +1,89 @@
+// Prisma Schema limpio para Casa TikKun
+// Base de datos: Neon PostgreSQL (Serverless)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+model Admin {
+  id           String   @id @default(cuid())
+  email        String   @unique @db.VarChar(254)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("admins")
+}
+
+// Conserva las listas y el orden de las imágenes que se muestran a todos los visitantes.
+model SiteMedia {
+  id            String   @id @default("main") @db.VarChar(16)
+  heroImages    String[] @default([]) @map("hero_images")
+  galleryImages String[] @default([]) @map("gallery_images")
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("site_media")
+}
+
+// Cada correo produce una huella HMAC única; no se conserva el correo del huésped.
+model Review {
+  id             String   @id @default(cuid())
+  guestName      String   @map("guest_name") @db.VarChar(100)
+  guestCity      String   @default("Medellín, Colombia") @map("guest_city") @db.VarChar(120)
+  emailHash      String   @unique @map("email_hash") @db.Char(64)
+  rating         Int
+  cabinId        String   @map("cabin_id") @db.VarChar(100)
+  cabinName      String   @map("cabin_name") @db.VarChar(150)
+  comment        String   @db.VarChar(2000)
+  travelType     String   @default("En Pareja") @map("travel_type") @db.VarChar(50)
+  status         ReviewStatus @default(PENDING)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([createdAt])
+  @@map("reviews")
+}
+
+enum ReviewStatus {
+  PENDING
+  PUBLISHED
+}
+
+// Catálogo persistente de alojamientos; listas y bloques reutilizables se validan en los DTO de NestJS.
+model Cabin {
+  id                   String   @id @db.VarChar(120)
+  numeroCabana         Int      @unique @map("numero_cabana")
+  etiquetaNumeroCabana String   @map("etiqueta_numero_cabana") @db.VarChar(50)
+  nombre               String   @db.VarChar(150)
+  tipo                 String   @db.VarChar(20)
+  subtitulo            String   @db.VarChar(300)
+  descripcion          String   @db.VarChar(4000)
+  capacidad            Int
+  camas                String   @db.VarChar(250)
+  banos                Int
+  precioCOP            Int      @map("precio_cop")
+  precioUSD            Int      @map("precio_usd")
+  tarifas              Json
+    calificacion         Float    @default(0)
+  cantidadResenas      Int      @default(0) @map("cantidad_resenas")
+  imagenPrincipal      String   @map("imagen_principal") @db.VarChar(2048)
+  imagenesGaleria      String[] @map("imagenes_galeria")
+  caracteristicas      String[]
+  comodidades          Json
+  insigniaPopular      String?  @map("insignia_popular") @db.VarChar(150)
+  tamanoM2             Float    @map("tamano_m2")
+  reglas               Json?
+  cortesias            Json?
+  especificaciones     Json?
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([numeroCabana])
+  @@map("cabins")
+}

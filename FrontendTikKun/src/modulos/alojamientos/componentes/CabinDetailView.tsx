@@ -131,22 +131,49 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
     setActiveImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
-  const handleShare = () => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(window.location.href);
+  const handleShare = async () => {
+    const shareUrl = new URL(window.location.href);
+    shareUrl.searchParams.set('cabana', accommodation.id);
+    try {
+      await navigator.clipboard.writeText(shareUrl.toString());
       setCopiedLink(true);
-      setTimeout(() => setCopiedLink(false), 2500);
+      window.setTimeout(() => setCopiedLink(false), 2500);
+    } catch {
+      notificar.error('No se pudo copiar el enlace. Revisa los permisos del navegador.');
     }
   };
 
   const handleAddCabinReview = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!revName.trim() || !revEmail.trim() || !revComment.trim() || !reviewPrivacyAccepted) return;
+    const cleanName = revName.trim();
+    const cleanEmail = revEmail.trim();
+    const cleanCity = revCity.trim();
+    const cleanComment = revComment.trim();
+    if (cleanName.length < 2 || cleanName.length > 100) {
+      setReviewError('Escribe tu nombre (entre 2 y 100 caracteres).');
+      return;
+    }
+    if (cleanEmail.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      setReviewError('Revisa el formato de tu correo electrónico.');
+      return;
+    }
+    if (cleanCity.length > 120) {
+      setReviewError('La ciudad debe tener máximo 120 caracteres.');
+      return;
+    }
+    if (cleanComment.length < 10 || cleanComment.length > 2000) {
+      setReviewError('Tu reseña debe tener entre 10 y 2.000 caracteres.');
+      return;
+    }
+    if (!reviewPrivacyAccepted) {
+      setReviewError('Acepta la política de privacidad para publicar tu reseña.');
+      return;
+    }
     setReviewError('');
     setIsReviewSubmitting(true);
     try {
-      await addReview({ nombreHuesped: revName, correoHuesped: revEmail, ciudadHuesped: revCity, calificacion: revRating, cabanaId: accommodation.id, nombreCabana: accommodation.nombre, comentario: revComment, tipoViaje: revTravelType });
-      notificar.exito('Gracias, tu reseña fue publicada.');
+      await addReview({ nombreHuesped: cleanName, correoHuesped: cleanEmail, ciudadHuesped: cleanCity, calificacion: revRating, cabanaId: accommodation.id, nombreCabana: accommodation.nombre, comentario: cleanComment, tipoViaje: revTravelType });
+      notificar.exito('Gracias, recibimos tu reseña. El equipo la revisará antes de publicarla.');
       setIsReviewModalOpen(false);
       setRevName(''); setRevEmail(''); setRevCity(''); setRevComment(''); setRevRating(5); setReviewPrivacyAccepted(false);
     } catch (error) {
@@ -166,48 +193,16 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
     <div className="pt-28 sm:pt-32 lg:pt-36 pb-16 bg-tikkun-brand-cream min-h-screen">
       
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <button
+          type="button"
+          onClick={onBackToCatalog}
+          className="mb-5 inline-flex items-center gap-2 rounded-xl border border-[#CCD8B8] bg-white px-4 py-2 text-sm font-semibold text-tikkun-brand-deep shadow-sm transition-colors hover:bg-[#EFF4E6] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#365530]"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          Volver al catálogo
+        </button>
         
-        {/* Navegación de la página y selector de cabañas. */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 bg-[#EFF4E6] p-2.5 sm:p-3 rounded-2xl border border-[#CCD8B8] shadow-2xs">
-          
-          {/* Volver al catálogo. */}
-          <button
-            type="button"
-            onClick={onBackToCatalog}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider text-tikkun-brand-deep bg-tikkun-brand-cream hover:bg-white border border-[#CCD8B8] transition-all cursor-pointer group shadow-2xs"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 text-[#5D7743] group-hover:-translate-x-0.5 transition-transform" />
-            <span>Volver a todas las cabañas</span>
-          </button>
-
-          {/* Selector rápido de cabaña. */}
-          <div className="flex items-center gap-1 overflow-x-auto py-0.5 no-scrollbar max-w-full">
-            <span className="text-[10px] font-bold text-[#556F48] uppercase tracking-wider mr-1 hidden lg:inline">
-              Cabañas:
-            </span>
-            {allAccommodations.map((acc) => {
-              const isCurrent = acc.id === accommodation.id;
-              const cabinShort = getCabinShortName(acc.nombre);
-              return (
-                <button
-                  key={acc.id}
-                  type="button"
-                  onClick={() => onSelectAnotherCabin(acc.id)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-                    isCurrent
-                      ? 'bg-tikkun-brand-deep text-white shadow-2xs'
-                      : 'bg-tikkun-brand-cream text-[#334E2B] hover:bg-tikkun-brand-sage/30 border border-[#CCD8B8]'
-                  }`}
-                >
-                  <span className="opacity-75">{acc.etiquetaNumeroCabana} · </span>
-                  <span>{cabinShort}</span>
-                </button>
-              );
-            })}
-          </div>
-
-        </div>
-
         {/* Encabezado con nombre, distintivos y opción para compartir. */}
         <div className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
@@ -667,7 +662,7 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
                         ))}
                       </div>
                       <span className="text-[11px] text-[#698256] font-medium">
-                        {rev.fecha}
+                        {new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(rev.fecha))}
                       </span>
                     </div>
 
@@ -820,6 +815,8 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
                     key={star}
                     type="button"
                     onClick={() => setRevRating(star)}
+                    aria-label={`${star} ${star === 1 ? 'estrella' : 'estrellas'}`}
+                    aria-pressed={revRating === star}
                     className="p-0.5 hover:scale-120 transition-transform cursor-pointer"
                   >
                     <Star
@@ -847,6 +844,9 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
                   <input
                     type="text"
                     required
+                    minLength={2}
+                    maxLength={100}
+                    autoComplete="name"
                     placeholder="Ej. Carolina M."
                     value={revName}
                     onChange={(e) => setRevName(e.target.value)}
@@ -855,7 +855,7 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
                 </div>
                 <div>
                   <label className="block text-[11px] font-bold text-tikkun-brand-deep uppercase tracking-wider mb-1">Correo electrónico *</label>
-                  <input type="email" required maxLength={254} placeholder="tu@correo.com" value={revEmail} onChange={(e) => setRevEmail(e.target.value)} className="w-full bg-white border border-[#CCD8B8] rounded-xl px-3 py-2 text-xs text-tikkun-brand-deep focus:outline-hidden" />
+                <input type="email" required maxLength={254} autoComplete="email" placeholder="tu@correo.com" value={revEmail} onChange={(e) => setRevEmail(e.target.value)} className="w-full bg-white border border-[#CCD8B8] rounded-xl px-3 py-2 text-xs text-tikkun-brand-deep focus:outline-hidden" />
                 </div>
                 <div>
                   <label className="block text-[11px] font-bold text-tikkun-brand-deep uppercase tracking-wider mb-1">
@@ -863,6 +863,8 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
                   </label>
                   <input
                     type="text"
+                    maxLength={120}
+                    autoComplete="address-level2"
                     placeholder="Medellín, Colombia"
                     value={revCity}
                     onChange={(e) => setRevCity(e.target.value)}
@@ -871,7 +873,7 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
                 </div>
               </div>
 
-              {reviewError && <p role="alert" className="text-sm text-red-700">{reviewError}</p>}
+              {reviewError && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-800">{reviewError}</p>}
 
               <label className="flex items-start gap-2 rounded-xl border border-[#D5DFCA] bg-white p-3 text-xs leading-5 text-[#465E3C]">
                 <input type="checkbox" required checked={reviewPrivacyAccepted} onChange={(event) => setReviewPrivacyAccepted(event.target.checked)} className="mt-1 accent-[#294326]" />
@@ -902,17 +904,20 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
                 <textarea
                   required
                   rows={3}
+                  minLength={10}
+                  maxLength={2000}
                   placeholder={`¿Qué fue lo que más disfrutaste de ${shortName}? La chimenea, la vista a los pinos, el descanso...`}
                   value={revComment}
                   onChange={(e) => setRevComment(e.target.value)}
                   className="w-full bg-white border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl p-3 text-xs text-tikkun-brand-deep focus:outline-hidden resize-none leading-relaxed"
                 />
+                <p className="mt-1 text-right text-[10px] text-[#698256]">{revComment.trim().length}/2.000 caracteres · mínimo 10</p>
               </div>
 
               <div className="pt-2 flex items-center justify-end gap-2">
                 <button
                   type="button"
-                  onClick={() => setIsReviewModalOpen(false)}
+                  onClick={() => { if (!isReviewSubmitting) setIsReviewModalOpen(false); }}
                   className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#465E3C] hover:bg-[#EAEFD9] rounded-xl transition-colors cursor-pointer"
                 >
                   Cancelar
@@ -922,7 +927,7 @@ export const CabinDetailView: React.FC<CabinDetailViewProps> = ({
                   disabled={isReviewSubmitting}
                   className="px-5 py-2 text-xs font-bold uppercase tracking-wider text-white bg-tikkun-brand-deep hover:bg-[#122210] rounded-xl transition-all shadow-xs cursor-pointer"
                 >
-                  {isReviewSubmitting ? 'Publicando…' : `Publicar en ${shortName}`}
+                  {isReviewSubmitting ? 'Enviando…' : `Enviar para revisión · ${shortName}`}
                 </button>
               </div>
             </form>

@@ -1,6 +1,6 @@
 // Muestra y permite gestionar las reseñas de los huéspedes.
 import React, { useState, useMemo } from 'react';
-import { Star, CheckCircle, MessageSquarePlus, X, Filter } from 'lucide-react';
+import { Star, CheckCircle, MessageSquarePlus, X, Filter, Quote } from 'lucide-react';
 import { useReviews } from '@/modulos/resenas/contexto/ReviewsContext';
 import { useAdmin } from '@/modulos/administracion/contexto/contextoAdmin';
 import { notificar } from '@/compartido/utilidades/notificaciones';
@@ -32,17 +32,51 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
   const averageRating = reviews.length
     ? reviews.reduce((sum, review) => sum + review.calificacion, 0) / reviews.length
     : 0;
+  const ratingCounts = [5, 4, 3, 2, 1].map((value) => ({
+    value,
+    count: reviews.filter((review) => review.calificacion === value).length,
+  }));
+
+  const formatReviewDate = (value: string) => {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? 'Fecha no disponible' : new Intl.DateTimeFormat('es-CO', {
+      day: 'numeric', month: 'short', year: 'numeric',
+    }).format(date);
+  };
 
   const handleAddReview = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !email.trim() || !comment.trim() || !privacyAccepted) return;
+    const cleanName = name.trim();
+    const cleanEmail = email.trim();
+    const cleanCity = city.trim();
+    const cleanComment = comment.trim();
+    if (cleanName.length < 2 || cleanName.length > 100) {
+      setSubmitError('Escribe tu nombre (entre 2 y 100 caracteres).');
+      return;
+    }
+    if (cleanEmail.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      setSubmitError('Revisa el formato de tu correo electrónico.');
+      return;
+    }
+    if (cleanCity.length > 120) {
+      setSubmitError('La ciudad debe tener máximo 120 caracteres.');
+      return;
+    }
+    if (cleanComment.length < 10 || cleanComment.length > 2000) {
+      setSubmitError('Tu reseña debe tener entre 10 y 2.000 caracteres.');
+      return;
+    }
+    if (!privacyAccepted) {
+      setSubmitError('Acepta la política de privacidad para publicar tu reseña.');
+      return;
+    }
     setSubmitError('');
     setIsSubmitting(true);
     try {
       if (!accommodationId) throw new Error('No hay alojamientos publicados para asociar la reseña.');
       const cabin = allAccommodations.find((item) => item.id === accommodationId);
-      await addReview({ nombreHuesped: name, correoHuesped: email, ciudadHuesped: city, calificacion: rating, cabanaId: accommodationId, nombreCabana: cabin?.nombre, comentario: comment, tipoViaje: travelType });
-      notificar.exito('Gracias, tu reseña fue publicada.');
+      await addReview({ nombreHuesped: cleanName, correoHuesped: cleanEmail, ciudadHuesped: cleanCity, calificacion: rating, cabanaId: accommodationId, nombreCabana: cabin?.nombre, comentario: cleanComment, tipoViaje: travelType });
+      notificar.exito('Gracias, recibimos tu reseña. El equipo la revisará antes de publicarla.');
       setIsModalOpen(false);
       setName(''); setEmail(''); setCity(''); setComment(''); setRating(5); setPrivacyAccepted(false);
     } catch (error) {
@@ -59,12 +93,12 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Encabezado de reseñas. */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 sm:mb-12 gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-9 sm:mb-11 gap-6">
           <div>
             <div className="inline-block px-3 py-1 bg-tikkun-brand-sage text-tikkun-brand-deep text-xs font-bold uppercase tracking-widest rounded-md mb-2">
               Testimonios de Huéspedes
             </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-tikkun-brand-deep tracking-tight text-balance">
+            <h2 className="max-w-3xl text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-tikkun-brand-deep tracking-tight text-balance leading-[1.05]">
               Lo que dicen quienes han vivido Casa Tikkun
             </h2>
             <p className="mt-2 text-sm sm:text-base text-[#465E3C]">
@@ -83,29 +117,42 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
         </div>
 
         {/* Resumen general de calificaciones. */}
-        {reviews.length > 0 && <div className="bg-tikkun-brand-cream rounded-2xl p-6 sm:p-8 border-2 border-[#CCD8B8] mb-8 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-            
-            {/* Calificación promedio. */}
-            <div className="md:col-span-4 text-center md:text-left md:border-r border-[#D5DFCA] md:pr-8">
-              <div className="text-5xl sm:text-6xl font-serif font-bold text-tikkun-brand-deep tabular-nums">
-                {averageRating.toFixed(1)}
+        <div className="mb-8 sm:mb-10 overflow-hidden rounded-3xl border border-[#D5DFCA] bg-gradient-to-br from-white via-[#FBFAF5] to-[#E8EFDF] p-5 sm:p-8 shadow-sm">
+          {reviews.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-[minmax(190px,0.8fr)_1.2fr] items-center gap-6 sm:gap-10">
+              <div className="flex items-center gap-5 md:border-r md:border-[#D5DFCA] md:pr-8">
+                <div className="flex h-24 w-24 shrink-0 flex-col items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-[#E2E8D8]">
+                  <span className="font-serif text-4xl font-bold leading-none text-tikkun-brand-deep">{averageRating.toFixed(1)}</span>
+                  <div className="mt-2 flex gap-0.5 text-[#C48E2E]" aria-label={`${averageRating.toFixed(1)} de 5 estrellas`}>
+                    {[1, 2, 3, 4, 5].map((star) => <Star key={star} className={`h-3 w-3 ${star <= Math.round(averageRating) ? 'fill-current' : 'text-stone-300'}`} />)}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-tikkun-brand-deep">Experiencias compartidas</p>
+                  <p className="mt-1 text-xs leading-relaxed text-[#526947]">{reviews.length} {reviews.length === 1 ? 'opinión de huésped' : 'opiniones de huéspedes'}</p>
+                </div>
               </div>
-              <div className="flex items-center justify-center md:justify-start gap-1 text-[#C48E2E] my-2">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 fill-current" />
+              <div className="space-y-2" aria-label="Distribución de calificaciones">
+                {ratingCounts.map(({ value, count }) => (
+                  <div key={value} className="grid grid-cols-[2.5rem_1fr_2rem] items-center gap-3 text-xs text-[#526947]">
+                    <span className="flex items-center gap-1">{value} <Star className="h-3 w-3 fill-[#C48E2E] text-[#C48E2E]" /></span>
+                    <div className="h-2 overflow-hidden rounded-full bg-[#E3E9DA]"><div className="h-full rounded-full bg-[#8A9E68] transition-all" style={{ width: `${reviews.length ? (count / reviews.length) * 100 : 0}%` }} /></div>
+                    <span className="text-right tabular-nums">{count}</span>
+                  </div>
                 ))}
               </div>
-              <p className="text-xs text-[#526947] font-medium">
-                Basado en {reviews.length} {reviews.length === 1 ? 'reseña publicada' : 'reseñas publicadas'}
-              </p>
             </div>
-
-          </div>
-        </div>}
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-2 py-3 text-center sm:py-5">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-[#C48E2E] shadow-sm"><Star className="h-6 w-6" /></div>
+              <h3 className="font-serif text-xl font-bold text-tikkun-brand-deep">Tu experiencia puede ser la primera</h3>
+              <p className="max-w-md text-sm text-[#526947]">Aún no hay reseñas publicadas. Comparte cómo fue tu estadía y ayuda a otros viajeros.</p>
+            </div>
+          )}
+        </div>
 
         {/* Filtros de reseñas por cabaña. */}
-        <div className="mb-8 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
+        <div className="mb-8 flex flex-wrap items-center gap-2 pb-1">
           <span className="text-xs font-bold text-[#3B5430] uppercase tracking-wider flex items-center gap-1 shrink-0 mr-1">
             <Filter className="w-3.5 h-3.5" />
             <span>Filtrar:</span>
@@ -113,7 +160,7 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
           <button
             type="button"
             onClick={() => setSelectedCabinFilter('all')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+            className={`max-w-full px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
               selectedCabinFilter === 'all'
                 ? 'bg-tikkun-brand-deep text-white shadow-xs'
                 : 'bg-tikkun-brand-cream text-[#384E33] hover:bg-[#DCE6CA] border border-[#CCD8B8]'
@@ -129,7 +176,7 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
                 key={acc.id}
                 type="button"
                 onClick={() => setSelectedCabinFilter(acc.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                className={`max-w-full px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   selectedCabinFilter === acc.id
                     ? 'bg-tikkun-brand-deep text-white shadow-xs'
                     : 'bg-tikkun-brand-cream text-[#384E33] hover:bg-[#DCE6CA] border border-[#CCD8B8]'
@@ -144,14 +191,16 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
         {/* Tarjetas de reseñas. */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredReviews.length === 0 ? (
-            <p className="md:col-span-2 lg:col-span-3 rounded-2xl border border-[#CCD8B8] bg-tikkun-brand-cream p-8 text-center text-sm text-[#465E3C]">
+            <div className="md:col-span-2 lg:col-span-3 rounded-2xl border border-dashed border-[#C6D3B6] bg-white/70 p-9 text-center text-sm text-[#465E3C]">
+              <Star className="mx-auto mb-2 h-6 w-6 text-[#A3B28A]" />
               {reviews.length === 0 ? 'Aún no hay reseñas publicadas.' : 'No hay reseñas para este alojamiento.'}
-            </p>
+            </div>
           ) : filteredReviews.map((rev) => (
             <div
               key={rev.id}
-              className="bg-tikkun-brand-cream p-6 sm:p-7 rounded-2xl border-2 border-[#D5DFCA] hover:border-tikkun-brand-sage flex flex-col justify-between shadow-xs hover:shadow-lg transition-all"
+              className="group relative overflow-hidden bg-white p-6 sm:p-7 rounded-2xl border border-[#D5DFCA] hover:border-[#A9BB8E] flex flex-col justify-between shadow-sm hover:shadow-lg transition-all duration-300"
             >
+              <Quote aria-hidden="true" className="absolute right-4 top-3 h-9 w-9 rotate-180 text-[#E8EFDF] transition-transform group-hover:scale-105" />
               <div>
                 {/* Calificación y datos de la reseña. */}
                 <div className="flex items-center justify-between mb-3">
@@ -160,8 +209,8 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
                       <Star key={i} className="w-4 h-4 fill-current" />
                     ))}
                   </div>
-                  <span className="text-[11px] text-[#698256] font-semibold">
-                    {rev.fecha}
+                  <span className="relative z-10 pr-8 text-[11px] text-[#698256] font-semibold">
+                    {formatReviewDate(rev.fecha)}
                   </span>
                 </div>
 
@@ -171,20 +220,23 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
                 </div>
 
                 {/* Comentario del huésped. */}
-                <p className="text-sm text-[#384E33] leading-relaxed italic">
+                <p className="relative text-sm text-[#384E33] leading-relaxed">
                   &ldquo;{rev.comentario}&rdquo;
                 </p>
               </div>
 
               {/* Datos de quien publicó la reseña. */}
               <div className="pt-4 mt-4 border-t border-[#DEE6D5] flex items-center justify-between">
-                <div>
-                  <h5 className="text-xs font-bold text-tikkun-brand-deep">
-                    {rev.nombreHuesped}
-                  </h5>
-                  <p className="text-[11px] text-[#5B7549]">
-                    {rev.ciudadHuesped} · {rev.tipoViaje}
-                  </p>
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#E8EFDF] font-serif text-sm font-bold text-tikkun-brand-deep">{rev.nombreHuesped.trim().charAt(0).toUpperCase()}</div>
+                  <div>
+                    <h5 className="text-xs font-bold text-tikkun-brand-deep">
+                      {rev.nombreHuesped}
+                    </h5>
+                    <p className="text-[11px] text-[#5B7549]">
+                      {rev.ciudadHuesped} · {rev.tipoViaje}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -248,6 +300,8 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
                         key={star}
                         type="button"
                         onClick={() => setRating(star)}
+                        aria-label={`${star} ${star === 1 ? 'estrella' : 'estrellas'}`}
+                        aria-pressed={rating === star}
                         className="p-1 hover:scale-125 transition-transform cursor-pointer focus:outline-hidden"
                       >
                         <Star
@@ -290,6 +344,9 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
                       <input
                         type="text"
                         required
+                        minLength={2}
+                        maxLength={100}
+                        autoComplete="name"
                         placeholder="Ej. Laura Gómez"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
@@ -299,7 +356,7 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
 
                     <div>
                       <label className="block text-[11px] font-bold text-tikkun-brand-deep uppercase tracking-wider mb-1">Correo electrónico *</label>
-                      <input type="email" required maxLength={254} placeholder="tu@correo.com" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-white border border-[#CCD8B8] rounded-xl px-3 py-2 text-xs sm:text-sm" />
+                      <input type="email" required maxLength={254} autoComplete="email" placeholder="tu@correo.com" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-white border border-[#CCD8B8] rounded-xl px-3 py-2 text-xs sm:text-sm" />
                     </div>
 
                     <div>
@@ -308,6 +365,8 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
                       </label>
                       <input
                         type="text"
+                        maxLength={120}
+                        autoComplete="address-level2"
                         placeholder="Medellín, Colombia"
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
@@ -316,7 +375,7 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
                     </div>
                   </div>
 
-                  {submitError && <p role="alert" className="text-sm text-red-700">{submitError}</p>}
+                  {submitError && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-800">{submitError}</p>}
 
                   {/* Fila 2: cabaña y tipo de viaje. */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -362,11 +421,14 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
                     <textarea
                       required
                       rows={3}
+                      minLength={10}
+                      maxLength={2000}
                       placeholder="Cuéntanos sobre la chimenea de leña, el frío de la montaña, la niebla, el desayuno y tu descanso..."
                       value={comment}
                       onChange={(e) => setComment(e.target.value)}
                       className="w-full bg-white border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl p-3 text-xs sm:text-sm text-tikkun-brand-deep focus:ring-1 focus:ring-tikkun-brand-deep focus:outline-hidden transition-all resize-none leading-relaxed"
                     />
+                    <p className="mt-1 text-right text-[10px] text-[#698256]">{comment.trim().length}/2.000 caracteres · mínimo 10</p>
                   </div>
 
                   <div className="flex items-start gap-2 rounded-xl border border-[#D5DFCA] bg-white p-3 text-xs leading-5 text-[#465E3C]">
@@ -378,17 +440,17 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
                   <div className="pt-2 flex items-center justify-end gap-2.5">
                     <button
                       type="button"
-                      onClick={() => setIsModalOpen(false)}
+                      onClick={() => { if (!isSubmitting) setIsModalOpen(false); }}
                       className="px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[#465E3C] hover:bg-[#EAEFD9] rounded-xl transition-colors cursor-pointer"
                     >
                       Cancelar
                     </button>
                     <button
                       type="submit"
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || !allAccommodations.length}
                       className="px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-white bg-tikkun-brand-deep hover:bg-[#122210] rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95 cursor-pointer border border-tikkun-brand-sage/40"
                     >
-                      {isSubmitting ? 'Publicando…' : 'Publicar Reseña'}
+                      {isSubmitting ? 'Enviando…' : !allAccommodations.length ? 'No hay cabañas disponibles' : 'Enviar para revisión'}
                     </button>
                   </div>
 

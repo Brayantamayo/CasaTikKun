@@ -16,6 +16,8 @@ import { formatCOP } from '@/compartido/utilidades/formatters';
 import { compressImageFile, compressMultipleImageFiles } from '@/compartido/utilidades/imageUtils';
 import { deleteImageFromCloudinary, uploadImageToCloudinary, uploadImagesToCloudinary } from '@/compartido/utilidades/cloudinaryService';
 import { notificar } from '@/compartido/utilidades/notificaciones';
+import { reviewsService } from '@/modulos/resenas/servicios/reviewsService';
+import type { ResenaAdministracion } from '@/compartido/tipos';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -36,7 +38,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     resetGalleryImagesToDefault
   } = useAdmin();
 
-  const { reviews, deleteReview } = useReviews();
+  const { reviews, deleteReview, refreshReviews } = useReviews();
+  const [adminReviews, setAdminReviews] = useState<ResenaAdministracion[]>([]);
+  const [isLoadingReviews, setIsLoadingReviews] = useState(false);
   const allAccommodations = getEffectiveAccommodations();
 
   const handleLogout = async () => {
@@ -53,6 +57,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
   // Pestañas principales de navegación.
   const [activeTab, setActiveTab] = useState<'cabins' | 'landing' | 'gallery' | 'reviews'>('cabins');
+
+  useEffect(() => {
+    if (activeTab !== 'reviews') return;
+    let active = true;
+    setIsLoadingReviews(true);
+    void reviewsService.listForAdmin()
+      .then((items) => { if (active) setAdminReviews(items); })
+      .catch((error) => { if (active) showError(error instanceof Error ? error.message : 'No se pudieron cargar las reseñas.'); })
+      .finally(() => { if (active) setIsLoadingReviews(false); });
+    return () => { active = false; };
+  }, [activeTab]);
 
   // Modo de visualización de cabañas: cuadrícula o tabla.
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
@@ -86,9 +101,22 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   const handleDeleteReview = async (reviewId: string) => {
     try {
       await deleteReview(reviewId);
+      setAdminReviews((items) => items.filter((item) => item.id !== reviewId));
       showSuccess('Reseña eliminada.');
     } catch (error) {
       showError(error instanceof Error ? error.message : 'No se pudo eliminar la reseña.');
+    }
+  };
+
+  const handleApproveReview = async (reviewId: string) => {
+    try {
+      await reviewsService.approve(reviewId);
+      const refreshed = await reviewsService.listForAdmin();
+      setAdminReviews(refreshed);
+      await refreshReviews();
+      showSuccess('Reseña aprobada. Si ya había 15 publicadas, se retiró automáticamente la más antigua.');
+    } catch (error) {
+      showError(error instanceof Error ? error.message : 'No se pudo aprobar la reseña.');
     }
   };
 
@@ -532,7 +560,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
               }`}
             >
               <Star className="w-4 h-4" />
-              <span>Reseñas <span className={activeTab === 'reviews' ? 'text-[#D4E0C2]' : 'text-stone-400'}>({reviews.length})</span></span>
+              <span>Reseñas <span className={activeTab === 'reviews' ? 'text-[#D4E0C2]' : 'text-stone-400'}>({adminReviews.filter((review) => review.estado === 'PENDING').length})</span></span>
             </button>
 
           </div>
@@ -1157,19 +1185,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
               <div>
                 <h2 className="text-base sm:text-lg font-serif font-bold text-tikkun-brand-deep flex items-center gap-2">
                   <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
-                  <span>Reseñas de Huéspedes ({reviews.length})</span>
+                  <span>Moderación de reseñas ({adminReviews.filter((review) => review.estado === 'PENDING').length} pendientes · {reviews.length}/15 publicadas)</span>
                 </h2>
                 <p className="text-xs text-stone-500 mt-0.5">
-                  Puedes eliminar las opiniones que no quieras mostrar en cualquier momento.
+                  Aprueba las reseñas que quieras mostrar. Al aprobar con 15 publicadas, la más antigua se reemplaza automáticamente.
                 </p>
               </div>
             </div>
 
+            {isLoadingReviews && <p className="rounded-xl border border-[#D5DFCA] bg-white p-4 text-sm text-stone-500">Cargando reseñas…</p>}
+            {!isLoadingReviews && adminReviews.filter((review) => review.estado === 'PENDING').length === 0 && (
+              <p className="rounded-xl border border-[#D5DFCA] bg-white p-4 text-sm text-stone-500">No hay reseñas pendientes de aprobación.</p>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {reviews.map((rev) => (
+              {adminReviews.map((rev) => (
                 <div
                   key={rev.id}
-                  className="bg-white rounded-2xl p-5 border border-[#D5DFCA] hover:border-tikkun-brand-deep transition-all flex flex-col justify-between gap-4 shadow-2xs"
+                  className={`bg-white rounded-2xl p-5 border transition-all flex flex-col justify-between gap-4 shadow-2xs ${rev.estado === 'PENDING' ? 'border-amber-300' : 'border-[#D5DFCA]'}`}
                 >
                   <div className="space-y-2">
                     <div className="flex items-center justify-between gap-2">
@@ -1186,7 +1218,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                     </div>
 
                     <div className="text-xs text-[#556F48] font-medium">
-                      {rev.nombreCabana || 'Cabaña'} · {rev.tipoViaje} · <span className="text-stone-400">{rev.fecha}</span>
+                      {rev.nombreCabana || 'Cabaña'} · {rev.tipoViaje} · <span className="text-stone-400">{rev.fecha}</span> · <span className={rev.estado === 'PENDING' ? 'text-amber-700' : 'text-emerald-700'}>{rev.estado === 'PENDING' ? 'Pendiente' : 'Publicada'}</span>
                     </div>
 
                     <p className="text-xs sm:text-sm text-stone-700 leading-relaxed italic">
@@ -1196,14 +1228,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
                   <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
                     <span className="text-[10px] text-stone-400">ID: {rev.id}</span>
-                    <button
-                      type="button"
-                      onClick={() => void handleDeleteReview(rev.id)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-red-600 hover:text-white bg-red-50 hover:bg-red-600 rounded-xl cursor-pointer transition-colors"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>Eliminar</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                      {rev.estado === 'PENDING' && <button type="button" onClick={() => void handleApproveReview(rev.id)} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-emerald-700 hover:bg-emerald-800 rounded-xl cursor-pointer transition-colors"><Check className="w-3.5 h-3.5" /><span>Aprobar</span></button>}
+                      <button
+                        type="button"
+                        onClick={() => void handleDeleteReview(rev.id)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-red-600 hover:text-white bg-red-50 hover:bg-red-600 rounded-xl cursor-pointer transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>{rev.estado === 'PENDING' ? 'Rechazar' : 'Retirar'}</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}

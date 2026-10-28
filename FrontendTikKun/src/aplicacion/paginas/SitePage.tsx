@@ -1,5 +1,5 @@
 // Página que coordina navegación, secciones públicas y acceso administrativo.
-import React, { useState, useEffect } from 'react';
+import React, { Suspense, lazy, useState, useEffect } from 'react';
 import { Navbar } from '@/modulos/Home/Navbar';
 import { Hero } from '@/modulos/Home/Hero';
 import { Differentiators } from '@/modulos/Home/Differentiators';
@@ -8,23 +8,24 @@ import { CatalogSection } from '@/modulos/alojamientos/componentes/CatalogSectio
 import { GallerySection } from '@/modulos/galeria/componentes/GallerySection';
 import { ReviewsSection } from '@/modulos/resenas/componentes/ReviewsSection';
 import { LocationSection } from '@/modulos/ubicacion/componentes/LocationSection';
-import { FaqView } from '@/modulos/preguntas/componentes/FaqView';
-import { CabinDetailView } from '@/modulos/alojamientos/componentes/CabinDetailView';
 import { Footer } from '@/modulos/Home/Footer';
 import { WhatsAppBookingModal } from '@/modulos/reservas/componentes/WhatsAppBookingModal';
-import { AdminDashboard } from '@/modulos/administracion/paginas/AdminDashboard';
 import { AdminAccessPage } from '@/modulos/autenticacion/paginas/AdminAccessPage';
 import { MessageCircle } from 'lucide-react';
 import { TIKKUN_CONTACT } from '@/compartido/datos/tikkunData';
 import { useAuth } from '@/modulos/autenticacion/contexto/AuthContext';
 import { useAdmin } from '@/modulos/administracion/contexto/contextoAdmin';
 import { CentroLegal } from '@/modulos/legal/componentes/CentroLegal';
+import { ensureValidCheckoutDate, getDefaultStayDates } from '@/compartido/utilidades/formatters';
+
+const CabinDetailView = lazy(() => import('@/modulos/alojamientos/componentes/CabinDetailView').then(({ CabinDetailView: view }) => ({ default: view })));
+const AdminDashboard = lazy(() => import('@/modulos/administracion/paginas/AdminDashboard').then(({ AdminDashboard: view }) => ({ default: view })));
 
 function MainApp() {
   const { isAuthenticated, isCheckingSession, isLoginModalOpen, openLoginModal, closeLoginModal } = useAuth();
   const { getEffectiveAccommodations } = useAdmin();
   const accommodations = getEffectiveAccommodations();
-  const [currentView, setCurrentView] = useState<'landing' | 'cabin-detail' | 'faq' | 'admin'>('landing');
+  const [currentView, setCurrentView] = useState<'landing' | 'cabin-detail' | 'admin'>('landing');
   const [activeCabinId, setActiveCabinId] = useState<string>('');
   const [activeSection, setActiveSection] = useState('inicio');
   
@@ -56,6 +57,28 @@ function MainApp() {
     window.addEventListener('hashchange', checkAdminAccess);
     return () => window.removeEventListener('hashchange', checkAdminAccess);
   }, [isAuthenticated, isCheckingSession, openLoginModal]);
+
+  // Una URL compartida con ?cabana=<id> abre el alojamiento directamente.
+  useEffect(() => {
+    const syncCabinFromUrl = () => {
+      const cabinId = new URLSearchParams(window.location.search).get('cabana');
+      const cabinExists = cabinId && accommodations.some((cabin) => cabin.id === cabinId);
+
+      if (cabinExists) {
+        setActiveCabinId(cabinId);
+        setActiveSection('catalogo');
+        setCurrentView('cabin-detail');
+      } else if (currentView === 'cabin-detail') {
+        setActiveCabinId('');
+        setActiveSection('catalogo');
+        setCurrentView('landing');
+      }
+    };
+
+    syncCabinFromUrl();
+    window.addEventListener('popstate', syncCabinFromUrl);
+    return () => window.removeEventListener('popstate', syncCabinFromUrl);
+  }, [accommodations, currentView]);
 
   // Atajo de teclado para abrir o cerrar el panel administrativo.
   useEffect(() => {
@@ -119,18 +142,13 @@ function MainApp() {
   }, [currentView]);
 
   const handleNavigate = (sectionId: string) => {
-    // Abrir la vista de preguntas frecuentes cuando se selecciona esa sección.
-    if (sectionId === 'faq') {
-      setCurrentView('faq');
-      setActiveSection('faq');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-
     setActiveSection(sectionId);
 
     // Volver a la página principal antes de desplazarse desde otra vista.
     if (currentView !== 'landing') {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('cabana');
+      window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
       setCurrentView('landing');
       setTimeout(() => {
         const element = document.getElementById(sectionId);
@@ -152,10 +170,12 @@ function MainApp() {
 
   const handleOpenBooking = (accId?: string, checkIn?: string, checkOut?: string, guests?: number) => {
     if (accommodations.length === 0) return;
+    const defaultDates = getDefaultStayDates();
     setBookingAccId(accId);
-    if (checkIn) setSearchCheckIn(checkIn);
-    if (checkOut) setSearchCheckOut(checkOut);
-    if (guests) setSearchGuests(guests);
+    const nextCheckIn = checkIn || defaultDates.tomorrowStr;
+    setSearchCheckIn(nextCheckIn);
+    setSearchCheckOut(ensureValidCheckoutDate(nextCheckIn, checkOut || defaultDates.dayAfterStr));
+    setSearchGuests(guests ?? 2);
     setIsBookingOpen(true);
   };
 
@@ -176,12 +196,23 @@ function MainApp() {
   // Abrir la vista de detalle de una cabaña.
   const handleViewCabin = (cabinId: string) => {
     if (!accommodations.some((cabin) => cabin.id === cabinId)) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set('cabana', cabinId);
+    const nextUrl = `${url.pathname}${url.search}${url.hash}`;
+    if (currentView === 'cabin-detail') {
+      window.history.replaceState({ appView: 'cabin-detail' }, '', nextUrl);
+    } else {
+      window.history.pushState({ appView: 'cabin-detail' }, '', nextUrl);
+    }
     setActiveCabinId(cabinId);
     setCurrentView('cabin-detail');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleBackToLanding = () => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('cabana');
+    window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
     setCurrentView('landing');
     setTimeout(() => {
       const el = document.getElementById('catalogo');
@@ -209,19 +240,14 @@ function MainApp() {
       {currentView !== 'admin' && (
         <Navbar
           onOpenBookingModal={() => handleOpenBooking()}
-          activeSection={
-            currentView === 'faq' 
-              ? 'faq' 
-              : currentView === 'cabin-detail' 
-                ? 'catalogo' 
-                : activeSection
-          }
+          activeSection={currentView === 'cabin-detail' ? 'catalogo' : activeSection}
           onNavigate={handleNavigate}
         />
       )}
 
       {/* Enrutador de las vistas principales. */}
       <main className="flex-1">
+        <Suspense fallback={<div className="min-h-[50vh] flex items-center justify-center text-sm text-[#465E3C]">Cargando…</div>}>
         {currentView === 'admin' ? (
           /* Panel administrativo de página completa. */
           <AdminDashboard
@@ -231,12 +257,6 @@ function MainApp() {
               setIsBookingOpen(false);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-          />
-        ) : currentView === 'faq' ? (
-          /* Vista de preguntas frecuentes de página completa. */
-          <FaqView
-            onBackToHome={() => handleNavigate('inicio')}
-            onOpenBookingModal={() => handleOpenBooking()}
           />
         ) : currentView === 'cabin-detail' ? (
           /* Vista de detalle de una cabaña. */
@@ -280,6 +300,7 @@ function MainApp() {
             <LocationSection />
           </>
         )}
+        </Suspense>
       </main>
 
       {/* El pie de página permanece en todas las vistas públicas. */}

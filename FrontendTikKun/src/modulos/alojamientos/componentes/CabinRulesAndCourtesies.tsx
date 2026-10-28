@@ -4,7 +4,7 @@ import {
   VolumeX, CreditCard, Clock, CalendarClock, 
   FileCheck, Dog, Car, Coffee, Leaf, 
   Egg, Droplets, Sparkles, Popcorn, 
-  Key, MapPin, ChevronRight, HelpCircle
+  Key, MapPin, ChevronRight, HelpCircle, Users
 } from 'lucide-react';
 import { ReglaCabana, ElementoCortesia, EspecificacionesCabana } from '@/compartido/tipos';
 import { TIKKUN_RULES, TIKKUN_COURTESIES, TIKKUN_SPECIFICATIONS, TIKKUN_CONTACT } from '@/compartido/datos/tikkunData';
@@ -208,6 +208,13 @@ export const CabinRulesAndCourtesies: React.FC<CabinRulesAndCourtesiesProps> = (
       {activeTab === 'reglas' && (
         <div className="space-y-2 animate-in fade-in duration-200">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <div className="p-2.5 rounded-xl border border-[#CCD8B8] bg-[#F9FAF4] flex items-start gap-2.5">
+              <div className="mt-0.5"><Users className="w-4 h-4 text-[#3E5C31] shrink-0" /></div>
+              <div className="flex-1 min-w-0">
+                <span className="font-bold text-tikkun-brand-deep text-xs">Persona adicional: $50.000 por noche</span>
+                <p className="text-[11px] text-[#47603B] leading-snug mt-0.5">Cada persona adicional tiene un costo de $50.000 COP por noche.</p>
+              </div>
+            </div>
             {rules.map((rule) => {
               const isTransport = rule.tipoAccion === 'whatsapp_transport';
               return (

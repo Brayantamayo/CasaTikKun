@@ -102,15 +102,6 @@ export const Footer: React.FC<FooterProps> = ({
                   Ubicación & Contacto
                 </button>
               </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => onNavigate('faq')}
-                  className="hover:text-white transition-colors cursor-pointer"
-                >
-                  Preguntas Frecuentes (FAQ)
-                </button>
-              </li>
             </ul>
           </div>
 

@@ -79,29 +79,26 @@ export const Differentiators: React.FC = () => {
       )
     },
     {
-      id: 'restaurante',
-      title: 'Restaurante y bar',
-      description: 'Desayunos campesinos típicos incluidos, servicio de cenas románticas del chef a la luz de las velas y cava de vinos seleccionados.',
+      id: 'pet-friendly',
+      title: 'Pet friendly',
+      description: 'Tu compañero de cuatro patas también es bienvenido en Casa Tikkun. Escríbenos antes de reservar para conocer las condiciones de estadía.',
       icon: (
         <svg className="w-12 h-12 text-[#E58A55]" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          {/* Copa de cóctel. */}
-          <path d="M12 12h24l-10 14v10h8" />
-          <path d="M18 36h12" />
-          <path d="M22 26v10" />
-          <path d="M14 16h20" strokeWidth="1" strokeDasharray="2 2" />
-          <circle cx="34" cy="10" r="2" />
-          <path d="M34 12l-3 4" />
+          {/* Huella para indicar que las mascotas también son bienvenidas. */}
+          <ellipse cx="24" cy="29" rx="10" ry="8" />
+          <ellipse cx="11" cy="19" rx="3.5" ry="5" transform="rotate(-25 11 19)" />
+          <ellipse cx="20" cy="13" rx="3.5" ry="5" transform="rotate(-8 20 13)" />
+          <ellipse cx="29" cy="13" rx="3.5" ry="5" transform="rotate(8 29 13)" />
+          <ellipse cx="37" cy="19" rx="3.5" ry="5" transform="rotate(25 37 19)" />
         </svg>
       )
-    }
-  ];
+    }  ];
 
   return (
     <section
       id="comodidades"
       className="relative min-h-[95vh] py-24 sm:py-32 flex items-center justify-center border-y border-tikkun-brand-deep bg-cover bg-center bg-no-repeat"
       style={{
-        backgroundImage: 'url(/Images/COmodidades.jpg)',
         backgroundAttachment: 'fixed',
         backgroundPosition: 'center',
         backgroundSize: 'cover',
@@ -109,14 +106,8 @@ export const Differentiators: React.FC = () => {
       }}
     >
       {/* Fondo fijo de paralaje, limitado al área de esta sección. */}
-      <div 
-        className="fixed inset-0 w-full h-full pointer-events-none z-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: 'url(/Images/COmodidades.jpg)',
-          backgroundPosition: 'center',
-          backgroundSize: 'cover',
-        }}
-      >
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <img src="/Images/COmodidades.jpg" alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover object-center" />
         {/* Capa oscura translúcida que conserva visible la fotografía. */}
         <div className="absolute inset-0 bg-black/35" />
         <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/20 to-black/60" />

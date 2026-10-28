@@ -96,6 +96,9 @@ export const Hero: React.FC<HeroProps> = ({
               <img
                 src={slide.image}
                 alt={slide.alt}
+                loading={isActive ? 'eager' : 'lazy'}
+                fetchPriority={isActive ? 'high' : 'auto'}
+                decoding="async"
                 className="w-full h-full object-cover object-center"
               />
             </div>

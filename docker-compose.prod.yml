@@ -1,0 +1,37 @@
+services:
+  backend:
+    build:
+      context: ./BackendTikKun
+      dockerfile: Dockerfile
+      target: production
+    restart: unless-stopped
+    env_file:
+      - path: ./.env.production
+        required: false
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-}
+      RUN_MIGRATIONS: ${RUN_MIGRATIONS:-true}
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/cabins').then(r=>process.exit(r.status < 500 ? 0 : 1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 40s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./FrontendTikKun
+      dockerfile: Dockerfile
+      target: production
+      args:
+        VITE_AUTH_API_BASE_URL: ${VITE_AUTH_API_BASE_URL:-http://localhost:3000}
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"

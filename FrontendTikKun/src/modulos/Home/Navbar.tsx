@@ -10,7 +10,6 @@ interface NavbarProps {
   onOpenBookingModal: () => void;
   activeSection: string;
   onNavigate: (sectionId: string) => void;
-  onOpenGuestGuide?: (tab?: 'especificaciones' | 'cortesia' | 'reglas') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -37,8 +36,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'catalogo', label: 'Cabañas' },
     { id: 'galeria', label: 'Galería' },
     { id: 'resenas', label: 'Opiniones' },
-    { id: 'ubicacion', label: 'Ubicación' },
-    { id: 'faq', label: 'Preguntas' }
+    { id: 'ubicacion', label: 'Ubicación' }
   ];
 
   const handleLinkClick = (id: string) => {

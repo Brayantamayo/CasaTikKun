@@ -3,7 +3,6 @@ import {
   ServicioExtra,
   Resena,
   ElementoGaleria,
-  PreguntaFrecuente,
   ElementoCortesia,
   ReglaCabana,
   EspecificacionesCabana,
@@ -540,64 +539,6 @@ export const GALLERY_ITEMS: ElementoGaleria[] = [
     urlImagen: OWN_IMAGE,
     descripcion: 'Luces cálidas que acogen a los viajeros al caer la tarde en las montañas de Santa Elena.',
     aspecto: 'horizontal'
-  }
-];
-
-export const FAQS: PreguntaFrecuente[] = [
-  {
-    pregunta: '¿Dónde está ubicada Casa Tikkun y cuánto se tarda desde Medellín?',
-    respuesta: 'Estamos ubicados en Santa Elena, Antioquia KM 6, a tan solo 35 minutos de Medellín. La vía principal está completamente pavimentada en excelente estado y el acceso es apto y cómodo para cualquier tipo de automóvil particular.',
-    categoria: 'llegada'
-  },
-  {
-    pregunta: '¿Cuáles son los horarios de Check-in y Check-out?',
-    respuesta: 'El Check-in es a partir de las 3:00 PM y el Check-out es a las 12:00 M (Mediodía). Contamos con modalidad de Self Check-in con instrucciones detalladas de acceso entregadas luego de confirmar tu reserva.',
-    categoria: 'politicas'
-  },
-  {
-    pregunta: '¿Qué incluye la Cortesía Tikkun en cada cabaña?',
-    respuesta: 'Cada cabaña cuenta con nuestra Cortesía Tikkun de bienvenida: Café selecto colombiano, Aromáticas naturales de la montaña, Huevos campesinos frescos, Aguas minerales puras, Sal para cocinar y Maíz para hacer crispetas al calor de la chimenea.',
-    categoria: 'servicios'
-  },
-  {
-    pregunta: '¿Cómo se manejan las tarifas y precios de las cabañas?',
-    respuesta: 'Manejamos 3 tarifas diferenciadas por noche para cada cabaña: Domingo a Jueves (tarifa entre semana, la más económica), Viernes (inicio de fin de semana) y Sábados, Domingos y Festivos (temporada alta / puentes). Todas las tarifas incluyen desayuno campesino artesanal, chimenea de leña tradicional con provisión de leña y la Cortesía Tikkun completa. El cotizador calcula el total exacto según los días de tu estadía.',
-    categoria: 'politicas'
-  },
-  {
-    pregunta: '¿Cuáles son las reglas de reserva, cancelaciones y cambios de fecha?',
-    respuesta: 'Se reserva con el 50% de anticipo. Las cancelaciones deben realizarse con mínimo 48 horas de anticipación. Ten presente que el cambio de fecha se debe hacer con mínimo 48 horas de anticipación de lo contrario contamos como reserva efectiva, no se hacen devoluciones; podemos gestionar cambios de fecha bajo los parámetros mencionados anteriormente.',
-    categoria: 'politicas'
-  },
-  {
-    pregunta: '¿Se permite ruido o música a alto volumen?',
-    respuesta: 'No se permite ruido alto. Casa Tikkun es un refugio consagrado a la desconexión, la paz, el descanso y la conservación de la fauna nativa de Santa Elena, por lo que solicitamos volumen moderado en todo momento.',
-    categoria: 'politicas'
-  },
-  {
-    pregunta: '¿Se permiten mascotas y menores de edad?',
-    respuesta: '¡Sí! Se permiten mascotas (somos 100% Pet Friendly con amplias zonas verdes). Respecto a menores de edad, su ingreso y alojamiento es permitido solo con autorización escrita de sus padres o tutores legales.',
-    categoria: 'politicas'
-  },
-  {
-    pregunta: '¿Ofrecen servicio adicional de transporte?',
-    respuesta: '¡Sí! Si deseas servicio adicional de transporte privado desde Medellín, el Aeropuerto José María Córdova (MDE) o alrededores, contáctanos previamente a nuestro WhatsApp y lo coordinamos para ti.',
-    categoria: 'servicios'
-  },
-  {
-    pregunta: '¿Cómo funciona el Self Check-in?',
-    respuesta: 'Una vez confirmada tu reserva recibirás un instructivo claro y privado con las indicaciones de llegada exacta al KM 6 y el código / acceso autónomo para ingresar a tu cabaña con total comodidad.',
-    categoria: 'llegada'
-  },
-  {
-    pregunta: '¿Las cabañas cuentan con chimenea de leña y calefacción?',
-    respuesta: 'Sí, todas las cabañas y chalets de Casa Tikkun cuentan con chimenea de leña tradicional con provisión de leña seca de roble incluida, cobijas térmicas afelpadas y fogateros exteriores privados para disfrutar del clima fresco de la montaña.',
-    categoria: 'servicios'
-  },
-  {
-    pregunta: '¿Tienen buena conexión a internet para teletrabajo?',
-    respuesta: 'Sí. Todas las instalaciones de Casa Tikkun cuentan con internet satelital Starlink de alta velocidad (120-220 Mbps estables) con cobertura Wi-Fi en cada cabaña y terrazas, ideal para nómadas digitales o personas que deseen trabajar en medio de la naturaleza.',
-    categoria: 'servicios'
   }
 ];
 

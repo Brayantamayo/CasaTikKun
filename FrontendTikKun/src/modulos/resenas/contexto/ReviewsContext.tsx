@@ -8,6 +8,7 @@ interface ReviewsContextType {
   getCabinReviews: (cabinId: string) => Resena[];
   getCabinStats: (cabinId: string) => { average: number; count: number };
   addReview: (input: CrearResenaDTO) => Promise<void>;
+  refreshReviews: () => Promise<void>;
   deleteReview: (reviewId: string) => Promise<void>;
 }
 
@@ -17,7 +18,7 @@ export function ReviewsProvider({ children }: { children: ReactNode }) {
   const [reviews, setReviews] = useState<Resena[]>([]);
   const [hasLoadedReviews, setHasLoadedReviews] = useState(false);
 
-  // Las reseñas se leen siempre del backend, sin mostrar copias locales antiguas.
+  // La API pública entrega solo las reseñas aprobadas.
   useEffect(() => {
     let active = true;
     void reviewsService.list()
@@ -26,6 +27,12 @@ export function ReviewsProvider({ children }: { children: ReactNode }) {
       .finally(() => { if (active) setHasLoadedReviews(true); });
     return () => { active = false; };
   }, []);
+
+  const refreshReviews = async () => {
+    const remoteReviews = await reviewsService.list();
+    setReviews(remoteReviews);
+    setHasLoadedReviews(true);
+  };
 
   const getCabinReviews = (cabinId: string): Resena[] => {
     return reviews.filter((review) => review.cabanaId === cabinId);
@@ -39,8 +46,7 @@ export function ReviewsProvider({ children }: { children: ReactNode }) {
   };
 
   const addReview = async (input: CrearResenaDTO) => {
-    const savedReview = await reviewsService.create(input);
-    setReviews((previous) => [savedReview, ...previous.filter((review) => review.id !== savedReview.id)]);
+    await reviewsService.create(input);
   };
 
   const deleteReview = async (reviewId: string) => {
@@ -49,7 +55,7 @@ export function ReviewsProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <ReviewsContext.Provider value={{ reviews: hasLoadedReviews ? reviews : [], getCabinReviews, getCabinStats, addReview, deleteReview }}>
+    <ReviewsContext.Provider value={{ reviews: hasLoadedReviews ? reviews : [], getCabinReviews, getCabinStats, addReview, refreshReviews, deleteReview }}>
       {children}
     </ReviewsContext.Provider>
   );

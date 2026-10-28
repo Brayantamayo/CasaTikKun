@@ -196,8 +196,12 @@ export interface Resena {
   reservaVerificada: boolean;
 }
 
+export interface ResenaAdministracion extends Resena {
+  estado: 'PENDING' | 'PUBLISHED';
+}
+
 // ============================================================================
-// 5. MÓDULO DE GALERÍA Y PREGUNTAS FRECUENTES (FAQ)
+// 5. MÓDULO DE GALERÍA
 // ============================================================================
 
 export type CategoriaGaleria =
@@ -219,24 +223,6 @@ export interface ElementoGaleria {
   categoria?: CategoriaGaleria;
   descripcion?: string;
   aspecto?: 'horizontal' | 'vertical' | 'cuadrado' | 'landscape' | 'portrait' | 'square';
-}
-
-export type CategoriaPreguntaFrecuente =
-  | 'llegada'
-  | 'estadia'
-  | 'servicios'
-  | 'politicas'
-  | 'alojamiento'
-  | 'ubicacion'
-  | string;
-
-/**
- * Pregunta y respuesta del Centro de Ayuda (FAQ).
- */
-export interface PreguntaFrecuente {
-  pregunta: string;
-  respuesta: string;
-  categoria: CategoriaPreguntaFrecuente;
 }
 
 // ============================================================================

@@ -1,0 +1,4 @@
+# Acceso por defecto para desarrollo local.
+# Producción: docker compose -f docker-compose.prod.yml up --build -d
+include:
+  - docker-compose.dev.yml

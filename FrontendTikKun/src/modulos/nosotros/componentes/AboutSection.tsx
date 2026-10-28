@@ -12,6 +12,8 @@ export const AboutSection: React.FC = () => {
         <img
           src="/Images/Conocenos.png"
           alt="Paisajes y espacios de Casa Tikkun"
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover object-center"
         />
         {/* Capa oscura para mantener el contraste y la calidez del fondo. */}
@@ -63,7 +65,7 @@ export const AboutSection: React.FC = () => {
                       <Heart className="w-3.5 h-3.5 fill-[#B8CFA0]" />
                     </div>
                     <div>
-                      <h4 className="text-[11px] font-bold uppercase tracking-wider text-white">Cuatro cabañas</h4>
+                      <h4 className="text-[11px] font-bold uppercase tracking-wider text-white">cabañas</h4>
                       <p className="text-[10.5px] text-white/80 mt-0.5 leading-snug">
                         Totalmente dotadas para una estadía cómoda.
                       </p>
@@ -106,6 +108,8 @@ export const AboutSection: React.FC = () => {
                   <img
                     src="/Images/Conocenos.png"
                     alt="Collage de Casa Tikkun: cabañas, terrazas y paisajes de Santa Elena"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full min-h-72.5 sm:min-h-82.5 object-cover group-hover:scale-103 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/15 to-transparent" />

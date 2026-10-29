@@ -97,7 +97,7 @@ export const Differentiators: React.FC = () => {
   return (
     <section
       id="comodidades"
-      className="relative min-h-[95vh] py-24 sm:py-32 flex items-center justify-center border-y border-tikkun-brand-deep bg-cover bg-center bg-no-repeat"
+      className="relative py-20 sm:py-24 lg:py-28 border-y border-tikkun-brand-deep bg-cover bg-center bg-no-repeat"
       style={{
         backgroundAttachment: 'fixed',
         backgroundPosition: 'center',
@@ -105,71 +105,54 @@ export const Differentiators: React.FC = () => {
         clipPath: 'inset(0)',
       }}
     >
-      {/* Fondo fijo de paralaje, limitado al área de esta sección. */}
+      {/* Fondo de montaña con una capa oscura para dar contraste al contenido. */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <img src="/Images/COmodidades.jpg" alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover object-center" />
-        {/* Capa oscura translúcida que conserva visible la fotografía. */}
-        <div className="absolute inset-0 bg-black/35" />
-        <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/20 to-black/60" />
+        <div className="absolute inset-0 bg-[#11190F]/55" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#10180F]/70 via-[#10180F]/35 to-[#10180F]/75" />
       </div>
 
-      {/* Contenido de la sección. */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        
-        {/* Encabezado de comodidades. */}
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <Reveal>
-          <div className="max-w-4xl text-left mb-14 sm:mb-16">
-            <div className="text-xs sm:text-sm font-bold tracking-[0.35em] uppercase text-[#DFA568] mb-3">
-              C O M O D I D A D E S
-            </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-white tracking-tight leading-tight mb-4 flex items-center gap-3">
-              <span role="img" aria-label="casa campestre" className="text-3xl sm:text-4xl shrink-0">
-                🏡
-              </span>
-              <span>Relájate, reconéctate y recarga energías</span>
+          <div className="mx-auto mb-10 max-w-3xl text-center sm:mb-14">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#E9C49F] backdrop-blur-md sm:text-xs">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#E58A55]" />
+              La experiencia Tikkun
+            </span>
+            <h2 className="mt-5 font-serif text-4xl font-medium leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
+              Conoce a <span className="italic text-[#D2DDB8]">Tikkun</span>
             </h2>
-            <p className="text-sm sm:text-base text-stone-200/90 leading-relaxed font-light max-w-4xl">
-              Respira el aire puro de la montaña mientras te relajas en nuestro hermoso jardín o disfruta de una caminata panorámica por los alrededores. Ya sea que disfrutes de tu café matutino al amanecer o contemples las estrellas bajo el cielo estrellado, Casa Tikkun es tu refugio perfecto.
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-white/80 sm:text-base sm:leading-8">
+              Pequeños detalles, grandes momentos. Todo lo que necesitas para disfrutar la montaña a tu manera.
             </p>
           </div>
         </Reveal>
 
-        {/* Cuadrícula de comodidades con entrada escalonada. */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
           {amenities.map((item, idx) => (
-            <Reveal key={item.id} delayMs={idx * 90} direction="up">
-              <div
-                className="group relative bg-white/[0.07] backdrop-blur-md p-7 sm:p-9 rounded-2xl border border-white/20 hover:border-[#E58A55] hover:bg-white/[0.12] transition-all duration-300 shadow-2xl flex flex-col justify-between h-full"
-              >
-                {/* Icono de la comodidad. */}
-                <div>
-                  <div className="mb-6 transform group-hover:scale-105 transition-transform duration-300">
-                    {item.icon}
+            <Reveal key={item.id} delayMs={idx * 70} direction="up">
+              <article className="group relative h-full min-h-52 overflow-hidden rounded-2xl border border-white/20 bg-[#172116]/55 p-5 shadow-[0_18px_50px_rgba(0,0,0,0.18)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-[#D89A68]/80 hover:bg-[#202B1E]/75 sm:min-h-56 sm:p-6">
+                <span aria-hidden="true" className="absolute -right-8 -top-10 h-32 w-32 rounded-full bg-[#D99A68]/0 blur-3xl transition-colors duration-500 group-hover:bg-[#D99A68]/20" />
+                <div className="relative flex h-full flex-col">
+                  <div className="flex items-start justify-between">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#E5B58D]/25 bg-[#E5B58D]/10 transition-colors duration-300 group-hover:bg-[#E5B58D]/20">
+                      <span className="scale-[0.78]">{item.icon}</span>
+                    </div>
+                    <span className="font-serif text-sm italic text-white/35">0{idx + 1}</span>
                   </div>
-
-                  {/* Nombre de la comodidad. */}
-                  <h3 className="text-xl sm:text-2xl font-serif font-medium text-white tracking-wide mb-3 group-hover:text-[#F3C49F] transition-colors">
-                    {item.title}
-                  </h3>
-
-                  {/* Descripción de la comodidad. */}
-                  <p className="text-sm text-stone-200/80 leading-relaxed font-light">
-                    {item.description}
-                  </p>
-                </div>
-
-                {/* Detalle visual de la tarjeta. */}
-                <div className="mt-6 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-stone-300/60">
-                  <span className="uppercase tracking-widest text-[11px] font-semibold text-[#DFA568]">
+                  <div className="mt-7">
+                    <h3 className="font-serif text-xl font-medium tracking-wide text-white transition-colors group-hover:text-[#F0C8A8] sm:text-2xl">{item.title}</h3>
+                    <p className="mt-2.5 max-w-md text-xs leading-6 text-white/70 sm:text-sm sm:leading-7">{item.description}</p>
+                  </div>
+                  <div className="mt-auto flex items-center gap-2 pt-5 text-[9px] font-semibold uppercase tracking-[0.2em] text-[#E7B58A]/80">
+                    <span className="h-px w-6 bg-[#E7B58A]/60 transition-all group-hover:w-10" />
                     Casa Tikkun
-                  </span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#E58A55]" />
+                  </div>
                 </div>
-              </div>
+              </article>
             </Reveal>
           ))}
         </div>
-
       </div>
     </section>
   );

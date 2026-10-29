@@ -11,8 +11,6 @@ import { LocationSection } from '@/modulos/ubicacion/componentes/LocationSection
 import { Footer } from '@/modulos/Home/Footer';
 import { WhatsAppBookingModal } from '@/modulos/reservas/componentes/WhatsAppBookingModal';
 import { AdminAccessPage } from '@/modulos/autenticacion/paginas/AdminAccessPage';
-import { MessageCircle } from 'lucide-react';
-import { TIKKUN_CONTACT } from '@/compartido/datos/tikkunData';
 import { useAuth } from '@/modulos/autenticacion/contexto/AuthContext';
 import { useAdmin } from '@/modulos/administracion/contexto/contextoAdmin';
 import { CentroLegal } from '@/modulos/legal/componentes/CentroLegal';
@@ -336,25 +334,6 @@ function MainApp() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       />
-
-      {/* Acceso flotante a la asistencia por WhatsApp. */}
-      {currentView !== 'admin' && (
-        <aside aria-label="Contacto flotante" className="fixed bottom-6 right-6 z-30 flex flex-col gap-2">
-          <a
-            href={`https://wa.me/${TIKKUN_CONTACT.numeroWhatsapp}?text=${encodeURIComponent('Hola Casa Tikkun, quisiera consultar información para reservar en sus cabañas.')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#25D366] hover:bg-[#20BD5A] text-white shadow-xl flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 group"
-            aria-label="Contactar por WhatsApp"
-          >
-            <MessageCircle className="w-6 h-6 sm:w-7 sm:h-7" />
-            <span className="sr-only">Contactar por WhatsApp</span>
-            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-tikkun-brand-deep text-white text-xs font-bold py-1.5 px-3 rounded-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-md pointer-events-none hidden sm:inline-block border border-tikkun-brand-sage/40">
-              ¿Dudas? Chatea en vivo
-            </span>
-          </a>
-        </aside>
-      )}
 
     </div>
   );

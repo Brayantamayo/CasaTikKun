@@ -1,10 +1,7 @@
 // Barra de navegación principal para recorrer las secciones del sitio.
 import React, { useState, useEffect } from 'react';
-import { 
-  Menu, X, MessageCircle, Calendar
-} from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { TikkunLogo } from '@/modulos/Home/TikkunLogo';
-import { TIKKUN_CONTACT } from '@/compartido/datos/tikkunData';
 
 interface NavbarProps {
   onOpenBookingModal: () => void;
@@ -18,11 +15,22 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNavigate
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
+    let previousScrollY = window.scrollY;
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
+      const currentScrollY = window.scrollY;
+      setIsScrolled(currentScrollY > 40);
+
+      if (currentScrollY <= 40) {
+        setIsVisible(true);
+      } else if (Math.abs(currentScrollY - previousScrollY) > 6) {
+        setIsVisible(currentScrollY < previousScrollY);
+      }
+
+      previousScrollY = currentScrollY;
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -45,20 +53,20 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none transition-all duration-300">
+    <header className={`fixed top-0 left-0 right-0 z-50 pointer-events-none transition-all duration-300 ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
       
-      {/* Barra completa al inicio y cápsula compacta al desplazarse. */}
+      {/* Barra rectangular con esquinas redondeadas, también al desplazarse. */}
       <div className={`pointer-events-auto transition-all duration-300 ease-out ${isScrolled ? 'px-3 sm:px-6 pt-2.5 pb-1' : 'px-0 pt-0 pb-0'}`}>
         <div 
           className={`transition-all duration-300 ease-out ${
             isScrolled
-              ? 'max-w-6xl mx-auto rounded-full bg-tikkun-brand-sage/95 backdrop-blur-md border border-[#A4B188] shadow-[0_10px_30px_rgba(30,49,26,0.18)] px-3 sm:px-4 py-1.5'
-              : 'w-full bg-tikkun-brand-sage/95 backdrop-blur-md border-b border-[#A2AF84]/80 shadow-2xs px-4 sm:px-6 lg:px-8 py-2'
+              ? 'max-w-6xl mx-auto rounded-2xl bg-tikkun-brand-sage/95 backdrop-blur-md border border-[#A4B188] shadow-[0_10px_30px_rgba(30,49,26,0.18)] px-3 sm:px-4 py-1.5'
+              : 'mx-3 mt-2 sm:mx-5 sm:mt-3 lg:mx-8 rounded-2xl bg-tikkun-brand-sage/95 backdrop-blur-md border border-[#A2AF84]/80 shadow-[0_8px_24px_rgba(30,49,26,0.14)] px-3 sm:px-5 lg:px-6 py-1.5 sm:py-2'
           }`}
         >
           <div 
             className={`flex items-center justify-between transition-all duration-300 ${
-              isScrolled ? 'h-14' : 'h-18 sm:h-20'
+              isScrolled ? 'h-12' : 'h-14 sm:h-16'
             }`}
           >
             
@@ -73,8 +81,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               aria-label="Ir al inicio de Casa Tikkun"
             >
               <TikkunLogo
-                shape="circle"
-                size={isScrolled ? 'md' : 'lg'}
+                shape="square"
+                size="md"
                 className="origin-left border-2 border-[#F4F1E7] shadow-[0_3px_12px_rgba(30,49,26,0.22)] transition-all duration-300"
               />
               <span className="flex flex-col items-start leading-none text-tikkun-brand-deep">
@@ -84,7 +92,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </a>
 
             {/* Navegación de escritorio. */}
-            <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1">
+            <nav className="hidden lg:flex flex-1 items-center justify-end gap-0.5 xl:gap-1">
               {navItems.map((item) => {
                 const isSelected = activeSection === item.id;
                 
@@ -125,38 +133,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               })}
             </nav>
 
-            {/* Acciones de contacto y reserva. */}
+            {/* Control del menú móvil. */}
             <div className="flex items-center gap-2 sm:gap-2.5">
-              
-              {/* Contacto directo por WhatsApp en escritorio. */}
-              <a
-                href={`https://wa.me/${TIKKUN_CONTACT.numeroWhatsapp}?text=${encodeURIComponent('Hola Casa Tikkun, quisiera consultar información sobre disponibilidad.')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-tikkun-brand-deep transition-all ${
-                  isScrolled
-                    ? 'hover:bg-[#A8B68C] border border-[#A2AF84]/50'
-                    : 'hover:bg-[#A8B68C]'
-                }`}
-                aria-label="Contactar por WhatsApp"
-              >
-                <MessageCircle className="w-3.5 h-3.5 text-tikkun-brand-deep" />
-                <span className="font-semibold">WhatsApp</span>
-              </a>
-
-              {/* Acceso directo a la reserva. */}
-              <button
-                type="button"
-                onClick={onOpenBookingModal}
-                className={`inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 text-xs font-bold text-white bg-tikkun-brand-deep hover:bg-[#2C4623] rounded-full transition-all shadow-xs active:scale-95 cursor-pointer shrink-0 ${
-                  isScrolled ? 'shadow-sm ring-1 ring-tikkun-brand-deep/20' : ''
-                }`}
-              >
-                <Calendar className="w-3.5 h-3.5 text-tikkun-brand-sage" />
-                <span>Reservar</span>
-              </button>
-
-              {/* Control del menú móvil. */}
               <div className="flex lg:hidden items-center ml-1">
                 <button
                   type="button"
@@ -179,7 +157,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="bg-tikkun-brand-cream border border-[#D6DFC7] rounded-3xl shadow-2xl p-4 space-y-3">
             <div className="flex items-center justify-between pb-2 border-b border-[#E2EBD8]">
               <div className="flex items-center gap-2">
-                <TikkunLogo shape="circle" size="sm" />
+                <TikkunLogo shape="square" size="sm" />
               </div>
               <button
                 type="button"

@@ -21,26 +21,40 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
 }) => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [hasReachedCatalog, setHasReachedCatalog] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const images = accommodation.imagenesGaleria && accommodation.imagenesGaleria.length > 0
     ? accommodation.imagenesGaleria
     : [accommodation.imagenPrincipal];
 
-  // Rotar las fotografías cada cuatro segundos, con un desfase según el número de cabaña.
+  // Las fotos esperan hasta que el catálogo entre en pantalla; luego rotan lentamente.
   useEffect(() => {
-    if (isHovered || images.length <= 1) return;
+    const catalogSection = document.getElementById('catalogo');
+    if (!catalogSection) return;
 
-    const intervalTime = 3800 + (accommodation.numeroCabana * 350);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setHasReachedCatalog(true);
+      },
+      { threshold: 0.05 },
+    );
+
+    observer.observe(catalogSection);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!hasReachedCatalog || isHovered || images.length <= 1) return;
 
     timerRef.current = setInterval(() => {
       setActiveImageIndex((prev) => (prev + 1) % images.length);
-    }, intervalTime);
+    }, 12000);
 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isHovered, images.length, accommodation.numeroCabana]);
+  }, [hasReachedCatalog, isHovered, images.length]);
 
   const rates = getEffectiveCabinRates(accommodation);
 
@@ -68,7 +82,7 @@ export const AccommodationCard: React.FC<AccommodationCardProps> = ({
         {images.map((img, idx) => (
           <div
             key={idx}
-            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+              className={`absolute inset-0 transition-opacity duration-1200 ease-in-out ${
               activeImageIndex === idx ? 'opacity-100 z-1' : 'opacity-0 z-0 pointer-events-none'
             }`}
           >

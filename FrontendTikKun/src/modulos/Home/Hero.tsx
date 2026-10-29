@@ -28,6 +28,7 @@ export const Hero: React.FC<HeroProps> = ({
   );
 
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [hasReachedCabins, setHasReachedCabins] = useState(false);
 
   // Mantener el índice dentro del rango si cambia la cantidad de imágenes.
   useEffect(() => {
@@ -36,15 +37,31 @@ export const Hero: React.FC<HeroProps> = ({
     }
   }, [activeSlides.length, currentSlideIndex]);
 
-  // Cambiar automáticamente la imagen de fondo cada seis segundos.
+  // Mantener la primera imagen hasta que la sección de cabañas entre en pantalla.
   useEffect(() => {
-    if (activeSlides.length <= 1) return;
+    const cabinsSection = document.getElementById('catalogo');
+    if (!cabinsSection) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setHasReachedCabins(true);
+      },
+      { threshold: 0.05 },
+    );
+
+    observer.observe(cabinsSection);
+    return () => observer.disconnect();
+  }, []);
+
+  // Una vez alcanzadas las cabañas, cambiar la foto lentamente cada 12 segundos.
+  useEffect(() => {
+    if (!hasReachedCabins || activeSlides.length <= 1) return;
     const timer = setInterval(() => {
       setCurrentSlideIndex((prev) => (prev + 1) % activeSlides.length);
-    }, 6000);
+    }, 12000);
 
     return () => clearInterval(timer);
-  }, [activeSlides.length]);
+  }, [activeSlides.length, hasReachedCabins]);
 
   // Obtener fechas predeterminadas sin desfases horarios.
   const { todayStr, tomorrowStr, dayAfterStr } = getDefaultStayDates();
@@ -287,8 +304,8 @@ export const Hero: React.FC<HeroProps> = ({
 
         </div>
 
-        {/* Indicadores para elegir la imagen de fondo. */}
-        <div className="flex items-center gap-1.5 mt-3.5 z-10">
+        {/* Indicadores disponibles después de llegar a la sección de cabañas. */}
+        {hasReachedCabins && <div className="flex items-center gap-1.5 mt-3.5 z-10">
           {activeSlides.map((_, idx) => (
             <button
               key={idx}
@@ -302,7 +319,7 @@ export const Hero: React.FC<HeroProps> = ({
               }`}
             />
           ))}
-        </div>
+        </div>}
 
       </div>
 

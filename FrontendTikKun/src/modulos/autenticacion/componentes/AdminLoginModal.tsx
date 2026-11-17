@@ -33,6 +33,9 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
       await login(username, password);
       onSuccess();
     } catch (loginError) {
+      // No dejar credenciales en el formulario después de un intento fallido.
+      setUsername('');
+      setPassword('');
       if (loginError instanceof ApiError && loginError.status === 401) {
         setError('El correo o la contraseña no son correctos.');
       } else {
@@ -91,7 +94,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
             </label>
             <input
               type="email"
-              autoComplete="username"
+              autoComplete="off"
               required
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -108,7 +111,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
               {/* El estado showPassword solo alterna la visibilidad del campo en pantalla. */}
               <input
                 type={showPassword ? 'text' : 'password'}
-                autoComplete="current-password"
+                autoComplete="new-password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

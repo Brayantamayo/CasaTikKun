@@ -35,16 +35,20 @@ export class AuthService implements OnModuleInit {
     const password = this.config.get<string>('ADMIN_PASSWORD');
     const jwtSecret = this.config.get<string>('JWT_SECRET');
 
-    if (!email || !jwtSecret || jwtSecret.length < 64) {
-      throw new Error('Auth configuration is incomplete. Set ADMIN_EMAIL and a JWT_SECRET of at least 64 characters.');
+    if (!jwtSecret || jwtSecret.length < 64) {
+      throw new Error('Auth configuration is incomplete. Set a JWT_SECRET of at least 64 characters.');
     }
 
     // Crea el hash señuelo una sola vez para reducir diferencias de tiempo en respuestas de login.
     this.dummyPasswordHash = await hash(randomBytes(32).toString('base64url'), ARGON2_OPTIONS);
 
     // El arranque es idempotente: si el administrador ya existe, no sobrescribe su contraseña.
-    const existingAdmin = await this.prisma.admin.findUnique({ where: { email }, select: { id: true } });
+    const existingAdmin = email
+      ? await this.prisma.admin.findUnique({ where: { email }, select: { id: true } })
+      : null;
     if (existingAdmin) return;
+    // Si no hay correo inicial configurado, conserva la cuenta existente y permite iniciar el backend.
+    if (!email) return;
     if (!password || password.length < 20) {
       throw new Error('Set an ADMIN_PASSWORD of at least 20 characters to create the first admin.');
     }

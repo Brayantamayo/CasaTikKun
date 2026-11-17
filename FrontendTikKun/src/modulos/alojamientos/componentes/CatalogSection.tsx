@@ -1,11 +1,10 @@
 // Sección pública que presenta el catálogo de alojamientos.
-import React, { useState, useMemo } from 'react';
-import { Home, Sparkles, ArrowRight, RotateCcw } from 'lucide-react';
+import React from 'react';
+import { Home, Sparkles, ArrowRight } from 'lucide-react';
 import { Cabana } from '@/compartido/tipos';
 import { AccommodationCard } from '@/modulos/alojamientos/componentes/AccommodationCard';
 import { Reveal } from '@/modulos/Home/Reveal';
 import { useAdmin } from '@/modulos/administracion/contexto/contextoAdmin';
-import { getCabinShortName } from '@/compartido/utilidades/formatters';
 
 interface CatalogSectionProps {
   onOpenBookingModal: (accommodationId?: string) => void;
@@ -18,25 +17,6 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
 }) => {
   const { getEffectiveAccommodations } = useAdmin();
   const allAccommodations = getEffectiveAccommodations();
-  const [activeFilter, setActiveFilter] = useState<string>('all');
-
-  // Crear filtros dinámicos para las cabañas predeterminadas y personalizadas.
-  const filterTabs = useMemo(() => [
-    { id: 'all', label: `Nuestras ${allAccommodations.length} Cabañas`, number: null },
-    ...allAccommodations.map((acc) => ({
-      id: acc.id,
-      label: getCabinShortName(acc.nombre),
-      number: String(acc.numeroCabana || '')
-    }))
-  ], [allAccommodations]);
-
-  const filteredAccommodations = useMemo(() => {
-    if (activeFilter === 'all') {
-      return allAccommodations;
-    }
-    return allAccommodations.filter((acc) => acc.id === activeFilter);
-  }, [activeFilter, allAccommodations]);
-
   const handleBookNow = (acc: Cabana) => {
     onOpenBookingModal(acc.id);
   };
@@ -67,55 +47,13 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({
           </div>
         </Reveal>
 
-        {/* Filtros del catálogo. */}
-        {allAccommodations.length > 0 && <Reveal delayMs={100}>
-          <div className="flex flex-wrap items-center gap-2 mb-8 pb-4 border-b border-[#CCD8B8]">
-            {filterTabs.map((tab) => {
-              const isActive = activeFilter === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setActiveFilter(tab.id)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-2xs whitespace-nowrap ${
-                    isActive
-                      ? 'bg-tikkun-brand-deep text-white shadow-xs scale-[1.02]'
-                      : 'bg-white text-stone-700 hover:bg-tikkun-brand-sage/30 border border-stone-200'
-                  }`}
-                >
-                  {tab.number && (
-                    <span className={`w-4 h-4 rounded-md flex items-center justify-center text-[10px] font-bold ${
-                      isActive ? 'bg-tikkun-brand-sage text-tikkun-brand-deep' : 'bg-[#E5ECD9] text-tikkun-brand-deep'
-                    }`}>
-                      {tab.number}
-                    </span>
-                  )}
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-
-            {activeFilter !== 'all' && (
-              <button
-                type="button"
-                onClick={() => setActiveFilter('all')}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#44603B] hover:text-tikkun-brand-deep underline underline-offset-4 cursor-pointer ml-auto"
-              >
-                <RotateCcw className="w-3 h-3" />
-                <span>Ver todas las {allAccommodations.length} cabañas</span>
-              </button>
-            )}
-          </div>
-        </Reveal>}
-
-
         {/* Cuadrícula de cabañas con animación de entrada. */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-14">
-          {filteredAccommodations.length === 0 ? (
+          {allAccommodations.length === 0 ? (
             <p className="md:col-span-2 rounded-2xl border border-[#CCD8B8] bg-white p-8 text-center text-sm text-[#465E3C]">
               Aún no hay alojamientos publicados. Vuelve pronto para conocerlos.
             </p>
-          ) : filteredAccommodations.map((acc, idx) => (
+          ) : allAccommodations.map((acc, idx) => (
             <Reveal key={acc.id} delayMs={(idx % 2) * 100} direction="up">
               <AccommodationCard
                 accommodation={acc}

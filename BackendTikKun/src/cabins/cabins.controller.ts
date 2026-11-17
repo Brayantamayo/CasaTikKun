@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { AdminAuthGuard } from '../auth/admin-auth.guard';
 import { CabinDto } from './dto/cabin.dto';
 import { CabinsService } from './cabins.service';
@@ -15,18 +16,21 @@ export class CabinsController {
 
   @Post()
   @UseGuards(AdminAuthGuard)
+  @Throttle({ default: { limit: 30, ttl: 60_000 } })
   async create(@Body() dto: CabinDto) {
     return { success: true, data: await this.cabins.create(dto) };
   }
 
   @Put(':id')
   @UseGuards(AdminAuthGuard)
+  @Throttle({ default: { limit: 60, ttl: 60_000 } })
   async update(@Param('id') id: string, @Body() dto: CabinDto) {
     return { success: true, data: await this.cabins.update(id, dto) };
   }
 
   @Delete(':id')
   @UseGuards(AdminAuthGuard)
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
   async remove(@Param('id') id: string) {
     await this.cabins.remove(id);
     return { success: true, data: null };

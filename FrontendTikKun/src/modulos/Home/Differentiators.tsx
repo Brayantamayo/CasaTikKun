@@ -144,10 +144,6 @@ export const Differentiators: React.FC = () => {
                     <h3 className="font-serif text-xl font-medium tracking-wide text-white transition-colors group-hover:text-[#F0C8A8] sm:text-2xl">{item.title}</h3>
                     <p className="mt-2.5 max-w-md text-xs leading-6 text-white/70 sm:text-sm sm:leading-7">{item.description}</p>
                   </div>
-                  <div className="mt-auto flex items-center gap-2 pt-5 text-[9px] font-semibold uppercase tracking-[0.2em] text-[#E7B58A]/80">
-                    <span className="h-px w-6 bg-[#E7B58A]/60 transition-all group-hover:w-10" />
-                    Casa Tikkun
-                  </div>
                 </div>
               </article>
             </Reveal>

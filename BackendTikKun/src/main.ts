@@ -7,6 +7,8 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, { bodyParser: false });
+  // Producción llega a través de un único Nginx propio; usa su IP real para límites por visitante.
+  app.set('trust proxy', 1);
   // Las imágenes comprimidas llegan en base64; este límite admite archivos grandes sin aceptar cuerpos ilimitados.
   app.useBodyParser('json', { limit: '16mb' });
   // En producción CORS falla de forma cerrada: nunca habilita localhost por una variable olvidada.
@@ -41,7 +43,7 @@ async function bootstrap() {
   app.use(helmet());
   app.use(cookieParser());
   // CORS con credenciales habilita la cookie solo desde el frontend configurado.
-  app.enableCors({ origin: [...allowedFrontendOrigins], credentials: true, methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], allowedHeaders: ['Content-Type'], exposedHeaders: ['Set-Cookie'] });
+  app.enableCors({ origin: [...allowedFrontendOrigins], credentials: true, methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], allowedHeaders: ['Content-Type', 'X-CSRF-Token'] });
   app.enableShutdownHooks();
   // Prefijo común de API y validación global estricta de todos los DTO de entrada.
   app.setGlobalPrefix('api');

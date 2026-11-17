@@ -16,12 +16,14 @@ export class ReviewsController {
 
   @Get('admin')
   @UseGuards(AdminAuthGuard)
+  @Throttle({ default: { limit: 30, ttl: 60_000 } })
   findAllForAdmin() {
     return this.reviews.findAllForAdmin();
   }
 
   @Post(':id/approve')
   @UseGuards(AdminAuthGuard)
+  @Throttle({ default: { limit: 30, ttl: 60_000 } })
   approve(@Param('id') id: string) {
     return this.reviews.approve(id);
   }
@@ -37,6 +39,7 @@ export class ReviewsController {
   // Solo una sesión de administrador puede retirar una reseña permanentemente.
   @Delete(':id')
   @UseGuards(AdminAuthGuard)
+  @Throttle({ default: { limit: 30, ttl: 60_000 } })
   remove(@Param('id') id: string) {
     return this.reviews.remove(id);
   }

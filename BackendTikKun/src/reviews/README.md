@@ -18,4 +18,4 @@ El correo se usa para impedir una segunda reseña y no se devuelve al público n
 
 ## Base de datos
 
-La migración `20261013010000_add_reviews` crea la tabla y un índice único de `email_hash`, que también impide duplicados simultáneos. Aplicar las migraciones desde `BackendTikKun` con `pnpm prisma migrate deploy` antes de levantar la API.
+Las migraciones crean la tabla, el índice único de `email_hash` y el estado de moderación. Docker las aplica al iniciar el backend (`RUN_MIGRATIONS=true`). Si ejecutas NestJS directamente, aplica primero las migraciones desde `BackendTikKun` con `pnpm prisma migrate deploy`; de lo contrario, las consultas de reseñas pueden fallar si la base de datos no está actualizada.

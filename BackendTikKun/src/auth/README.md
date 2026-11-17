@@ -18,6 +18,6 @@ Este módulo deja que solo el administrador inicie sesión. NestJS valida el DTO
 4. Inicia la API: `pnpm start:dev`. Por defecto escucha en `http://localhost:3000`.
 5. Configura `VITE_AUTH_API_BASE_URL=http://localhost:3000` en el frontend local.
 
-La primera vez que el servidor arranca después de aplicar la migración crea la cuenta indicada por `ADMIN_EMAIL` y `ADMIN_PASSWORD`. Si la cuenta ya existe, no cambia su contraseña al reiniciar. Después de crearla puedes quitar `ADMIN_PASSWORD` del entorno; la base de datos conserva únicamente el hash.
+La primera vez que el servidor arranca después de aplicar la migración crea la cuenta indicada por `ADMIN_EMAIL` y `ADMIN_PASSWORD`. Si la cuenta ya existe, no cambia su contraseña al reiniciar. Después de crearla puedes quitar `ADMIN_EMAIL` y `ADMIN_PASSWORD` del entorno; la base de datos conserva únicamente el hash. `JWT_SECRET` sigue siendo obligatorio para sesiones y huellas HMAC de reseñas.
 
 La sesión vive ocho horas, usa cookie `HttpOnly` con `SameSite=Strict`, y el endpoint de login acepta cinco intentos por minuto por IP. Configura HTTPS en producción y define allí las variables en el gestor de secretos del proveedor. Mantén el frontend y la API bajo el mismo sitio para que el navegador envíe la cookie.

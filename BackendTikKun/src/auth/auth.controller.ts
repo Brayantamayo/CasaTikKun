@@ -5,6 +5,7 @@ import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common
 import { ConfigService } from '@nestjs/config';
 // Importa el tipo Response de Express para gestionar cookies.
 import { Response } from 'express';
+import { randomBytes } from 'crypto';
 // Limita la cantidad de intentos de inicio de sesión.
 import { Throttle } from '@nestjs/throttler';
 // Importa el guard de autenticación y el tipo de petición del administrador.
@@ -16,6 +17,7 @@ import { LoginDto } from './dto/login.dto';
 
 // Define la duración de la sesión: 8 horas en milisegundos.
 const SESSION_MAX_AGE_MS = 8 * 60 * 60 * 1000;
+const CSRF_MAX_AGE_MS = SESSION_MAX_AGE_MS;
 
 // Controller que gestiona las rutas de autenticación bajo /auth.
 @Controller('auth')
@@ -39,6 +41,14 @@ export class AuthController {
       path: '/',
       maxAge: SESSION_MAX_AGE_MS,
     });
+    // Double-submit token: el navegador puede enviarlo en X-CSRF-Token, JS no puede leer la cookie de sesión.
+    response.cookie('admin_csrf', randomBytes(32).toString('base64url'), {
+      httpOnly: false,
+      secure: this.config.get('NODE_ENV') === 'production',
+      sameSite: 'strict',
+      path: '/',
+      maxAge: CSRF_MAX_AGE_MS,
+    });
 
     // Devuelve los datos públicos del administrador, sin enviar el token.
     return { success: true, data: { id: admin.id, email: admin.email } };
@@ -50,6 +60,11 @@ export class AuthController {
     // Elimina la cookie usando las mismas opciones con las que fue creada.
     response.clearCookie('admin_session', {
       httpOnly: true,
+      secure: this.config.get('NODE_ENV') === 'production',
+      sameSite: 'strict',
+      path: '/',
+    });
+    response.clearCookie('admin_csrf', {
       secure: this.config.get('NODE_ENV') === 'production',
       sameSite: 'strict',
       path: '/',

@@ -2,6 +2,13 @@
 /** Cliente HTTP único del frontend: centraliza URL base, cookies y errores de NestJS. */
 const API_ORIGIN = (import.meta.env.VITE_AUTH_API_BASE_URL || 'http://localhost:3000').replace(/\/+$/, '');
 
+function readCookie(name: string): string | undefined {
+  if (typeof document === 'undefined') return undefined;
+  const entry = document.cookie.split('; ').find((cookie) => cookie.startsWith(`${name}=`));
+  if (!entry) return undefined;
+  try { return decodeURIComponent(entry.slice(name.length + 1)); } catch { return undefined; }
+}
+
 export class ApiError extends Error {
   constructor(message: string, public readonly status: number, public readonly details?: unknown) {
     super(message);
@@ -21,6 +28,11 @@ function getErrorMessage(payload: unknown, fallback: string): string {
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const endpoint = `${API_ORIGIN}/api${path.startsWith('/') ? path : `/${path}`}`;
   const headers = new Headers(init.headers);
+  const method = (init.method || 'GET').toUpperCase();
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+    const csrfToken = readCookie('admin_csrf');
+    if (csrfToken) headers.set('X-CSRF-Token', csrfToken);
+  }
   if (init.body && !(init.body instanceof FormData) && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json');
   }

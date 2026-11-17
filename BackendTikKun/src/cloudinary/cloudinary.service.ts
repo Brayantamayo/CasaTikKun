@@ -1,4 +1,4 @@
-import { BadGatewayException, Injectable, Logger, ServiceUnavailableException } from '@nestjs/common';
+import { BadGatewayException, Injectable, Logger, PayloadTooLargeException, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createHash, randomUUID } from 'crypto';
 
@@ -35,6 +35,10 @@ export class CloudinaryService {
     body.set('public_id', publicId);
 
     try {
+      const estimatedBytes = Math.floor((image.length - image.indexOf(',') - 1) * 3 / 4);
+      if (estimatedBytes > 10 * 1024 * 1024) {
+        throw new PayloadTooLargeException('La imagen excede el límite de 10 MB.');
+      }
       const response = await fetch(`https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/image/upload`, {
         method: 'POST',
         // El runtime añade el boundary multipart requerido al enviar FormData.

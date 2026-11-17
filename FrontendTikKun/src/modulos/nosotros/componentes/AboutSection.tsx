@@ -21,123 +21,74 @@ export const AboutSection: React.FC = () => {
         <div className="absolute inset-0 bg-linear-to-t from-[#0E1A0C]/90 via-transparent to-[#0E1A0C]/80" />
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
-        {/* Panel translúcido con la historia y los atributos del alojamiento. */}
+      <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
         <Reveal direction="up">
-          <div className="relative rounded-3xl p-5 sm:p-7 lg:p-8 bg-white/12 backdrop-blur-2xl border border-white/20 shadow-[0_16px_45px_rgba(0,0,0,0.4)] ring-1 ring-white/15 overflow-hidden">
-            
-            {/* Brillos ambientales interiores. */}
-            <div className="absolute -top-24 -left-24 w-60 h-60 bg-[#B8CFA0]/15 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-24 -right-24 w-60 h-60 bg-amber-200/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
+            <div className="space-y-6 lg:col-span-5">
+              <h2 className="max-w-xl text-3xl font-serif font-bold leading-[1.12] tracking-tight text-white text-balance sm:text-4xl lg:text-5xl">
+                Somos <span className="font-normal italic text-[#B8CFA0]">TikKun</span>
+              </h2>
 
-            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
-              
-              {/* Columna izquierda: historia y significado. */}
-              <div className="lg:col-span-6 space-y-4">
-                
-                {/* Rótulo translúcido de identidad. */}
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-[11px] font-medium uppercase tracking-wider text-white shadow-2xs">
-                  <Heart className="w-3 h-3 text-[#E68A7E] fill-[#E68A7E]" />
-                  <span>Glamping en Santa Elena · Antioquia</span>
-                </div>
-
-                {/* Título principal. */}
-                <h2 className="text-xl sm:text-2xl lg:text-3xl font-serif font-bold text-white tracking-tight leading-snug text-balance">
-                  Somos <span className="italic font-normal text-[#B8CFA0] drop-shadow-[0_2px_10px_rgba(184,207,160,0.4)]">Tikkun</span>, un refugio de montaña para compartir y reconectar
-                </h2>
-
-                {/* Relato de la marca. */}
-                <div className="space-y-2.5 text-xs sm:text-sm text-white/90 leading-relaxed font-normal">
-                  <p>
-                    A solo <strong className="text-white font-semibold">35 minutos de Medellín</strong>, en las montañas de <strong className="text-[#D3E5BF] font-semibold">Santa Elena</strong>, te esperan cuatro cabañas totalmente dotadas para disfrutar una escapada especial.
-                  </p>
-                  <p>
-                    El clima fresco de montaña hace de cada cabaña un refugio acogedor para compartir con tus personas favoritas. Somos <strong className="text-white font-semibold">pet friendly</strong>, estamos en una zona segura y vigilada, y aquí puedes bajar el ritmo al sonido de la naturaleza. Ven a vivir un momento inolvidable.
-                  </p>
-                </div>
-
-                {/* Tres atributos principales de la experiencia. */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
-                  
-                  <div className="bg-white/10 hover:bg-white/15 backdrop-blur-md rounded-xl p-3 border border-white/15 shadow-2xs flex flex-col justify-between transition-colors">
-                    <div className="w-7 h-7 rounded-lg bg-white/20 text-[#B8CFA0] flex items-center justify-center mb-1.5">
-                      <Heart className="w-3.5 h-3.5 fill-[#B8CFA0]" />
-                    </div>
-                    <div>
-                      <h4 className="text-[11px] font-bold uppercase tracking-wider text-white">cabañas</h4>
-                      <p className="text-[10.5px] text-white/80 mt-0.5 leading-snug">
-                        Totalmente dotadas para una estadía cómoda.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="bg-white/10 hover:bg-white/15 backdrop-blur-md rounded-xl p-3 border border-white/15 shadow-2xs flex flex-col justify-between transition-colors">
-                    <div className="w-7 h-7 rounded-lg bg-white/20 text-[#B8CFA0] flex items-center justify-center mb-1.5">
-                      <Trees className="w-3.5 h-3.5 text-[#B8CFA0]" />
-                    </div>
-                    <div>
-                      <h4 className="text-[11px] font-bold uppercase tracking-wider text-white">Naturaleza viva</h4>
-                      <p className="text-[10.5px] text-white/80 mt-0.5 leading-snug">
-                        Respira aire puro y disfruta el sonido del entorno.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="bg-white/10 hover:bg-white/15 backdrop-blur-md rounded-xl p-3 border border-white/15 shadow-2xs flex flex-col justify-between transition-colors">
-                    <div className="w-7 h-7 rounded-lg bg-white/20 text-[#E5A069] flex items-center justify-center mb-1.5">
-                      <ShieldCheck className="w-3.5 h-3.5 text-[#F4BE9B]" />
-                    </div>
-                    <div>
-                      <h4 className="text-[11px] font-bold uppercase tracking-wider text-white">Descanso tranquilo</h4>
-                      <p className="text-[10.5px] text-white/80 mt-0.5 leading-snug">
-                        Zona segura y vigilada para que disfrutes con calma.
-                      </p>
-                    </div>
-                  </div>
-
-                </div>
-
+              <div className="max-w-xl space-y-4 text-sm leading-relaxed text-white/85 sm:text-base">
+                <p>
+                  A solo <strong className="font-semibold text-white">35 minutos de Medellín</strong>, en las montañas de <strong className="font-semibold text-[#D3E5BF]">Santa Elena</strong>, te esperan cuatro cabañas totalmente dotadas para disfrutar una escapada especial.
+                </p>
+                <p>
+                  El clima fresco de montaña hace de cada cabaña un refugio acogedor para compartir con tus personas favoritas. Somos <strong className="font-semibold text-white">pet friendly</strong>, estamos en una zona segura y vigilada, y aquí puedes bajar el ritmo al sonido de la naturaleza. Ven a vivir un momento inolvidable.
+                </p>
               </div>
 
-              {/* Columna derecha: fotografía de la cabaña. */}
-              <div className="lg:col-span-6 h-full flex flex-col justify-center">
-                
-                {/* Fotografía principal de la cabaña iluminada. */}
-                <div className="relative rounded-2xl overflow-hidden shadow-xl border border-white/25 group h-full min-h-72.5 sm:min-h-82.5">
-                  <img
-                    src="/Images/Conocenos.png"
-                    alt="Collage de Casa Tikkun: cabañas, terrazas y paisajes de Santa Elena"
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full min-h-72.5 sm:min-h-82.5 object-cover group-hover:scale-103 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/15 to-transparent" />
-                  
-                  {/* Ubicación sobre la fotografía. */}
-                  <div className="absolute top-3.5 right-3.5 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 text-[11px] font-medium text-white shadow-xs flex items-center gap-1.5">
-                    <Sparkles className="w-3 h-3 text-[#ECCB85]" />
-                    <span>Santa Elena, Antioquia</span>
-                  </div>
-
-                  {/* Frase que resume la filosofía del alojamiento. */}
-                  <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <span className="text-[9.5px] uppercase tracking-widest text-[#B8CFA0] font-bold block mb-0.5">
-                      Una pausa en Santa Elena
-                    </span>
-                    <p className="font-serif italic text-xs sm:text-sm text-white/95 leading-snug">
-                      &ldquo;Ven a compartir con quienes quieres y déjate llevar por el sonido de la naturaleza.&rdquo;
-                    </p>
+              <div className="grid gap-4 border-t border-white/25 pt-5 sm:grid-cols-3">
+                <div className="flex items-start gap-2.5">
+                  <Heart className="mt-0.5 h-4 w-4 shrink-0 fill-[#B8CFA0] text-[#B8CFA0]" />
+                  <div>
+                    <h3 className="text-[10px] font-bold uppercase tracking-wider text-white sm:text-[11px]">Cabañas</h3>
+                    <p className="mt-1 text-[11px] leading-snug text-white/70">Totalmente dotadas para una estadía cómoda.</p>
                   </div>
                 </div>
-
+                <div className="flex items-start gap-2.5">
+                  <Trees className="mt-0.5 h-4 w-4 shrink-0 text-[#B8CFA0]" />
+                  <div>
+                    <h3 className="text-[10px] font-bold uppercase tracking-wider text-white sm:text-[11px]">Naturaleza viva</h3>
+                    <p className="mt-1 text-[11px] leading-snug text-white/70">Respira aire puro y disfruta el sonido del entorno.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#F4BE9B]" />
+                  <div>
+                    <h3 className="text-[10px] font-bold uppercase tracking-wider text-white sm:text-[11px]">Descanso tranquilo</h3>
+                    <p className="mt-1 text-[11px] leading-snug text-white/70">Zona segura y vigilada para que disfrutes con calma.</p>
+                  </div>
+                </div>
               </div>
-
             </div>
 
+            <div className="relative lg:col-span-7">
+              <div className="group relative min-h-80 overflow-hidden rounded-[1.5rem_1.5rem_1.5rem_7rem] sm:min-h-[27rem] lg:min-h-[34rem]">
+                <img
+                  src="/Images/Conocenos.png"
+                  alt="Collage de Casa Tikkun: cabañas, terrazas y paisajes de Santa Elena"
+                  loading="lazy"
+                  decoding="async"
+                  className="absolute inset-y-0 -left-[4%] h-full w-[108%] object-cover transition-transform duration-700 group-hover:translate-x-[3%] group-hover:scale-[1.02] motion-reduce:transition-none"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/10" />
+                <div className="absolute left-5 top-5 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-white drop-shadow sm:left-7 sm:top-7">
+                  <Sparkles className="h-3.5 w-3.5 text-[#ECCB85]" />
+                  <span>Santa Elena, Antioquia</span>
+                </div>
+                <div className="absolute bottom-6 left-6 right-6 text-white sm:bottom-8 sm:left-8 sm:right-8">
+                  <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-[#B8CFA0]">
+                    Una pausa en Santa Elena
+                  </span>
+                  <p className="max-w-lg font-serif text-lg italic leading-snug text-white sm:text-xl">
+                    &ldquo;Ven a compartir con quienes quieres y déjate llevar por el sonido de la naturaleza.&rdquo;
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </Reveal>
-
       </div>
     </section>
   );

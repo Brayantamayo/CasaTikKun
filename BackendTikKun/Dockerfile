@@ -10,7 +10,7 @@ COPY prisma ./prisma
 RUN npx prisma generate
 COPY . .
 EXPOSE 3000
-CMD ["npm", "run", "start:dev", "--", "--host", "0.0.0.0"]
+CMD ["sh", "-c", "if [ \"${RUN_MIGRATIONS:-true}\" = \"true\" ]; then ./node_modules/.bin/prisma migrate deploy; fi && npm run start:dev -- --host 0.0.0.0"]
 
 FROM base AS build
 RUN npm ci --include=dev

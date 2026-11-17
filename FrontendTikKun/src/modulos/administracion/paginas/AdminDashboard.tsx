@@ -113,7 +113,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       await reviewsService.approve(reviewId);
       const refreshed = await reviewsService.listForAdmin();
       setAdminReviews(refreshed);
-      await refreshReviews();
+      try {
+        await refreshReviews();
+      } catch {
+        // El listado administrativo confirma la aprobación aunque falle una lectura pública transitoria.
+      }
       showSuccess('Reseña aprobada. Si ya había 15 publicadas, se retiró automáticamente la más antigua.');
     } catch (error) {
       showError(error instanceof Error ? error.message : 'No se pudo aprobar la reseña.');

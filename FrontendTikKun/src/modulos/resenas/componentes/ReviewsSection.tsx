@@ -25,6 +25,24 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
 
+  const resetReviewForm = () => {
+    setName('');
+    setEmail('');
+    setCity('');
+    setAccommodationId(allAccommodations[0]?.id || '');
+    setRating(5);
+    setTravelType('En Pareja');
+    setComment('');
+    setSubmitError('');
+    setPrivacyAccepted(false);
+  };
+
+  const closeReviewModal = () => {
+    if (isSubmitting) return;
+    setIsModalOpen(false);
+    resetReviewForm();
+  };
+
   const filteredReviews = useMemo(() => {
     if (selectedCabinFilter === 'all') return reviews;
     return reviews.filter((r) => r.cabanaId === selectedCabinFilter);
@@ -78,7 +96,7 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
       await addReview({ nombreHuesped: cleanName, correoHuesped: cleanEmail, ciudadHuesped: cleanCity, calificacion: rating, cabanaId: accommodationId, nombreCabana: cabin?.nombre, comentario: cleanComment, tipoViaje: travelType });
       notificar.exito('Gracias, recibimos tu reseña. El equipo la revisará antes de publicarla.');
       setIsModalOpen(false);
-      setName(''); setEmail(''); setCity(''); setComment(''); setRating(5); setPrivacyAccepted(false);
+      resetReviewForm();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'No se pudo publicar la reseña.';
       setSubmitError(message);
@@ -248,7 +266,7 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
       {/* Ventana para añadir una reseña. */}
       {isModalOpen && (
         <div
-          onClick={() => setIsModalOpen(false)}
+          onClick={closeReviewModal}
           className="fixed inset-0 z-50 bg-[#0E1712]/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 animate-in fade-in duration-200 overflow-y-auto"
         >
           <div
@@ -258,7 +276,7 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
             {/* Botón para cerrar la ventana. */}
             <button
               type="button"
-              onClick={() => setIsModalOpen(false)}
+              onClick={closeReviewModal}
               className="absolute top-4 right-4 z-10 p-2 rounded-full bg-[#EAEFD9] hover:bg-[#DCE6CA] text-tikkun-brand-deep transition-colors cursor-pointer"
               aria-label="Cerrar modal"
             >
@@ -406,9 +424,9 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
                         className="w-full bg-white border border-[#CCD8B8] focus:border-tikkun-brand-deep rounded-xl px-3 py-2 text-xs text-tikkun-brand-deep focus:ring-1 focus:ring-tikkun-brand-deep focus:outline-hidden transition-all"
                       >
                         <option value="En Pareja">En Pareja</option>
-                        <option value="Familia">En Familia</option>
-                        <option value="Amigos">Con Amigos</option>
-                        <option value="Escapada Solitaria">Retiro Solitario</option>
+                        <option value="En Familia">En Familia</option>
+                        <option value="Con Amigos">Con Amigos</option>
+                        <option value="Retiro Solitario">Retiro Solitario</option>
                       </select>
                     </div>
                   </div>
@@ -440,7 +458,7 @@ export const ReviewsSection: React.FC<{ onOpenLegal?: () => void }> = ({ onOpenL
                   <div className="pt-2 flex items-center justify-end gap-2.5">
                     <button
                       type="button"
-                      onClick={() => { if (!isSubmitting) setIsModalOpen(false); }}
+                      onClick={closeReviewModal}
                       className="px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[#465E3C] hover:bg-[#EAEFD9] rounded-xl transition-colors cursor-pointer"
                     >
                       Cancelar

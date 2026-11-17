@@ -11,10 +11,18 @@ services:
     environment:
       NODE_ENV: production
       PORT: "3000"
-      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:?Define FRONTEND_ORIGIN con el origen HTTPS público del frontend}
       RUN_MIGRATIONS: ${RUN_MIGRATIONS:-true}
+      DATABASE_URL: ${DATABASE_URL:?Define DATABASE_URL en el entorno del despliegue}
+      DATABASE_URL_UNPOOLED: ${DATABASE_URL_UNPOOLED:?Define DATABASE_URL_UNPOOLED en el entorno del despliegue}
+      JWT_SECRET: ${JWT_SECRET:?Define JWT_SECRET con un valor aleatorio de al menos 64 caracteres}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
     ports:
-      - "${BACKEND_PORT:-3000}:3000"
+      - "127.0.0.1:${BACKEND_PORT:-3000}:3000"
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/cabins').then(r=>process.exit(r.status < 500 ? 0 : 1)).catch(()=>process.exit(1))"]
       interval: 30s
@@ -28,10 +36,11 @@ services:
       dockerfile: Dockerfile
       target: production
       args:
-        VITE_AUTH_API_BASE_URL: ${VITE_AUTH_API_BASE_URL:-http://localhost:3000}
+        # El navegador usa rutas same-origin: Nginx proxy /api al backend.
+        VITE_AUTH_API_BASE_URL: ${VITE_AUTH_API_BASE_URL:-}
     restart: unless-stopped
     depends_on:
       backend:
         condition: service_healthy
     ports:
-      - "${FRONTEND_PORT:-8080}:80"
+      - "127.0.0.1:${FRONTEND_PORT:-8080}:80"

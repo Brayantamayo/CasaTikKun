@@ -107,6 +107,7 @@ export class CabinsService {
     return error instanceof Prisma.PrismaClientKnownRequestError && error.code === code;
   }
 
+// Maneja errores de conflicto de unicidad de manera centralizada para evitar duplicación de código.
   private handleUniqueConflict(error: unknown): void {
     if (this.isPrismaCode(error, 'P2002')) {
       throw new ConflictException('Ya existe una cabaña con ese número.');

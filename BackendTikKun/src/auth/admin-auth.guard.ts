@@ -1,4 +1,5 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { timingSafeEqual } from 'crypto';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
@@ -12,7 +13,11 @@ export interface AdminRequest extends Request {
 // Guard de NestJS: rechaza peticiones sin sesión válida antes de ejecutar el controller protegido.
 @Injectable()
 export class AdminAuthGuard implements CanActivate {
-  constructor(private readonly jwt: JwtService, private readonly auth: AuthService) {}
+  constructor(
+    private readonly jwt: JwtService,
+    private readonly auth: AuthService,
+    private readonly config: ConfigService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // La sesión viaja en cookie HttpOnly, inaccesible desde JavaScript del navegador.
@@ -21,13 +26,32 @@ export class AdminAuthGuard implements CanActivate {
     const token = request.cookies?.admin_session;
     if (!token) throw new UnauthorizedException('Inicia sesión para continuar.');
 
-    // Exigir token double-submit en mutaciones autenticadas para bloquear CSRF desde sitios externos.
+    // Verificar CSRF en todas las mutaciones autenticadas.
     if (!['GET', 'HEAD', 'OPTIONS'].includes(request.method)) {
       const cookieToken = request.cookies?.admin_csrf;
       const headerValue = request.headers['x-csrf-token'];
       const headerToken = Array.isArray(headerValue) ? headerValue[0] : headerValue;
-      if (!cookieToken || !headerToken || cookieToken.length !== headerToken.length ||
-          !timingSafeEqual(Buffer.from(cookieToken), Buffer.from(headerToken))) {
+      const cookieBytes = cookieToken ? Buffer.from(cookieToken) : undefined;
+      const headerBytes = headerToken ? Buffer.from(headerToken) : undefined;
+      const csrfTokenMatches = Boolean(
+        cookieBytes && headerBytes && cookieBytes.length === headerBytes.length &&
+        timingSafeEqual(cookieBytes, headerBytes),
+      );
+
+      // Si frontend y API son orígenes distintos, el navegador no permite leer una cookie host-only.
+      // En ese caso el Origin exacto permitido por CORS sirve como segunda defensa contra CSRF.
+      const requestOrigin = request.get('origin');
+      const allowedOrigins = new Set<string>();
+      const configuredOrigin = this.config.get<string>('FRONTEND_ORIGIN')?.trim();
+      if (configuredOrigin) {
+        try { allowedOrigins.add(new URL(configuredOrigin).origin); } catch { /* main.ts valida esta variable al iniciar. */ }
+      }
+      if (this.config.get<string>('NODE_ENV') !== 'production') {
+        allowedOrigins.add('http://localhost:3000');
+        allowedOrigins.add('http://localhost:3001');
+      }
+
+      if (!csrfTokenMatches && (!requestOrigin || !allowedOrigins.has(requestOrigin))) {
         throw new ForbiddenException('Solicitud no válida. Recarga la página e inténtalo de nuevo.');
       }
     }

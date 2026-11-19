@@ -551,8 +551,7 @@ export const TIKKUN_CONTACT: InformacionContacto = {
   correoSecundario: 'reservas@casatikkun.com',
   instagram: '@casatikkun.glamping',
   ubicacion: 'Carrera 25 Este, Vía Medellín-Vía Sta. Elena #54-989 KM 6, Santa Elena, Medellín, Antioquia',
-  direccion: 'Carrera 25 Este, Vía Medellín-Vía Sta. Elena #54-989 KM 6, Santa Elena, Medellín, Antioquia',
-  coordenadasMapa: '6.2086, -75.4983'
+  direccion: 'Carrera 25 Este, Vía Medellín-Vía Sta. Elena #54-989 KM 6, Santa Elena, Medellín, Antioquia'
 };
 
 export {

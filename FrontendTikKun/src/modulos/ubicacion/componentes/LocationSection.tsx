@@ -3,6 +3,11 @@ import React from 'react';
 import { MapPin, Navigation, Car, Bus, PhoneCall, Mail, Smartphone, Clock, ExternalLink, Compass } from 'lucide-react';
 import { TIKKUN_CONTACT } from '@/compartido/datos/tikkunData';
 
+const mapSearch = `Casa Tikkun, ${TIKKUN_CONTACT.direccion}`;
+const googleMapsDirectionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(mapSearch)}`;
+const googleMapsEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(mapSearch)}&z=16&output=embed`;
+const wazeDirectionsUrl = `https://waze.com/ul?q=${encodeURIComponent(mapSearch)}&navigate=yes`;
+
 export const LocationSection: React.FC = () => {
   return (
     <section id="ubicacion" className="py-24 bg-tikkun-brand-cream">
@@ -84,7 +89,7 @@ export const LocationSection: React.FC = () => {
                       Dirección Oficial
                     </span>
                     <p className="font-semibold text-tikkun-brand-deep text-sm">
-                      Carrera 25 Este, Vía Medellín-Vía Sta. Elena #54-989 KM 6
+                      {TIKKUN_CONTACT.direccion}, Colombia
                     </p>
                     <span className="text-xs text-[#526D46] block mt-0.5">
                       Santa Elena, Medellín, Antioquia (A 35 min de Medellín)
@@ -159,10 +164,10 @@ export const LocationSection: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="hidden sm:inline-block px-2.5 py-1 rounded-md bg-[#EDF2E4] text-[10px] font-bold text-[#2A4222] border border-[#CCD8B8]">
-                    Coords: 6.2086° N, 75.4983° W
+                    Santa Elena, Medellín
                   </span>
                   <a
-                    href="https://maps.google.com/?q=carrera+25+este,+Via+Medell%C3%ADn-Via+Sta.+Elena+%2354-989+km+6,+Santa+Elena,+Medell%C3%ADn,+Antioquia"
+                    href={googleMapsDirectionsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold text-white bg-tikkun-brand-deep hover:bg-[#122210] transition-colors"
@@ -177,7 +182,7 @@ export const LocationSection: React.FC = () => {
               <div className="relative w-full h-107.5 sm:h-120 rounded-2xl overflow-hidden border border-[#CCD8B8] shadow-inner bg-[#DEE5D2]">
                 <iframe
                   title="Ubicación de Casa Tikkun en Santa Elena en Google Maps"
-                  src="https://maps.google.com/maps?q=carrera+25+este,+Via+Medell%C3%ADn-Via+Sta.+Elena+%2354-989+km+6,+Santa+Elena,+Medell%C3%ADn,+Antioquia&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                  src={googleMapsEmbedUrl}
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
@@ -196,11 +201,11 @@ export const LocationSection: React.FC = () => {
                     </span>
                   </div>
                   <p className="text-xs text-[#415638] leading-snug">
-                    Carrera 25 Este, Vía Medellín-Vía Sta. Elena #54-989 KM 6, Santa Elena, Medellín.
+                    {TIKKUN_CONTACT.direccion}, Colombia
                   </p>
                   <div className="mt-2.5 flex items-center gap-2 text-[11px] font-bold">
                     <a
-                      href="https://waze.com/ul?q=carrera+25+este+Via+Medellin+Via+Sta+Elena+54-989+km+6+Santa+Elena+Medellin"
+                      href={wazeDirectionsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-2.5 py-1 rounded-md bg-[#EDF2E4] text-tikkun-brand-deep border border-[#CCD8B8] hover:bg-[#DEE6D5]"
@@ -208,7 +213,7 @@ export const LocationSection: React.FC = () => {
                       Abrir con Waze
                     </a>
                     <a
-                      href="https://maps.google.com/?q=carrera+25+este,+Via+Medell%C3%ADn-Via+Sta.+Elena+%2354-989+km+6,+Santa+Elena,+Medell%C3%ADn,+Antioquia"
+                      href={googleMapsDirectionsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-2.5 py-1 rounded-md bg-tikkun-brand-deep text-white hover:bg-[#122210]"

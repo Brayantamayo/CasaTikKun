@@ -12,14 +12,8 @@ skills-lock.json
 # Secretos locales
 .env
 .env.*
-!.env.example
-!.env.development.example
-!.env.production.example
 **/.env
 **/.env.*
-!**/.env.example
-!**/.env.development.example
-!**/.env.production.example
 
 # Salidas de compilación
 **/dist/

@@ -239,7 +239,6 @@ export interface InformacionContacto {
   instagram: string;
   ubicacion: string;
   direccion: string;
-  coordenadasMapa: string;
 }
 
 // ============================================================================

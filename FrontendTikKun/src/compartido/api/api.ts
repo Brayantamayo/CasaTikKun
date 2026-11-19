@@ -1,6 +1,9 @@
 // Cliente HTTP común: conecta con NestJS y normaliza las respuestas y errores.
 /** Cliente HTTP único del frontend: centraliza URL base, cookies y errores de NestJS. */
-const API_ORIGIN = (import.meta.env.VITE_AUTH_API_BASE_URL || 'http://localhost:3000').replace(/\/+$/, '');
+const API_ORIGIN = (
+  import.meta.env.VITE_AUTH_API_BASE_URL ||
+  (import.meta.env.PROD ? '' : 'http://localhost:3000')
+).replace(/\/+$/, '');
 
 function readCookie(name: string): string | undefined {
   if (typeof document === 'undefined') return undefined;

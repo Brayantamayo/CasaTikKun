@@ -53,7 +53,8 @@ export class ReviewsService {
   async approve(id: string) {
     return this.prisma.$transaction(async (tx) => {
       // Serialize approvals so simultaneous admin clicks cannot exceed the 15-publication limit.
-      await tx.$queryRaw`SELECT pg_advisory_xact_lock(734821506)`;
+      // Devolver un entero evita que Prisma intente deserializar el tipo PostgreSQL `void` del lock.
+      await tx.$queryRaw`SELECT 1 FROM pg_advisory_xact_lock(734821506)`;
       const review = await tx.review.findUnique({ where: { id } });
       if (!review) throw new NotFoundException('No se encontró la reseña solicitada.');
       if (review.status === 'PUBLISHED') return this.toPublicReview(review);

@@ -41,6 +41,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   const { reviews, deleteReview, refreshReviews } = useReviews();
   const [adminReviews, setAdminReviews] = useState<ResenaAdministracion[]>([]);
   const [isLoadingReviews, setIsLoadingReviews] = useState(false);
+  const [processingReviewId, setProcessingReviewId] = useState<string | null>(null);
   const allAccommodations = getEffectiveAccommodations();
 
   const handleLogout = async () => {
@@ -99,28 +100,35 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   const showError = (msg: string) => notificar.error(msg);
 
   const handleDeleteReview = async (reviewId: string) => {
+    if (processingReviewId) return;
+    const review = adminReviews.find((item) => item.id === reviewId);
+    setProcessingReviewId(reviewId);
     try {
       await deleteReview(reviewId);
       setAdminReviews((items) => items.filter((item) => item.id !== reviewId));
-      showSuccess('Reseña eliminada.');
+      // La acción ya está confirmada por el servidor; un fallo de refresco no debe ocultar el éxito.
+      try { await refreshReviews(); } catch { /* El próximo acceso vuelve a cargar la lista pública. */ }
+      showSuccess(review?.estado === 'PENDING' ? 'Reseña rechazada y eliminada.' : 'Reseña retirada de publicación.');
     } catch (error) {
       showError(error instanceof Error ? error.message : 'No se pudo eliminar la reseña.');
+    } finally {
+      setProcessingReviewId(null);
     }
   };
 
   const handleApproveReview = async (reviewId: string) => {
+    if (processingReviewId) return;
+    setProcessingReviewId(reviewId);
     try {
       await reviewsService.approve(reviewId);
-      const refreshed = await reviewsService.listForAdmin();
-      setAdminReviews(refreshed);
-      try {
-        await refreshReviews();
-      } catch {
-        // El listado administrativo confirma la aprobación aunque falle una lectura pública transitoria.
-      }
+      setAdminReviews((items) => items.map((item) => item.id === reviewId ? { ...item, estado: 'PUBLISHED' } : item));
+      void reviewsService.listForAdmin().then(setAdminReviews).catch(() => undefined);
+      void refreshReviews().catch(() => undefined);
       showSuccess('Reseña aprobada. Si ya había 15 publicadas, se retiró automáticamente la más antigua.');
     } catch (error) {
       showError(error instanceof Error ? error.message : 'No se pudo aprobar la reseña.');
+    } finally {
+      setProcessingReviewId(null);
     }
   };
 
@@ -452,64 +460,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       </header>
 
       {/* Contenido principal del panel. */}
-      <div className="mx-auto max-w-7xl space-y-6 px-4 pt-7 sm:px-6 lg:px-8 lg:pt-9">
-
-        <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
-          <div>
-            <p className="text-xs font-semibold text-[#718267]">ADMINISTRACIÓN DEL SITIO</p>
-            <h2 className="mt-1 text-2xl font-serif font-bold tracking-tight text-[#1C2E20] sm:text-3xl">Todo en orden, desde aquí.</h2>
-            <p className="mt-1 text-sm text-stone-500">Gestiona alojamientos, fotos y opiniones en un solo lugar.</p>
-          </div>
-          {admin?.email && <span className="text-xs text-stone-500">Sesión: <strong className="font-medium text-[#465E3C]">{admin.email}</strong></span>}
-        </div>
-
-        {/* Tarjetas de resumen e indicadores. */}
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-          
-          <button type="button" onClick={() => setActiveTab('cabins')} aria-label="Abrir alojamientos" className="group w-full cursor-pointer space-y-1 rounded-2xl border border-[#E1E5D9] bg-white p-4 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-[#B8C9A5] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9CAF83] sm:p-5">
-            <span className="flex items-center justify-between text-xs text-stone-500">
-              <span className="font-medium">Alojamientos</span>
-              <span className="rounded-xl bg-[#EEF3E8] p-2 text-[#556F48] transition-transform duration-200 group-hover:scale-110"><Users className="h-4 w-4" /></span>
-            </span>
-            <span className="block text-xl font-serif font-bold text-tikkun-brand-deep sm:text-2xl">
-              {allAccommodations.length} <span className="text-xs font-sans font-normal text-stone-500">refugios</span>
-            </span>
-            <span className="block text-[11px] font-semibold text-[#556F48]">
-              {allAccommodations.length > 0
-                ? `Hasta ${totalCapacity} huéspedes simultáneos`
-                : 'Agrega cabañas para calcular la capacidad'}
-            </span>
-          </button>
-
-          <button type="button" onClick={() => setActiveTab('gallery')} aria-label="Abrir galería" className="group w-full cursor-pointer space-y-1 rounded-2xl border border-[#E1E5D9] bg-white p-4 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-[#B8C9A5] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9CAF83] sm:p-5">
-            <span className="flex items-center justify-between text-xs text-stone-500">
-              <span className="font-medium">Fotografías</span>
-              <span className="rounded-xl bg-[#EEF3E8] p-2 text-[#556F48] transition-transform duration-200 group-hover:scale-110"><ImageIcon className="h-4 w-4" /></span>
-            </span>
-            <span className="block text-xl font-serif font-bold text-tikkun-brand-deep sm:text-2xl">
-              {heroImages.length + galleryImages.length} <span className="text-xs font-sans font-normal text-stone-500">fotos</span>
-            </span>
-            <span className="block text-[11px] text-stone-500">
-              {heroImages.length} en portada · {galleryImages.length} en galería
-            </span>
-          </button>
-
-          <button type="button" onClick={() => setActiveTab('reviews')} aria-label="Abrir reseñas" className="group w-full cursor-pointer space-y-1 rounded-2xl border border-[#E1E5D9] bg-white p-4 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-[#E9D6B3] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AA5E] sm:p-5">
-            <span className="flex items-center justify-between text-xs text-stone-500">
-              <span className="font-medium">Opiniones de huéspedes</span>
-              <span className="rounded-xl bg-[#FBF2E3] p-2 text-amber-500 transition-transform duration-200 group-hover:rotate-6 group-hover:scale-110"><Star className="h-4 w-4 fill-amber-500" /></span>
-            </span>
-            <span className="block text-xl font-serif font-bold text-tikkun-brand-deep sm:text-2xl">
-              {averageReviewRating === null ? '—' : `${averageReviewRating.toFixed(1)}★`}
-            </span>
-            <span className="block text-[11px] font-semibold text-[#556F48]">
-              {reviews.length === 0
-                ? 'Aún no hay reseñas'
-                : `${reviews.length} ${reviews.length === 1 ? 'reseña' : 'reseñas'}`}
-            </span>
-          </button>
-
-        </div>
+      <div className="mx-auto max-w-7xl space-y-6 px-4 pt-3 sm:px-6 sm:pt-4 lg:px-8 lg:pt-4">
 
         {/* Pestañas de navegación. */}
         <div className="rounded-2xl border border-[#E1E5D9] bg-white p-1.5 shadow-sm">
@@ -568,6 +519,64 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             </button>
 
           </div>
+        </div>
+
+
+        <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
+          <div>
+            <p className="text-xs font-semibold text-[#718267]">ADMINISTRACIÓN DEL SITIO</p>
+            <h2 className="mt-1 text-2xl font-serif font-bold tracking-tight text-[#1C2E20] sm:text-3xl">Todo en orden, desde aquí.</h2>
+            <p className="mt-1 text-sm text-stone-500">Gestiona alojamientos, fotos y opiniones en un solo lugar.</p>
+          </div>
+          {admin?.email && <span className="text-xs text-stone-500">Sesión: <strong className="font-medium text-[#465E3C]">{admin.email}</strong></span>}
+        </div>
+
+        {/* Tarjetas de resumen e indicadores. */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+
+          <button type="button" onClick={() => setActiveTab('cabins')} aria-label="Abrir alojamientos" className="group w-full cursor-pointer space-y-1 rounded-2xl border border-[#E1E5D9] bg-white p-4 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-[#B8C9A5] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9CAF83] sm:p-5">
+            <span className="flex items-center justify-between text-xs text-stone-500">
+              <span className="font-medium">Alojamientos</span>
+              <span className="rounded-xl bg-[#EEF3E8] p-2 text-[#556F48] transition-transform duration-200 group-hover:scale-110"><Users className="h-4 w-4" /></span>
+            </span>
+            <span className="block text-xl font-serif font-bold text-tikkun-brand-deep sm:text-2xl">
+              {allAccommodations.length} <span className="text-xs font-sans font-normal text-stone-500">refugios</span>
+            </span>
+            <span className="block text-[11px] font-semibold text-[#556F48]">
+              {allAccommodations.length > 0
+                ? `Hasta ${totalCapacity} huéspedes simultáneos`
+                : 'Agrega cabañas para calcular la capacidad'}
+            </span>
+          </button>
+
+          <button type="button" onClick={() => setActiveTab('gallery')} aria-label="Abrir galería" className="group w-full cursor-pointer space-y-1 rounded-2xl border border-[#E1E5D9] bg-white p-4 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-[#B8C9A5] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9CAF83] sm:p-5">
+            <span className="flex items-center justify-between text-xs text-stone-500">
+              <span className="font-medium">Fotografías</span>
+              <span className="rounded-xl bg-[#EEF3E8] p-2 text-[#556F48] transition-transform duration-200 group-hover:scale-110"><ImageIcon className="h-4 w-4" /></span>
+            </span>
+            <span className="block text-xl font-serif font-bold text-tikkun-brand-deep sm:text-2xl">
+              {heroImages.length + galleryImages.length} <span className="text-xs font-sans font-normal text-stone-500">fotos</span>
+            </span>
+            <span className="block text-[11px] text-stone-500">
+              {heroImages.length} en portada · {galleryImages.length} en galería
+            </span>
+          </button>
+
+          <button type="button" onClick={() => setActiveTab('reviews')} aria-label="Abrir reseñas" className="group w-full cursor-pointer space-y-1 rounded-2xl border border-[#E1E5D9] bg-white p-4 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-[#E9D6B3] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AA5E] sm:p-5">
+            <span className="flex items-center justify-between text-xs text-stone-500">
+              <span className="font-medium">Opiniones de huéspedes</span>
+              <span className="rounded-xl bg-[#FBF2E3] p-2 text-amber-500 transition-transform duration-200 group-hover:rotate-6 group-hover:scale-110"><Star className="h-4 w-4 fill-amber-500" /></span>
+            </span>
+            <span className="block text-xl font-serif font-bold text-tikkun-brand-deep sm:text-2xl">
+              {averageReviewRating === null ? '—' : `${averageReviewRating.toFixed(1)}★`}
+            </span>
+            <span className="block text-[11px] font-semibold text-[#556F48]">
+              {reviews.length === 0
+                ? 'Aún no hay reseñas'
+                : `${reviews.length} ${reviews.length === 1 ? 'reseña' : 'reseñas'}`}
+            </span>
+          </button>
+
         </div>
 
         {/* TAB 1: CABAÑAS & GLAMPINGS */}
@@ -1233,14 +1242,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                   <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
                     <span className="text-[10px] text-stone-400">ID: {rev.id}</span>
                     <div className="flex items-center gap-2">
-                      {rev.estado === 'PENDING' && <button type="button" onClick={() => void handleApproveReview(rev.id)} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-emerald-700 hover:bg-emerald-800 rounded-xl cursor-pointer transition-colors"><Check className="w-3.5 h-3.5" /><span>Aprobar</span></button>}
+                      {rev.estado === 'PENDING' && <button type="button" disabled={processingReviewId !== null} onClick={() => void handleApproveReview(rev.id)} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-emerald-700 hover:bg-emerald-800 rounded-xl cursor-pointer transition-colors disabled:cursor-wait disabled:opacity-60"><Check className="w-3.5 h-3.5" /><span>{processingReviewId === rev.id ? 'Guardando…' : 'Aprobar'}</span></button>}
                       <button
                         type="button"
+                        disabled={processingReviewId !== null}
                         onClick={() => void handleDeleteReview(rev.id)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-red-600 hover:text-white bg-red-50 hover:bg-red-600 rounded-xl cursor-pointer transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-red-600 hover:text-white bg-red-50 hover:bg-red-600 rounded-xl cursor-pointer transition-colors disabled:cursor-wait disabled:opacity-60"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
-                        <span>{rev.estado === 'PENDING' ? 'Rechazar' : 'Retirar'}</span>
+                        <span>{processingReviewId === rev.id ? 'Guardando…' : rev.estado === 'PENDING' ? 'Rechazar' : 'Retirar'}</span>
                       </button>
                     </div>
                   </div>
